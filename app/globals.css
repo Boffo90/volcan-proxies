@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #0F1115;
+  --color-bf-secondary: #1E242b;
+  --color-accent: #ff4f1a;
+  --color-gray: #e6e6e6;
+  --color-white: #ffffff;
+}
+
+@theme inline {
+  --color-volcan-bg: var(--color-bg);
+  --color-volcan-secondary: var(--color-bg-secondary);
+  --color-volcan-accent: var(--color-accent);
+  --color-volcan-gray: var(--color-gray);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-white);
+  font-family: 'Montserrat', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
