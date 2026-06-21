@@ -1,0 +1,150 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Trash2, Loader2, ShoppingBag } from "lucide-react";
+import NavBar from "@/components/NavBar";
+import {
+  getCart,
+  removeFromCart,
+  updateQty,
+  type CartItem,
+} from "@/lib/cart";
+import { calculateTotal, formatCLP } from "@/lib/pricing";
+
+export default function CarritoPage() {
+  const router = useRouter();
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+	setItems(getCart());
+	setMounted(true);
+	const onUpdate = () => setItems(getCart());
+	window.addEventListener("cart-updated", onUpdate);
+	return () => window.removeEventListener("cart-updated", onUpdate);
+  }, []);
+
+  if (!mounted) {
+	return (
+  	<main className="min-h-screen bg-[#0F1115] text-white">
+    	<NavBar />
+    	<div className="flex items-center justify-center py-32">
+      	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+    	</div>
+  	</main>
+	);
+  }
+
+  const { total, applied } = calculateTotal(
+	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
+  );
+  const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+
+  const goCatalogo = () => router.push("/catalogo");
+  const goCheckout = () => router.push("/checkout");
+
+  return (
+	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<NavBar />
+
+  	<div className="max-w-5xl mx-auto px-6 py-10">
+    	<h1 className="text-3xl md:text-4xl font-bold mb-8">
+      	Tu <span className="text-[#FF4D1A]">carrito</span>
+    	</h1>
+
+    	{items.length === 0 ? (
+      	<div className="text-center py-20">
+        	<ShoppingBag className="mx-auto text-gray-500 mb-4" size={48} />
+        	<p className="text-gray-400 mb-6">Tu carrito está vacío</p>
+        	<button
+          	onClick={goCatalogo}
+          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold transition"
+        	>
+          	Ir al catálogo
+        	</button>
+      	</div>
+    	) : (
+      	<div className="grid lg:grid-cols-3 gap-8">
+        	<div className="lg:col-span-2 space-y-4">
+          	{items.map((it, idx) => (
+            	<div
+              	key={`${it.id}-${it.finish}-${idx}`}
+              	className="flex gap-4 bg-[#1E242B] p-4 rounded-xl border border-white/10"
+            	>
+              	<img
+					src={it.image}
+					alt={it.name}
+					className="w-[60px] h-[84px] rounded object-contain bg-[#0F1115] flex-shrink-0"
+			  	/>
+			  	<div className="flex-1">
+                	<p className="font-semibold">{it.name}</p>
+                	<p className="text-xs text-gray-400 uppercase">
+                  	{it.set_name}
+                	</p>
+                	<p className="text-xs text-[#FF4D1A] mt-1 capitalize">
+                  	{it.finish}
+                	</p>
+                	<div className="flex items-center gap-3 mt-3">
+                  	<label className="text-xs text-gray-400">Cant:</label>
+                  	<input
+                    	type="number"
+                    	min={1}
+                    	max={100}
+                    	value={it.quantity}
+                    	onChange={(e) =>
+                      	updateQty(idx, Number(e.target.value) || 1)
+                    	}
+                    	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1 text-sm"
+                  	/>
+                  	<button
+                    	onClick={() => removeFromCart(idx)}
+                    	className="text-red-400 hover:text-red-300 ml-auto"
+                    	title="Eliminar"
+                  	>
+                    	<Trash2 size={18} />
+                  	</button>
+                	</div>
+              	</div>
+            	</div>
+          	))}
+        	</div>
+
+        	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
+          	<h2 className="font-bold text-lg mb-4">Resumen</h2>
+          	<div className="flex justify-between text-sm mb-2">
+            	<span className="text-gray-400">Cartas totales</span>
+            	<span>{totalQty}</span>
+          	</div>
+          	<div className="flex justify-between text-sm mb-4">
+            	<span className="text-gray-400">Tarifa aplicada</span>
+            	<span className="text-[#FF4D1A]">{applied}</span>
+          	</div>
+          	<div className="border-t border-white/10 pt-4 mb-6">
+            	<div className="flex justify-between items-center">
+              	<span className="text-gray-400">Subtotal</span>
+              	<span className="text-2xl font-bold text-[#FF4D1A]">
+                	{formatCLP(total)}
+              	</span>
+            	</div>
+            	<p className="text-xs text-gray-500 mt-2">
+              	Envío a calcular en el checkout.
+            	</p>
+          	</div>
+          	<button
+            	onClick={goCheckout}
+            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition"
+          	>
+            	Ir a pagar
+          	</button>
+          	<p className="text-xs text-gray-500 text-center mt-4">
+            	Mercado Pago o transferencia
+          	</p>
+        	</aside>
+      	</div>
+    	)}
+  	</div>
+	</main>
+  );
+}
+

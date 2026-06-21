@@ -36,19 +36,22 @@ export default function CartaDetalle() {
   }, [id]);
 
   const addToCart = () => {
-	if (!selectedPrint) return;
-	const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-	cart.push({
-  	id: selectedPrint.id,
-  	name: selectedPrint.name,
-  	set_name: selectedPrint.set_name,
-  	image: getCardImage(selectedPrint, "small"),
-  	finish,
-  	quantity: qty,
-	});
-	localStorage.setItem("cart", JSON.stringify(cart));
-	alert(`Agregado al carrito: ${selectedPrint.name} x${qty} (${finish})`);
-  };
+  if (!selectedPrint) return;
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  cart.push({
+	id: selectedPrint.id,
+	name: selectedPrint.name,
+	set: selectedPrint.set,
+	set_name: selectedPrint.set_name,
+	collector_number: selectedPrint.collector_number,
+	image: getCardImage(selectedPrint, "small"),
+	finish,
+	quantity: qty,
+  });
+  localStorage.setItem("cart", JSON.stringify(cart));
+  window.dispatchEvent(new Event("cart-updated"));
+  alert(`Agregado al carrito: ${selectedPrint.name} x${qty} (${finish})`);
+};
 
   if (loading) {
 	return (
