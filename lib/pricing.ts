@@ -35,9 +35,10 @@ export async function getPrecios(): Promise<Precios> {
 	const res = await fetch("/api/precios", { cache: "no-store" });
 	if (!res.ok) throw new Error("fetch fail");
 	const data = await res.json();
-	cachedPrecios = { ...PRECIOS_DEFAULT, ...data };
+	const merged: Precios = { ...PRECIOS_DEFAULT, ...data };
+	cachedPrecios = merged;
 	cachedAt = now;
-	return cachedPrecios;
+	return merged;
   } catch {
 	return PRECIOS_DEFAULT;
   }
@@ -71,7 +72,6 @@ export function calculateTotalWith(
 	.filter((i) => i.isCustom)
 	.reduce((s, i) => s + i.quantity, 0);
 
-  // Detección de promo: solo si TODAS las cartas son del mismo finish y NO hay customs
   const finishes = new Set(items.map((i) => i.finish));
   const hasCustom = items.some((i) => i.isCustom);
 
@@ -92,7 +92,6 @@ export function calculateTotalWith(
   	};
   }
 
-  // Cálculo unitario + recargo custom
   const base = items.reduce(
 	(s, i) =>
   	s +
