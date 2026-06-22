@@ -3,6 +3,11 @@ import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { Resend } from "resend";
 
+const COURIER_NAMES: Record<string, string> = {
+  starken: "Starken",
+  chilexpress: "Chilexpress",
+};
+
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -79,58 +84,91 @@ export async function PATCH(
   if (triggerTrackingEmail && current) {
 	try {
   	const resend = new Resend(process.env.RESEND_API_KEY);
-  	const courier = (body.tracking_courier || "courier") as string;
+  	const courierKey = (body.tracking_courier || "courier") as string;
+  	const courierName = COURIER_NAMES[courierKey] || "Courier";
   	const trackingNum = body.tracking_numero as string;
   	const siteUrl =
     	process.env.NEXT_PUBLIC_SITE_URL || "https://volcanproxies.cl";
 
   	let trackingLink = "";
-  	if (courier === "starken") {
-    	trackingLink = `https://www.starken.cl/seguimiento?codigo=${trackingNum}`;
-  	} else if (courier === "chilexpress") {
-    	trackingLink = `https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=${trackingNum}`;
+  	if (courierKey === "starken") {
+    	trackingLink =
+      	"https://www.starken.cl/seguimiento?codigo=" + trackingNum;
+  	} else if (courierKey === "chilexpress") {
+    	trackingLink =
+      	"https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=" +
+      	trackingNum;
   	}
+
+  	const seguimientoLocalUrl =
+    	siteUrl + "/seguimiento/" + current.numero;
+
+  	// Construimos el botón de tracking como string aparte
+  	const trackButtonHtml = trackingLink
+    	? '<p style="margin:16px 0 0;"><a href="' +
+      	trackingLink +
+      	'" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Rastrear en ' +
+      	courierName +
+      	" →</a></p>"
+    	: "";
+
+  	const seguimientoLinkHtml =
+    	'<a href="' +
+    	seguimientoLocalUrl +
+    	'" style="color:#FF4D1A;">' +
+    	seguimientoLocalUrl +
+    	"</a>";
+
+  	const html =
+    	'<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#222;">' +
+    	'<div style="background:#0F1115;color:white;padding:24px;text-align:center;border-radius:8px 8px 0 0;">' +
+    	'<h1 style="margin:0;">🌋 VOLCÁN <span style="color:#FF4D1A;">PROXIES</span></h1>' +
+    	'<p style="margin:8px 0 0;color:#aaa;">Tu pedido está en camino</p>' +
+    	"</div>" +
+    	'<div style="background:#fafafa;padding:24px;border-radius:0 0 8px 8px;">' +
+    	"<h2>¡Hola " +
+    	current.cliente_nombre.split(" ")[0] +
+    	"! 📦</h2>" +
+    	'<p>Tu pedido <b style="color:#FF4D1A;">#' +
+    	current.numero +
+    	"</b> ya fue despachado.</p>" +
+    	'<div style="background:white;padding:16px;border-radius:6px;margin:16px 0;border:1px solid #eee;">' +
+    	'<h3 style="margin-top:0;">Datos de seguimiento</h3>' +
+    	'<p style="margin:4px 0;"><b>Courier:</b> ' +
+    	courierName +
+    	"</p>" +
+    	'<p style="margin:4px 0;"><b>N° seguimiento:</b> <span style="color:#FF4D1A;font-weight:bold;">' +
+    	trackingNum +
+    	"</span></p>" +
+    	trackButtonHtml +
+    	"</div>" +
+    	'<div style="background:white;padding:16px;border-radius:6px;margin:16px 0;border:1px solid #eee;">' +
+    	'<h3 style="margin-top:0;">📍 Dirección de envío</h3>' +
+    	'<p style="margin:4px 0;">' +
+    	current.direccion +
+    	"</p>" +
+    	'<p style="margin:4px 0;">' +
+    	current.comuna +
+    	", " +
+    	current.region +
+    	"</p>" +
+    	"</div>" +
+    	'<p style="margin:16px 0;">También puedes seguir tu pedido en cualquier momento aquí:</p>' +
+    	"<p>" +
+    	seguimientoLinkHtml +
+    	"</p>" +
+    	'<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">' +
+    	"¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b>" +
+    	"</p>" +
+    	"</div>" +
+    	"</div>";
 
   	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: current.cliente_email,
-    	subject: `🚚 Tu pedido #${current.numero} fue enviado - Volcán Proxies`,
-    	html: `
-      	<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#222;">
-        	<div style="background:#0F1115;color:white;padding:24px;text-align:center;border-radius:8px 8px 0 0;">
-          	<h1 style="margin:0;">🌋 VOLCÁN <span style="color:#FF4D1A;">PROXIES</span></h1>
-          	<p style="margin:8px 0 0;color:#aaa;">Tu pedido está en camino</p>
-        	</div>
-        	<div style="background:#fafafa;padding:24px;border-radius:0 0 8px 8px;">
-          	<h2>¡Hola ${current.cliente_nombre.split(" ")[0]}! 📦</h2>
-          	<p>Tu pedido <b style="color:#FF4D1A;">#${current.numero}</b> ya fue despachado.</p>
-
-          	<div style="background:white;padding:16px;border-radius:6px;margin:16px 0;border:1px solid #eee;">
-            	<h3 style="margin-top:0;">Datos de seguimiento</h3>
-            	<p style="margin:4px 0;"><b>Courier:</b> ${courier}</p>
-            	<p style="margin:4px 0;"><b>N° seguimiento:</b> <span style="color:#FF4D1A;font-weight:bold;">${trackingNum}</span></p>
-            	${
-              	trackingLink
-                	? `<p style="margin:16px 0 0;">${trackingLink}" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Rastrear pedido →</a></p>`
-                	: ""
-            	}
-          	</div>
-
-          	<div style="background:white;padding:16px;border-radius:6px;margin:16px 0;border:1px solid #eee;">
-            	<h3 style="margin-top:0;">📍 Dirección de envío</h3>
-            	<p style="margin:4px 0;">${current.direccion}</p>
-            	<p style="margin:4px 0;">${current.comuna}, ${current.region}</p>
-          	</div>
-
-          	<p style="margin:16px 0;">También puedes seguir tu pedido en cualquier momento aquí:</p>
-          	<p>${siteUrl}/seguimiento/${current.numero}" style="color:#FF4D1A;">${siteUrl}/seguimiento/${current.numero}</a></p>
-
-          	<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">
-            	¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b>
-          	</p>
-        	</div>
-      	</div>
-    	`,
+    	subject:
+      	"🚚 Tu pedido #" + current.numero + " fue enviado - Volcán Proxies",
+    	html,
   	});
 	} catch (e) {
   	console.error("[TRACKING EMAIL] error:", e);
