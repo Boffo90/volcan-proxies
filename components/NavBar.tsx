@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Flame, Search, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, Menu, X, Flame } from "lucide-react";
 import { autocomplete } from "@/lib/scryfall";
 import { getCart } from "@/lib/cart";
 import CartDrawer from "@/components/CartDrawer";
@@ -20,7 +20,6 @@ export default function NavBar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
 
-  // Cart count
   useEffect(() => {
 	const updateCount = () => {
   	const cart = getCart();
@@ -31,7 +30,6 @@ export default function NavBar() {
 	return () => window.removeEventListener("cart-updated", updateCount);
   }, []);
 
-  // Autocomplete con debounce
   useEffect(() => {
 	if (debounceRef.current) clearTimeout(debounceRef.current);
 	if (!query.trim() || query.length < 2) {
@@ -46,7 +44,6 @@ export default function NavBar() {
 	}, 200);
   }, [query]);
 
-  // Cerrar dropdown al click fuera
   useEffect(() => {
 	const handler = (e: MouseEvent) => {
   	if (
@@ -61,12 +58,9 @@ export default function NavBar() {
 	return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Auto-scroll a la sugerencia activa
   useEffect(() => {
 	if (activeIdx >= 0 && itemsRef.current[activeIdx]) {
-  	itemsRef.current[activeIdx]?.scrollIntoView({
-    	block: "nearest",
-  	});
+  	itemsRef.current[activeIdx]?.scrollIntoView({ block: "nearest" });
 	}
   }, [activeIdx]);
 
@@ -88,7 +82,6 @@ export default function NavBar() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 	if (!showSuggestions || suggestions.length === 0) return;
-
 	if (e.key === "ArrowDown") {
   	e.preventDefault();
   	setActiveIdx((prev) => (prev + 1) % suggestions.length);
@@ -110,7 +103,7 @@ export default function NavBar() {
 
   const navLinks = [
 	{ slug: "catalogo", label: "Catálogo" },
-	{ slug: "importar", label: "Importar Lista" },
+	{ slug: "importar", label: "Importar lista" },
 	{ slug: "promos", label: "Promos" },
 	{ slug: "custom", label: "Custom" },
 	{ slug: "nosotros", label: "Nosotros" },

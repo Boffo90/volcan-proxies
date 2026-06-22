@@ -46,8 +46,20 @@ export async function POST(req: Request) {
 	};
 
 	if (!nombre || !email || !direccion || !comuna || !items?.length) {
-  	return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
-	}
+  return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+}
+
+const totalQty = items.reduce(
+  (s: number, i: { quantity: number }) => s + i.quantity,
+  0
+);
+if (totalQty < 9) {
+  return NextResponse.json(
+	{ error: "Pedido mínimo: 9 cartas" },
+	{ status: 400 }
+  );
+}
+
 
 	const sb = supabaseAdmin();
 

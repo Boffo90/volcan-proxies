@@ -22,6 +22,9 @@ export const PRECIOS_DEFAULT: Precios = {
 
 export const PRICES = PRECIOS_DEFAULT;
 
+// Mínimo de cartas por pedido (1 hoja de papel = 9 cartas)
+export const MIN_CARDS = 9;
+
 let cachedPrecios: Precios | null = null;
 let cachedAt = 0;
 const TTL = 60_000;

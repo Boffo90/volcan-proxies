@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Loader2, ShoppingBag } from "lucide-react";
+import { Trash2, Loader2, ShoppingBag, AlertCircle } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import {
   getCart,
@@ -10,7 +10,7 @@ import {
   updateQty,
   type CartItem,
 } from "@/lib/cart";
-import { calculateTotalWith, formatCLP } from "@/lib/pricing";
+import { calculateTotalWith, formatCLP, MIN_CARDS } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
 export default function CarritoPage() {
@@ -40,9 +40,11 @@ export default function CarritoPage() {
 
   const { total, applied } = calculateTotalWith(
 	precios,
-	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
+	items.map((i) => ({ finish: i.finish, quantity: i.quantity, isCustom: i.isCustom }))
   );
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+  const faltan = Math.max(0, MIN_CARDS - totalQty);
+  const cumpleMin = totalQty >= MIN_CARDS;
 
   return (
 	<main className="min-h-screen bg-[#0F1115] text-white">
@@ -116,14 +118,36 @@ export default function CarritoPage() {
 
         	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
           	<h2 className="font-bold text-lg mb-4">Resumen</h2>
+
           	<div className="flex justify-between text-sm mb-2">
             	<span className="text-gray-400">Cartas totales</span>
-            	<span>{totalQty}</span>
+            	<span className={cumpleMin ? "" : "text-yellow-400"}>
+              	{totalQty}
+            	</span>
           	</div>
           	<div className="flex justify-between text-sm mb-4">
             	<span className="text-gray-400">Tarifa aplicada</span>
             	<span className="text-[#FF4D1A]">{applied}</span>
           	</div>
+
+          	{!cumpleMin && (
+            	<div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded-lg mb-4 flex gap-2">
+              	<AlertCircle
+                	className="text-yellow-400 flex-shrink-0"
+                	size={16}
+              	/>
+              	<div className="text-xs text-yellow-200">
+                	<p className="font-semibold">
+                  	Faltan {faltan} carta{faltan !== 1 ? "s" : ""} para el
+                  	mínimo.
+                	</p>
+                	<p className="opacity-80 mt-1">
+                  	Pedido mínimo: {MIN_CARDS} cartas (1 hoja completa).
+                	</p>
+              	</div>
+            	</div>
+          	)}
+
           	<div className="border-t border-white/10 pt-4 mb-6">
             	<div className="flex justify-between items-center">
               	<span className="text-gray-400">Subtotal</span>
@@ -137,9 +161,10 @@ export default function CarritoPage() {
           	</div>
           	<button
             	onClick={() => router.push("/checkout")}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition"
+            	disabled={!cumpleMin}
+            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed"
           	>
-            	Ir a pagar
+            	{cumpleMin ? "Ir a pagar" : `Faltan ${faltan} carta(s)`}
           	</button>
           	<p className="text-xs text-gray-500 text-center mt-4">
             	Mercado Pago o transferencia
