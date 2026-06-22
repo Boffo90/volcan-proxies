@@ -35,6 +35,11 @@ const TIMELINE = [
   { key: "entregado", label: "Entregado", icon: Home },
 ];
 
+const COURIER_NAMES: Record<string, string> = {
+  starken: "Starken",
+  chilexpress: "Chilexpress",
+};
+
 export default function SeguimientoPage() {
   const { numero } = useParams<{ numero: string }>();
   const [pedido, setPedido] = useState<PedidoPublico | null>(null);
@@ -65,6 +70,20 @@ export default function SeguimientoPage() {
   const currentIdx = pedido
 	? TIMELINE.findIndex((t) => t.key === pedido.estado)
 	: -1;
+
+  const openTracking = () => {
+	if (!pedido?.tracking_numero || !pedido.tracking_courier) return;
+	let url = "";
+	if (pedido.tracking_courier === "starken") {
+  	url =
+    	"https://www.starken.cl/seguimiento?codigo=" + pedido.tracking_numero;
+	} else if (pedido.tracking_courier === "chilexpress") {
+  	url =
+    	"https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=" +
+    	pedido.tracking_numero;
+	}
+	if (url) window.open(url, "_blank");
+  };
 
   return (
 	<main className="min-h-screen bg-[#0F1115] text-white">
@@ -108,29 +127,24 @@ export default function SeguimientoPage() {
             	</h3>
             	<p className="text-sm mb-1">
               	<span className="text-gray-400">Courier: </span>
-              	<b className="capitalize">{pedido.tracking_courier}</b>
+              	<b>
+                	{COURIER_NAMES[pedido.tracking_courier || ""] ||
+                  	pedido.tracking_courier}
+              	</b>
             	</p>
             	<p className="text-sm mb-3">
               	<span className="text-gray-400">N° seguimiento: </span>
               	<b className="text-[#FF4D1A]">{pedido.tracking_numero}</b>
             	</p>
-            	{pedido.tracking_courier === "starken" && (
-              	https://www.starken.cl/seguimiento?codigo=${pedido.tracking_numero}`}
-                	target="_blank"
-                	rel="noreferrer"
+            	{(pedido.tracking_courier === "starken" ||
+              	pedido.tracking_courier === "chilexpress") && (
+              	<button
+                	onClick={openTracking}
                 	className="inline-block bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold"
               	>
-                	Rastrear en Starken →
-              	</a>
-            	)}
-            	{pedido.tracking_courier === "chilexpress" && (
-              	https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=${pedido.tracking_numero}`}
-                	target="_blank"
-                	rel="noreferrer"
-                	className="inline-block bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold"
-              	>
-                	Rastrear en Chilexpress →
-              	</a>
+                	Rastrear en{" "}
+                	{COURIER_NAMES[pedido.tracking_courier]} →
+              	</button>
             	)}
           	</div>
         	)}
