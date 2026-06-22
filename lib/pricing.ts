@@ -10,7 +10,6 @@ export type Precios = {
   custom_surcharge: number;
 };
 
-// Fallback por si la API falla
 export const PRECIOS_DEFAULT: Precios = {
   glossy: 150,
   matte: 200,
@@ -21,12 +20,11 @@ export const PRECIOS_DEFAULT: Precios = {
   custom_surcharge: 50,
 };
 
-// Compatibilidad con código que aún usa PRICES (no rompe nada)
 export const PRICES = PRECIOS_DEFAULT;
 
 let cachedPrecios: Precios | null = null;
 let cachedAt = 0;
-const TTL = 60_000; // 1 minuto
+const TTL = 60_000;
 
 export async function getPrecios(): Promise<Precios> {
   const now = Date.now();
@@ -58,14 +56,26 @@ export function formatCLP(amount: number): string {
   }).format(amount);
 }
 
+type CartCalcItem = {
+  finish: Finish;
+  quantity: number;
+  isCustom?: boolean;
+};
+
 export function calculateTotalWith(
   precios: Precios,
-  items: Array<{ finish: Finish; quantity: number }>
+  items: CartCalcItem[]
 ): { total: number; applied: string } {
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
-  const finishes = new Set(items.map((i) => i.finish));
+  const customQty = items
+	.filter((i) => i.isCustom)
+	.reduce((s, i) => s + i.quantity, 0);
 
-  if (finishes.size === 1) {
+  // Detección de promo: solo si TODAS las cartas son del mismo finish y NO hay customs
+  const finishes = new Set(items.map((i) => i.finish));
+  const hasCustom = items.some((i) => i.isCustom);
+
+  if (finishes.size === 1 && !hasCustom) {
 	const f = [...finishes][0];
 	if (totalQty === 60)
   	return {
@@ -82,19 +92,28 @@ export function calculateTotalWith(
   	};
   }
 
-  const total = items.reduce(
+  // Cálculo unitario + recargo custom
+  const base = items.reduce(
 	(s, i) =>
   	s +
   	(i.finish === "glossy" ? precios.glossy : precios.matte) * i.quantity,
 	0
   );
-  return { total, applied: "Precio unitario" };
+  const surcharge = customQty * precios.custom_surcharge;
+  const total = base + surcharge;
+
+  const applied =
+	customQty > 0
+  	? `Precio unitario + ${customQty} carta(s) custom`
+  	: "Precio unitario";
+
+  return { total, applied };
 }
 
-// Wrapper para compatibilidad con código antiguo que usaba calculateTotal sin precios
-export function calculateTotal(
-  items: Array<{ finish: Finish; quantity: number }>
-): { total: number; applied: string } {
+export function calculateTotal(items: CartCalcItem[]): {
+  total: number;
+  applied: string;
+} {
   return calculateTotalWith(cachedPrecios || PRECIOS_DEFAULT, items);
 }
 

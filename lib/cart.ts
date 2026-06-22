@@ -1,12 +1,13 @@
 export type CartItem = {
   id: string;
   name: string;
-  set: string;      	// ej: "cmr"
-  set_name: string; 	// ej: "Commander Legends"
-  collector_number: string; // ej: "197"
+  set: string;
+  set_name: string;
+  collector_number: string;
   image: string;
   finish: "glossy" | "matte";
   quantity: number;
+  isCustom?: boolean;
 };
 
 const KEY = "cart";
@@ -51,13 +52,14 @@ export function clearCart() {
   setCart([]);
 }
 
-// Formato MTGO/Arena: "1 Lightning Bolt (M11) 149"
 export function toMtgoFormat(items: CartItem[]): string {
   return items
-	.map(
-  	(it) =>
-    	`${it.quantity} ${it.name} (${it.set.toUpperCase()}) ${it.collector_number}`
-	)
+	.map((it) => {
+  	if (it.isCustom) {
+    	return `${it.quantity} [CUSTOM] ${it.name}`;
+  	}
+  	return `${it.quantity} ${it.name} (${it.set.toUpperCase()}) ${it.collector_number}`;
+	})
 	.join("\n");
 }
-	
+

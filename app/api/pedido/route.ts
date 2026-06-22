@@ -112,12 +112,14 @@ export async function POST(req: Request) {
 	// =========================
 	// Lista MTGO/Arena para imprimir
 	// =========================
-	const mtgoList = items
-  	.map(
-    	(it) =>
-      	`${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`
-  	)
-  	.join("\n");
+const mtgoList = items
+  .map((it: PedidoItem & { isCustom?: boolean }) => {
+	if (it.isCustom) {
+  	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
+	}
+	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
+  })
+  .join("\n");
 
 	// =========================
 	// Mail al admin
