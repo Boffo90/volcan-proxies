@@ -11,6 +11,7 @@ type PedidoItem = {
   collector_number: string;
   finish: string;
   quantity: number;
+  isCustom?: boolean;
 };
 
 export async function POST(req: Request) {
@@ -79,6 +80,13 @@ export async function POST(req: Request) {
 	}
 
 	// =========================
+	// URL del sitio
+	// =========================
+	const siteUrl =
+  	process.env.NEXT_PUBLIC_SITE_URL || "https://volcanproxies.cl";
+	const seguimientoUrl = `${siteUrl}/seguimiento/${pedido.numero}`;
+
+	// =========================
 	// Estilos compartidos
 	// =========================
 	const baseStyle =
@@ -110,16 +118,16 @@ export async function POST(req: Request) {
   	.join("");
 
 	// =========================
-	// Lista MTGO/Arena para imprimir
+	// Lista MTGO/Arena para imprimir (admin)
 	// =========================
-const mtgoList = items
-  .map((it: PedidoItem & { isCustom?: boolean }) => {
-	if (it.isCustom) {
-  	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
-	}
-	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
-  })
-  .join("\n");
+	const mtgoList = items
+  	.map((it) => {
+    	if (it.isCustom) {
+      	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
+    	}
+    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
+  	})
+  	.join("\n");
 
 	// =========================
 	// Mail al admin
@@ -192,6 +200,7 @@ const mtgoList = items
 	try {
   	console.log("[RESEND] Enviando mail cliente...");
   	const resend = new Resend(process.env.RESEND_API_KEY);
+
   	const transferInfo =
     	metodo === "transferencia"
       	? `
@@ -241,7 +250,18 @@ const mtgoList = items
             	<p style="margin:4px 0;">${direccion}</p>
             	<p style="margin:4px 0;">${comuna}, ${region}</p>
             	<p style="margin:12px 0 0;color:#666;font-size:13px;">
-              	Envío por Starken/Chilexpress (por pagar al recibir).
+              	Envío en máximo 48 hrs vía Starken/Chilexpress (por pagar al recibir).
+            	</p>
+          	</div>
+
+          	<div style="${boxStyle}">
+            	<h3 style="margin-top:0;">🔍 Sigue tu pedido</h3>
+            	<p style="margin:4px 0;">Puedes ver el estado en cualquier momento aquí:</p>
+            	<p style="margin:12px 0;">
+              	${seguimientoUrl}" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:bold;">Ver seguimiento →</a>
+            	</p>
+            	<p style="margin:8px 0 0;color:#666;font-size:12px;">
+              	Cuando despachemos tu pedido te enviaremos el número de tracking del courier.
             	</p>
           	</div>
 
@@ -281,9 +301,9 @@ const mtgoList = items
       	],
       	payer: { name: nombre, email },
       	back_urls: {
-        	success: `${process.env.NEXT_PUBLIC_SITE_URL}/gracias?pedido=${pedido.numero}`,
-        	failure: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout`,
-        	pending: `${process.env.NEXT_PUBLIC_SITE_URL}/gracias?pedido=${pedido.numero}&estado=pendiente`,
+        	success: `${siteUrl}/gracias?pedido=${pedido.numero}`,
+        	failure: `${siteUrl}/checkout`,
+        	pending: `${siteUrl}/gracias?pedido=${pedido.numero}&estado=pendiente`,
       	},
       	auto_return: "approved",
       	external_reference: String(pedido.id),

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, ArrowLeft, Save, Copy, Check } from "lucide-react";
+import { Loader2, ArrowLeft, Save, Copy, Check, Truck } from "lucide-react";
 
 type PedidoItem = {
   id: string;
@@ -13,6 +13,7 @@ type PedidoItem = {
   finish: string;
   quantity: number;
   image: string;
+  isCustom?: boolean;
 };
 
 type Pedido = {
@@ -34,6 +35,9 @@ type Pedido = {
   historial?: Array<{ from: string; to: string; at: string }>;
   items: PedidoItem[];
   created_at: string;
+  tracking_numero?: string;
+  tracking_courier?: string;
+  fecha_envio?: string;
 };
 
 const ESTADOS = [
@@ -52,6 +56,10 @@ export default function AdminPedidoDetail() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [adminNotas, setAdminNotas] = useState("");
+  const [trackingNum, setTrackingNum] = useState("");
+  const [trackingCourier, setTrackingCourier] = useState<
+	"starken" | "chilexpress" | ""
+  >("");
   const [copied, setCopied] = useState(false);
 
   const fetchPedido = useCallback(async () => {
@@ -64,6 +72,8 @@ export default function AdminPedidoDetail() {
 	const data = await res.json();
 	setPedido(data.pedido);
 	setAdminNotas(data.pedido?.admin_notas || "");
+	setTrackingNum(data.pedido?.tracking_numero || "");
+	setTrackingCourier(data.pedido?.tracking_courier || "");
 	setLoading(false);
   }, [id, router]);
 
@@ -92,6 +102,29 @@ export default function AdminPedidoDetail() {
 	setSaving(false);
   };
 
+  const saveTracking = async () => {
+	if (!trackingNum.trim() || !trackingCourier) {
+  	alert("Ingresa courier y número de tracking");
+  	return;
+	}
+	setSaving(true);
+	const res = await fetch("/api/admin/pedido/" + id, {
+  	method: "PATCH",
+  	headers: { "Content-Type": "application/json" },
+  	body: JSON.stringify({
+    	tracking_numero: trackingNum.trim(),
+    	tracking_courier: trackingCourier,
+    	fecha_envio: new Date().toISOString(),
+    	estado: "enviado",
+  	}),
+	});
+	if (res.ok) {
+  	await fetchPedido();
+  	alert("✅ Tracking guardado y email enviado al cliente");
+	}
+	setSaving(false);
+  };
+
   const formatCLP = (n: number) =>
 	new Intl.NumberFormat("es-CL", {
   	style: "currency",
@@ -101,10 +134,12 @@ export default function AdminPedidoDetail() {
 
   const mtgoList =
 	pedido?.items
-  	.map(
-    	(it) =>
-      	`${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`
-  	)
+  	.map((it) => {
+    	if (it.isCustom) {
+      	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
+    	}
+    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
+  	})
   	.join("\n") || "";
 
   const copyMtgo = async () => {
@@ -178,6 +213,65 @@ export default function AdminPedidoDetail() {
           	);
         	})}
       	</div>
+    	</div>
+
+    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
+      	<h2 className="font-bold mb-3 flex items-center gap-2">
+        	<Truck size={18} className="text-[#FF4D1A]" /> Tracking de envío
+      	</h2>
+      	<p className="text-xs text-gray-400 mb-4">
+        	Al guardar, se enviará automáticamente un email al cliente con el
+        	número de seguimiento.
+      	</p>
+      	<div className="grid md:grid-cols-2 gap-3 mb-3">
+        	<div>
+          	<label className="block text-xs text-gray-400 mb-1">
+            	Courier
+          	</label>
+          	<select
+            	value={trackingCourier}
+            	onChange={(e) =>
+              	setTrackingCourier(
+                	e.target.value as "starken" | "chilexpress" | ""
+              	)
+            	}
+            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+          	>
+            	<option value="">Elige courier</option>
+            	<option value="starken">Starken</option>
+            	<option value="chilexpress">Chilexpress</option>
+          	</select>
+        	</div>
+        	<div>
+          	<label className="block text-xs text-gray-400 mb-1">
+            	N° seguimiento
+          	</label>
+          	<input
+            	value={trackingNum}
+            	onChange={(e) => setTrackingNum(e.target.value)}
+            	placeholder="Ej: 1234567890"
+            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+          	/>
+        	</div>
+      	</div>
+      	<button
+        	onClick={saveTracking}
+        	disabled={saving}
+        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+      	>
+        	{saving ? (
+          	<Loader2 className="animate-spin" size={14} />
+        	) : (
+          	<Save size={14} />
+        	)}
+        	Guardar tracking y enviar email
+      	</button>
+      	{pedido.tracking_numero && (
+        	<p className="mt-3 text-xs text-green-400">
+          	✓ Tracking guardado: {pedido.tracking_courier} ·{" "}
+          	{pedido.tracking_numero}
+        	</p>
+      	)}
     	</div>
 
     	<div className="grid lg:grid-cols-2 gap-6">

@@ -110,6 +110,7 @@ export default function NavBar() {
 
   const navLinks = [
 	{ slug: "catalogo", label: "Catálogo" },
+	{ slug: "importar", label: "Importar Lista" },
 	{ slug: "promos", label: "Promos" },
 	{ slug: "custom", label: "Custom" },
 	{ slug: "nosotros", label: "Nosotros" },
