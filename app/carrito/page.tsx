@@ -10,10 +10,12 @@ import {
   updateQty,
   type CartItem,
 } from "@/lib/cart";
-import { calculateTotal, formatCLP } from "@/lib/pricing";
+import { calculateTotalWith, formatCLP } from "@/lib/pricing";
+import { usePrecios } from "@/hooks/usePrecios";
 
 export default function CarritoPage() {
   const router = useRouter();
+  const { precios } = usePrecios();
   const [items, setItems] = useState<CartItem[]>([]);
   const [mounted, setMounted] = useState(false);
 
@@ -36,13 +38,11 @@ export default function CarritoPage() {
 	);
   }
 
-  const { total, applied } = calculateTotal(
+  const { total, applied } = calculateTotalWith(
+	precios,
 	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
   );
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
-
-  const goCatalogo = () => router.push("/catalogo");
-  const goCheckout = () => router.push("/checkout");
 
   return (
 	<main className="min-h-screen bg-[#0F1115] text-white">
@@ -58,7 +58,7 @@ export default function CarritoPage() {
         	<ShoppingBag className="mx-auto text-gray-500 mb-4" size={48} />
         	<p className="text-gray-400 mb-6">Tu carrito está vacío</p>
         	<button
-          	onClick={goCatalogo}
+          	onClick={() => router.push("/catalogo")}
           	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold transition"
         	>
           	Ir al catálogo
@@ -67,47 +67,51 @@ export default function CarritoPage() {
     	) : (
       	<div className="grid lg:grid-cols-3 gap-8">
         	<div className="lg:col-span-2 space-y-4">
-          	{items.map((it, idx) => (
-            	<div
-              	key={`${it.id}-${it.finish}-${idx}`}
-              	className="flex gap-4 bg-[#1E242B] p-4 rounded-xl border border-white/10"
-            	>
-              	<img
-					src={it.image}
-					alt={it.name}
-					className="w-[60px] h-[84px] rounded object-contain bg-[#0F1115] flex-shrink-0"
-			  	/>
-			  	<div className="flex-1">
-                	<p className="font-semibold">{it.name}</p>
-                	<p className="text-xs text-gray-400 uppercase">
-                  	{it.set_name}
-                	</p>
-                	<p className="text-xs text-[#FF4D1A] mt-1 capitalize">
-                  	{it.finish}
-                	</p>
-                	<div className="flex items-center gap-3 mt-3">
-                  	<label className="text-xs text-gray-400">Cant:</label>
-                  	<input
-                    	type="number"
-                    	min={1}
-                    	max={100}
-                    	value={it.quantity}
-                    	onChange={(e) =>
-                      	updateQty(idx, Number(e.target.value) || 1)
-                    	}
-                    	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1 text-sm"
-                  	/>
-                  	<button
-                    	onClick={() => removeFromCart(idx)}
-                    	className="text-red-400 hover:text-red-300 ml-auto"
-                    	title="Eliminar"
-                  	>
-                    	<Trash2 size={18} />
-                  	</button>
+          	{items.map((it, idx) => {
+            	const key = it.id + "-" + it.finish + "-" + idx;
+            	return (
+              	<div
+                	key={key}
+                	className="flex gap-4 bg-[#1E242B] p-4 rounded-xl border border-white/10"
+              	>
+                	<div
+                  	role="img"
+                  	aria-label={it.name}
+                  	className="w-[60px] h-[84px] rounded bg-[#0F1115] flex-shrink-0 bg-center bg-contain bg-no-repeat"
+                  	style={{ backgroundImage: `url(${it.image})` }}
+                	/>
+                	<div className="flex-1">
+                  	<p className="font-semibold">{it.name}</p>
+                  	<p className="text-xs text-gray-400 uppercase">
+                    	{it.set_name}
+                  	</p>
+                  	<p className="text-xs text-[#FF4D1A] mt-1 capitalize">
+                    	{it.finish}
+                  	</p>
+                  	<div className="flex items-center gap-3 mt-3">
+                    	<label className="text-xs text-gray-400">Cant:</label>
+                    	<input
+                      	type="number"
+                      	min={1}
+                      	max={100}
+                      	value={it.quantity}
+                      	onChange={(e) =>
+                        	updateQty(idx, Number(e.target.value) || 1)
+                      	}
+                      	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1 text-sm"
+                    	/>
+                    	<button
+                      	onClick={() => removeFromCart(idx)}
+                      	className="text-red-400 hover:text-red-300 ml-auto"
+                      	title="Eliminar"
+                    	>
+                      	<Trash2 size={18} />
+                    	</button>
+                  	</div>
                 	</div>
               	</div>
-            	</div>
-          	))}
+            	);
+          	})}
         	</div>
 
         	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
@@ -132,7 +136,7 @@ export default function CarritoPage() {
             	</p>
           	</div>
           	<button
-            	onClick={goCheckout}
+            	onClick={() => router.push("/checkout")}
             	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition"
           	>
             	Ir a pagar

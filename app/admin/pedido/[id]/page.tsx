@@ -45,17 +45,6 @@ const ESTADOS = [
   "entregado",
 ];
 
-// Componente auxiliar para evitar bug del chat con tag img
-function CardThumb({ src, alt }: { src: string; alt: string }) {
-  return (
-	<img
-  	src={src}
-  	alt={alt}
-  	className="w-full aspect-[5/7] rounded object-cover mb-2"
-	/>
-  );
-}
-
 export default function AdminPedidoDetail() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -253,7 +242,12 @@ export default function AdminPedidoDetail() {
             	key={idx}
             	className="bg-[#0F1115] rounded-lg p-2 border border-white/5"
           	>
-            	<CardThumb src={it.image} alt={it.name} />
+            	<div
+              	role="img"
+              	aria-label={it.name}
+              	className="w-full aspect-[5/7] rounded mb-2 bg-[#1E242B] bg-center bg-cover bg-no-repeat"
+              	style={{ backgroundImage: `url(${it.image})` }}
+            	/>
             	<p className="text-xs font-semibold truncate">{it.name}</p>
             	<p className="text-[10px] text-gray-400 truncate">
               	{it.set_name}

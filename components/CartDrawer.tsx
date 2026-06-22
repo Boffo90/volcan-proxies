@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Trash2, ShoppingBag } from "lucide-react";
 import { getCart, removeFromCart, type CartItem } from "@/lib/cart";
-import { calculateTotal, formatCLP } from "@/lib/pricing";
+import { calculateTotalWith, formatCLP } from "@/lib/pricing";
+import { usePrecios } from "@/hooks/usePrecios";
 
 export default function CartDrawer({
   open,
@@ -14,6 +15,7 @@ export default function CartDrawer({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { precios } = usePrecios();
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -23,7 +25,8 @@ export default function CartDrawer({
 	return () => window.removeEventListener("cart-updated", onUpdate);
   }, []);
 
-  const { total, applied } = calculateTotal(
+  const { total, applied } = calculateTotalWith(
+	precios,
 	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
   );
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
@@ -65,10 +68,11 @@ export default function CartDrawer({
               	key={it.id + "-" + it.finish + "-" + idx}
               	className="flex gap-3 bg-[#1E242B] p-3 rounded-lg border border-white/5"
             	>
-              	<img
-                	src={it.image}
-                	alt={it.name}
-                	className="w-12 h-16 rounded object-contain bg-[#0F1115] flex-shrink-0"
+              	<div
+                	role="img"
+                	aria-label={it.name}
+                	className="w-12 h-16 rounded bg-[#0F1115] flex-shrink-0 bg-center bg-contain bg-no-repeat"
+                	style={{ backgroundImage: `url(${it.image})` }}
               	/>
               	<div className="flex-1 min-w-0">
                 	<p className="text-sm font-semibold truncate">{it.name}</p>

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Loader2, CreditCard, Banknote } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
-import { calculateTotal, formatCLP } from "@/lib/pricing";
+import { calculateTotalWith, formatCLP } from "@/lib/pricing";
+import { usePrecios } from "@/hooks/usePrecios";
 
 const REGIONES = [
   "Arica y Parinacota",
@@ -39,6 +40,7 @@ type FormData = {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { precios } = usePrecios();
   const [items, setItems] = useState<CartItem[]>([]);
   const [form, setForm] = useState<FormData>({
 	nombre: "",
@@ -59,7 +61,8 @@ export default function CheckoutPage() {
 	setMounted(true);
   }, []);
 
-  const { total, applied } = calculateTotal(
+  const { total, applied } = calculateTotalWith(
+	precios,
 	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
   );
 

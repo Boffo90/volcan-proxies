@@ -11,11 +11,13 @@ import {
   getCardImage,
   type ScryfallCard,
 } from "@/lib/scryfall";
-import { PRICES, formatCLP, type Finish } from "@/lib/pricing";
+import { formatCLP, type Finish } from "@/lib/pricing";
+import { usePrecios } from "@/hooks/usePrecios";
 
 export default function CartaDetalle() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+  const { precios } = usePrecios();
   const [card, setCard] = useState<ScryfallCard | null>(null);
   const [prints, setPrints] = useState<ScryfallCard[]>([]);
   const [selectedPrint, setSelectedPrint] = useState<ScryfallCard | null>(null);
@@ -75,7 +77,8 @@ export default function CartaDetalle() {
   }
 
   const display = selectedPrint || card;
-  const unitPrice = finish === "glossy" ? PRICES.glossy : PRICES.matte;
+  const unitPrice = finish === "glossy" ? precios.glossy : precios.matte;
+  const mainImg = getCardImage(display, "large");
 
   return (
 	<main className="min-h-screen bg-[#0F1115] text-white">
@@ -90,13 +93,12 @@ export default function CartaDetalle() {
     	</button>
 
     	<div className="grid md:grid-cols-2 gap-10">
-      	<div className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#1E242B]">
-        	<img
-          	src={getCardImage(display, "large")}
-          	alt={display.name}
-          	className="w-full h-full object-cover"
-        	/>
-      	</div>
+      	<div
+        	role="img"
+        	aria-label={display.name}
+        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#1E242B] bg-center bg-cover bg-no-repeat"
+        	style={{ backgroundImage: `url(${mainImg})` }}
+      	/>
 
       	<div>
         	<h1 className="text-3xl font-bold mb-1">{display.name}</h1>
@@ -149,22 +151,19 @@ export default function CartaDetalle() {
               	{prints.map((p) => {
                 	const isSel = selectedPrint?.id === p.id;
                 	const btnClass =
-                  	"relative flex-shrink-0 w-20 aspect-[5/7] rounded border-2 overflow-hidden transition " +
+                  	"relative flex-shrink-0 w-20 aspect-[5/7] rounded border-2 overflow-hidden transition bg-center bg-cover bg-no-repeat " +
                   	(isSel
                     	? "border-[#FF4D1A]"
                     	: "border-white/10 hover:border-white/30");
+                	const thumbImg = getCardImage(p, "small");
                 	return (
                   	<button
                     	key={p.id}
                     	onClick={() => setSelectedPrint(p)}
+                    	aria-label={p.name}
                     	className={btnClass}
-                  	>
-                    	<img
-                      	src={getCardImage(p, "small")}
-                      	alt={p.set_name}
-                      	className="w-full h-full object-cover"
-                    	/>
-                  	</button>
+                    	style={{ backgroundImage: `url(${thumbImg})` }}
+                  	/>
                 	);
               	})}
             	</div>
@@ -183,7 +182,7 @@ export default function CartaDetalle() {
                   	: "border-white/10")
               	}
             	>
-              	Glossy · {formatCLP(PRICES.glossy)}
+              	Glossy · {formatCLP(precios.glossy)}
             	</button>
             	<button
               	onClick={() => setFinish("matte")}
@@ -194,7 +193,7 @@ export default function CartaDetalle() {
                   	: "border-white/10")
               	}
             	>
-              	Matte · {formatCLP(PRICES.matte)}
+              	Matte · {formatCLP(precios.matte)}
             	</button>
           	</div>
 
@@ -222,7 +221,7 @@ export default function CartaDetalle() {
             	<ShoppingCart size={18} /> Agregar al carrito
           	</button>
           	<p className="text-xs text-gray-400 text-center mt-2">
-            	Tip: el ícono del carrito en la barra superior se actualiza al instante.
+            	Tip: el carrito en la barra superior se actualiza al instante.
           	</p>
         	</div>
       	</div>
