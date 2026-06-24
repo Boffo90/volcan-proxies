@@ -80,27 +80,27 @@ export default function Home() {
 	{
   	name: "Mazo 60",
   	subtitle: "Glossy",
-  	price: "$7.900",
+  	price: "$9.900",
   	desc: "Standard, Modern, Pioneer.",
   	qty: "60 cartas",
-  	perCard: "~$132/carta",
+  	perCard: "~$165/carta",
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Glossy",
-  	price: "$12.900",
+  	price: "$15.500",
   	desc: "Tu mazo EDH completo.",
   	qty: "100 cartas",
-  	perCard: "~$129/carta",
+  	perCard: "~$155/carta",
   	featured: true,
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Matte",
-  	price: "$17.900",
+  	price: "$19.900",
   	desc: "Acabado premium sin reflejo.",
   	qty: "100 cartas",
-  	perCard: "~$179/carta",
+  	perCard: "~$199/carta",
 	},
   ];
 
