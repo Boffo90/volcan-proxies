@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, ArrowLeft, Save, Copy, Check, Truck } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeft,
+  Save,
+  Copy,
+  Check,
+  Truck,
+  Trash2,
+} from "lucide-react";
 
 type PedidoItem = {
   id: string;
@@ -55,6 +63,7 @@ export default function AdminPedidoDetail() {
   const [pedido, setPedido] = useState<Pedido | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [adminNotas, setAdminNotas] = useState("");
   const [trackingNum, setTrackingNum] = useState("");
   const [trackingCourier, setTrackingCourier] = useState<
@@ -65,11 +74,14 @@ export default function AdminPedidoDetail() {
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
 	const res = await fetch("/api/admin/pedido/" + id);
+
 	if (res.status === 401) {
   	router.push("/admin/login");
   	return;
 	}
+
 	const data = await res.json();
+
 	setPedido(data.pedido);
 	setAdminNotas(data.pedido?.admin_notas || "");
 	setTrackingNum(data.pedido?.tracking_numero || "");
@@ -83,22 +95,27 @@ export default function AdminPedidoDetail() {
 
   const updateEstado = async (nuevoEstado: string) => {
 	setSaving(true);
+
 	const res = await fetch("/api/admin/pedido/" + id, {
   	method: "PATCH",
   	headers: { "Content-Type": "application/json" },
   	body: JSON.stringify({ estado: nuevoEstado }),
 	});
+
 	if (res.ok) await fetchPedido();
+
 	setSaving(false);
   };
 
   const saveNotas = async () => {
 	setSaving(true);
+
 	await fetch("/api/admin/pedido/" + id, {
   	method: "PATCH",
   	headers: { "Content-Type": "application/json" },
   	body: JSON.stringify({ admin_notas: adminNotas }),
 	});
+
 	setSaving(false);
   };
 
@@ -107,7 +124,9 @@ export default function AdminPedidoDetail() {
   	alert("Ingresa courier y número de tracking");
   	return;
 	}
+
 	setSaving(true);
+
 	const res = await fetch("/api/admin/pedido/" + id, {
   	method: "PATCH",
   	headers: { "Content-Type": "application/json" },
@@ -118,11 +137,39 @@ export default function AdminPedidoDetail() {
     	estado: "enviado",
   	}),
 	});
+
 	if (res.ok) {
   	await fetchPedido();
   	alert("✅ Tracking guardado y email enviado al cliente");
 	}
+
 	setSaving(false);
+  };
+
+  const deletePedido = async () => {
+	if (!pedido) return;
+
+	const confirmDelete = window.confirm(
+  	`Vas a eliminar el pedido #${pedido.numero} de ${pedido.cliente_nombre}.\n\nEsta acción no se puede deshacer.\n\n¿Quieres continuar?`
+	);
+
+	if (!confirmDelete) return;
+
+	setDeleting(true);
+
+	const res = await fetch("/api/admin/pedido/" + id, {
+  	method: "DELETE",
+	});
+
+	if (!res.ok) {
+  	const data = await res.json().catch(() => null);
+  	alert(data?.error || "No se pudo eliminar el pedido");
+  	setDeleting(false);
+  	return;
+	}
+
+	alert("Pedido eliminado correctamente");
+	router.push("/admin");
   };
 
   const formatCLP = (n: number) =>
@@ -138,7 +185,9 @@ export default function AdminPedidoDetail() {
     	if (it.isCustom) {
       	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
     	}
-    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
+    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
+      	it.collector_number
+    	} [${it.finish}]`;
   	})
   	.join("\n") || "";
 
@@ -183,11 +232,27 @@ export default function AdminPedidoDetail() {
           	{new Date(pedido.created_at).toLocaleString("es-CL")}
         	</p>
       	</div>
-      	<div className="bg-[#1E242B] px-4 py-2 rounded-lg border border-white/10">
-        	<p className="text-xs text-gray-400">Estado actual</p>
-        	<p className="text-xl font-bold capitalize text-[#FF4D1A]">
-          	{pedido.estado}
-        	</p>
+
+      	<div className="flex items-center gap-3 flex-wrap">
+        	<div className="bg-[#1E242B] px-4 py-2 rounded-lg border border-white/10">
+          	<p className="text-xs text-gray-400">Estado actual</p>
+          	<p className="text-xl font-bold capitalize text-[#FF4D1A]">
+            	{pedido.estado}
+          	</p>
+        	</div>
+
+        	<button
+          	onClick={deletePedido}
+          	disabled={deleting}
+          	className="bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+        	>
+          	{deleting ? (
+            	<Loader2 className="animate-spin" size={16} />
+          	) : (
+            	<Trash2 size={16} />
+          	)}
+          	Eliminar pedido
+        	</button>
       	</div>
     	</div>
 
@@ -223,6 +288,7 @@ export default function AdminPedidoDetail() {
         	Al guardar, se enviará automáticamente un email al cliente con el
         	número de seguimiento.
       	</p>
+
       	<div className="grid md:grid-cols-2 gap-3 mb-3">
         	<div>
           	<label className="block text-xs text-gray-400 mb-1">
@@ -242,6 +308,7 @@ export default function AdminPedidoDetail() {
             	<option value="chilexpress">Chilexpress</option>
           	</select>
         	</div>
+
         	<div>
           	<label className="block text-xs text-gray-400 mb-1">
             	N° seguimiento
@@ -254,6 +321,7 @@ export default function AdminPedidoDetail() {
           	/>
         	</div>
       	</div>
+
       	<button
         	onClick={saveTracking}
         	disabled={saving}
@@ -266,6 +334,7 @@ export default function AdminPedidoDetail() {
         	)}
         	Guardar tracking y enviar email
       	</button>
+
       	{pedido.tracking_numero && (
         	<p className="mt-3 text-xs text-green-400">
           	✓ Tracking guardado: {pedido.tracking_courier} ·{" "}
@@ -321,6 +390,7 @@ export default function AdminPedidoDetail() {
           	{copied ? "Copiado!" : "Copiar"}
         	</button>
       	</div>
+
       	<pre className="bg-[#0F1115] text-[#FF4D1A] p-4 rounded-lg text-sm font-mono whitespace-pre-wrap">
 {mtgoList}
       	</pre>
@@ -330,6 +400,7 @@ export default function AdminPedidoDetail() {
       	<h2 className="font-bold mb-3">
         	Cartas ({pedido.items.length} items)
       	</h2>
+
       	<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         	{pedido.items.map((it, idx) => (
           	<div
@@ -400,4 +471,5 @@ export default function AdminPedidoDetail() {
 	</main>
   );
 }
+``
 

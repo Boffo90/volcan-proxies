@@ -15,15 +15,20 @@ export async function GET(
   if (!(await isAuthenticated())) {
 	return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   const { id } = await params;
   const sb = supabaseAdmin();
+
   const { data, error } = await sb
 	.from("pedidos")
 	.select("*")
 	.eq("id", id)
 	.single();
-  if (error)
+
+  if (error) {
 	return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
   return NextResponse.json({ pedido: data });
 }
 
@@ -34,6 +39,7 @@ export async function PATCH(
   if (!(await isAuthenticated())) {
 	return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   const { id } = await params;
   const body = await req.json();
   const sb = supabaseAdmin();
@@ -55,20 +61,29 @@ export async function PATCH(
   	to: body.estado,
   	at: new Date().toISOString(),
 	};
+
 	const historial = Array.isArray(current.historial) ? current.historial : [];
+
 	updates.estado = body.estado;
 	updates.historial = [...historial, newEntry];
   }
-  if (body.admin_notas !== undefined) updates.admin_notas = body.admin_notas;
+
+  if (body.admin_notas !== undefined) {
+	updates.admin_notas = body.admin_notas;
+  }
 
   if (body.tracking_numero !== undefined) {
 	updates.tracking_numero = body.tracking_numero;
 	triggerTrackingEmail = !!body.tracking_numero;
   }
-  if (body.tracking_courier !== undefined)
-	updates.tracking_courier = body.tracking_courier;
 
-  if (body.fecha_envio !== undefined) updates.fecha_envio = body.fecha_envio;
+  if (body.tracking_courier !== undefined) {
+	updates.tracking_courier = body.tracking_courier;
+  }
+
+  if (body.fecha_envio !== undefined) {
+	updates.fecha_envio = body.fecha_envio;
+  }
 
   const { data, error } = await sb
 	.from("pedidos")
@@ -77,13 +92,14 @@ export async function PATCH(
 	.select()
 	.single();
 
-  if (error)
+  if (error) {
 	return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
-  // Email automático si se agregó tracking
   if (triggerTrackingEmail && current) {
 	try {
   	const resend = new Resend(process.env.RESEND_API_KEY);
+
   	const courierKey = (body.tracking_courier || "courier") as string;
   	const courierName = COURIER_NAMES[courierKey] || "Courier";
   	const trackingNum = body.tracking_numero as string;
@@ -91,6 +107,7 @@ export async function PATCH(
     	process.env.NEXT_PUBLIC_SITE_URL || "https://volcanproxies.cl";
 
   	let trackingLink = "";
+
   	if (courierKey === "starken") {
     	trackingLink =
       	"https://www.starken.cl/seguimiento?codigo=" + trackingNum;
@@ -103,8 +120,7 @@ export async function PATCH(
   	const seguimientoLocalUrl =
     	siteUrl + "/seguimiento/" + current.numero;
 
-  	// Construimos el botón de tracking como string aparte
-  	const trackButtonHtml = trackingLink
+  	const trackingButtonHtml = trackingLink
     	? '<p style="margin:16px 0 0;"><a href="' +
       	trackingLink +
       	'" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Rastrear en ' +
@@ -140,7 +156,7 @@ export async function PATCH(
     	'<p style="margin:4px 0;"><b>N° seguimiento:</b> <span style="color:#FF4D1A;font-weight:bold;">' +
     	trackingNum +
     	"</span></p>" +
-    	trackButtonHtml +
+    	trackingButtonHtml +
     	"</div>" +
     	'<div style="background:white;padding:16px;border-radius:6px;margin:16px 0;border:1px solid #eee;">' +
     	'<h3 style="margin-top:0;">📍 Dirección de envío</h3>' +
@@ -176,5 +192,26 @@ export async function PATCH(
   }
 
   return NextResponse.json({ pedido: data });
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!(await isAuthenticated())) {
+	return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const sb = supabaseAdmin();
+
+  const { error } = await sb.from("pedidos").delete().eq("id", id);
+
+  if (error) {
+	console.error("[DELETE PEDIDO] error:", error);
+	return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
 }
 
