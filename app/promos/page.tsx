@@ -10,8 +10,8 @@ export const metadata = {
 const PROMOS = [
   {
 	name: "Mazo 60 Glossy",
-	price: "$7.900",
-	unitEquiv: "≈ $132 por carta",
+	price: "$9.900",
+	unitEquiv: "≈ $165 por carta",
 	desc: "60 cartas con acabado brillante. Ideal para Modern, Standard, Pioneer.",
 	color: "#FF4D1A",
 	features: [
@@ -23,8 +23,8 @@ const PROMOS = [
   },
   {
 	name: "Commander 100 Glossy",
-	price: "$12.900",
-	unitEquiv: "≈ $129 por carta",
+	price: "$15.500",
+	unitEquiv: "≈ $155 por carta",
 	desc: "100 cartas Glossy para tu mazo EDH/Commander completo.",
 	color: "#FF4D1A",
 	features: [
@@ -37,8 +37,8 @@ const PROMOS = [
   },
   {
 	name: "Commander 100 Matte",
-	price: "$17.900",
-	unitEquiv: "≈ $179 por carta",
+	price: "$19.900",
+	unitEquiv: "≈ $199 por carta",
 	desc: "Acabado mate premium, ideal contra reflejos en torneos.",
 	color: "#FF4D1A",
 	features: [
