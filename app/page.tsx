@@ -129,11 +129,11 @@ export default function Home() {
           	🌋 Hecho en Pucón · Envíos a todo Chile
         	</span>
         	<h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05]">
-          	Tu mazo soñado,
+          	Proxies MTG 
           	<br />
-          	<span className="text-[#FF4D1A]">sin venderle el alma</span>
+          	<span className="text-[#FF4D1A]">Premium</span>
           	<br />
-          	<span className="text-[#FF4D1A]">a la billetera.</span>
+          	<span className="text-[#FF4D1A]">en Chile</span>
         	</h1>
         	<p className="text-lg text-gray-300 mb-8 max-w-lg">
           	Proxies premium de MTG con impresión fotográfica y laminado en
