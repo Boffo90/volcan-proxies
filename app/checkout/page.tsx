@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, CreditCard, Banknote } from "lucide-react";
+import { Loader2, CreditCard, Banknote, AlertCircle } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
-import { calculateTotalWith, formatCLP } from "@/lib/pricing";
+import { calculateTotalWith, formatCLP, MIN_CARDS } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
 const REGIONES = [
@@ -41,6 +41,7 @@ type FormData = {
 export default function CheckoutPage() {
   const router = useRouter();
   const { precios } = usePrecios();
+
   const [items, setItems] = useState<CartItem[]>([]);
   const [form, setForm] = useState<FormData>({
 	nombre: "",
@@ -52,7 +53,10 @@ export default function CheckoutPage() {
 	region: "Araucanía",
 	notas: "",
   });
-  const [metodo, setMetodo] = useState<"mp" | "transferencia">("transferencia");
+
+  const [metodo, setMetodo] = useState<"flow" | "transferencia">(
+	"transferencia"
+  );
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -61,35 +65,56 @@ export default function CheckoutPage() {
 	setMounted(true);
   }, []);
 
+  const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+  const cumpleMinimo = totalQty >= MIN_CARDS;
+  const faltan = Math.max(0, MIN_CARDS - totalQty);
+
   const { total, applied } = calculateTotalWith(
 	precios,
-	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
+	items.map((i) => ({
+  	finish: i.finish,
+  	quantity: i.quantity,
+  	isCustom: i.isCustom,
+	}))
   );
 
-  const handleChange = (k: keyof FormData, v: string) =>
+  const handleChange = (k: keyof FormData, v: string) => {
 	setForm((f) => ({ ...f, [k]: v }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
 	e.preventDefault();
+
+	if (!cumpleMinimo) {
+  	alert(`Pedido mínimo: ${MIN_CARDS} cartas. Te faltan ${faltan}.`);
+  	return;
+	}
+
 	setLoading(true);
+
 	try {
   	const res = await fetch("/api/pedido", {
     	method: "POST",
     	headers: { "Content-Type": "application/json" },
     	body: JSON.stringify({ ...form, items, metodo, total, applied }),
   	});
-  	const data = await res.json();
-  	if (!res.ok) throw new Error(data.error || "Error al crear pedido");
 
-  	if (metodo === "mp" && data.init_point) {
-    	clearCart();
-    	window.location.href = data.init_point;
-  	} else {
-    	clearCart();
-    	router.push(
-      	"/gracias?pedido=" + data.numero + "&metodo=transferencia"
-    	);
+  	const data = await res.json();
+
+  	if (!res.ok) {
+    	throw new Error(data.error || "Error al crear pedido");
   	}
+
+  	if (metodo === "flow" && data.payment_url) {
+    	clearCart();
+    	window.location.href = data.payment_url;
+    	return;
+  	}
+
+  	clearCart();
+  	router.push(
+    	"/gracias?pedido=" + data.numero + "&metodo=transferencia"
+  	);
 	} catch (err: unknown) {
   	const msg = err instanceof Error ? err.message : "Error";
   	alert("Error: " + msg);
@@ -143,10 +168,26 @@ export default function CheckoutPage() {
       	Finaliza tu <span className="text-[#FF4D1A]">pedido</span>
     	</h1>
 
+    	{!cumpleMinimo && (
+      	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl mb-6 flex gap-3">
+        	<AlertCircle className="text-yellow-400 flex-shrink-0" size={20} />
+        	<div>
+          	<p className="text-sm font-semibold text-yellow-300">
+            	Pedido mínimo: {MIN_CARDS} cartas.
+          	</p>
+          	<p className="text-xs text-yellow-200/80 mt-1">
+            	Actualmente tienes {totalQty}. Te faltan {faltan} carta
+            	{faltan !== 1 ? "s" : ""} para continuar.
+          	</p>
+        	</div>
+      	</div>
+    	)}
+
     	<form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
       	<div className="lg:col-span-2 space-y-6">
         	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
           	<h2 className="font-bold mb-4">Datos de envío</h2>
+
           	<div className="grid md:grid-cols-2 gap-4">
             	{fields.map((f) => (
               	<div key={f.k} className={f.full ? "md:col-span-2" : ""}>
@@ -162,6 +203,7 @@ export default function CheckoutPage() {
                 	/>
               	</div>
             	))}
+
             	<div>
               	<label className="block text-xs text-gray-400 mb-1">
                 	Región *
@@ -179,6 +221,7 @@ export default function CheckoutPage() {
                 	))}
               	</select>
             	</div>
+
             	<div className="md:col-span-2">
               	<label className="block text-xs text-gray-400 mb-1">
                 	Notas (opcional)
@@ -191,6 +234,7 @@ export default function CheckoutPage() {
               	/>
             	</div>
           	</div>
+
           	<p className="text-xs text-gray-500 mt-3">
             	Envío por Starken/Chilexpress por pagar al recibir.
           	</p>
@@ -198,6 +242,7 @@ export default function CheckoutPage() {
 
         	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
           	<h2 className="font-bold mb-4">Método de pago</h2>
+
           	<div className="grid md:grid-cols-2 gap-3">
             	<button
               	type="button"
@@ -212,24 +257,25 @@ export default function CheckoutPage() {
               	<Banknote className="text-[#FF4D1A]" />
               	<div className="text-left">
                 	<p className="font-semibold text-sm">Transferencia</p>
-                	<p className="text-xs text-gray-400">MACH BCI</p>
+                	<p className="text-xs text-gray-400">MACH / BCI</p>
               	</div>
             	</button>
+
             	<button
               	type="button"
-              	onClick={() => setMetodo("mp")}
+              	onClick={() => setMetodo("flow")}
               	className={
                 	"p-4 rounded-lg border transition flex items-center gap-3 " +
-                	(metodo === "mp"
+                	(metodo === "flow"
                   	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
                   	: "border-white/10")
               	}
             	>
               	<CreditCard className="text-[#FF4D1A]" />
               	<div className="text-left">
-                	<p className="font-semibold text-sm">Mercado Pago</p>
+                	<p className="font-semibold text-sm">Flow.cl</p>
                 	<p className="text-xs text-gray-400">
-                  	Tarjeta crédito/débito
+                  	Tarjeta / Webpay / medios disponibles
                 	</p>
               	</div>
             	</button>
@@ -239,6 +285,7 @@ export default function CheckoutPage() {
 
       	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
         	<h2 className="font-bold mb-4">Resumen</h2>
+
         	<div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
           	{items.map((it, idx) => (
             	<div
@@ -254,22 +301,40 @@ export default function CheckoutPage() {
             	</div>
           	))}
         	</div>
+
         	<div className="border-t border-white/10 pt-4">
+          	<div className="flex justify-between text-sm mb-2">
+            	<span className="text-gray-400">Cartas totales</span>
+            	<span className={cumpleMinimo ? "" : "text-yellow-400"}>
+              	{totalQty}
+            	</span>
+          	</div>
+
           	<p className="text-xs text-[#FF4D1A] mb-2">{applied}</p>
+
           	<div className="flex justify-between items-center mb-4">
             	<span>Total</span>
             	<span className="text-2xl font-bold text-[#FF4D1A]">
               	{formatCLP(total)}
             	</span>
           	</div>
+
           	<button
             	type="submit"
-            	disabled={loading}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition disabled:opacity-50 flex items-center justify-center gap-2"
+            	disabled={loading || !cumpleMinimo}
+            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           	>
             	{loading ? <Loader2 className="animate-spin" size={18} /> : null}
-            	Confirmar pedido
+            	{!cumpleMinimo
+              	? `Faltan ${faltan} carta${faltan !== 1 ? "s" : ""}`
+              	: metodo === "flow"
+              	? "Pagar con Flow.cl"
+              	: "Confirmar pedido"}
           	</button>
+
+          	<p className="text-xs text-gray-500 text-center mt-4">
+            	Flow.cl o transferencia
+          	</p>
         	</div>
       	</aside>
     	</form>

@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { MercadoPagoConfig, Preference } from "mercadopago";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
+import { createFlowPayment } from "@/lib/flow";
+import { MIN_CARDS } from "@/lib/pricing";
 
 type PedidoItem = {
   id: string;
@@ -9,6 +10,7 @@ type PedidoItem = {
   set: string;
   set_name: string;
   collector_number: string;
+  image?: string;
   finish: string;
   quantity: number;
   isCustom?: boolean;
@@ -17,6 +19,7 @@ type PedidoItem = {
 export async function POST(req: Request) {
   try {
 	const body = await req.json();
+
 	const {
   	nombre,
   	rut,
@@ -40,26 +43,23 @@ export async function POST(req: Request) {
   	region: string;
   	notas?: string;
   	items: PedidoItem[];
-  	metodo: "mp" | "transferencia";
+  	metodo: "flow" | "transferencia";
   	total: number;
   	applied: string;
 	};
 
 	if (!nombre || !email || !direccion || !comuna || !items?.length) {
-  return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
-}
+  	return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+	}
 
-const totalQty = items.reduce(
-  (s: number, i: { quantity: number }) => s + i.quantity,
-  0
-);
-if (totalQty < 9) {
-  return NextResponse.json(
-	{ error: "Pedido mínimo: 9 cartas" },
-	{ status: 400 }
-  );
-}
+	const totalQty = items.reduce((s, i) => s + i.quantity, 0);
 
+	if (totalQty < MIN_CARDS) {
+  	return NextResponse.json(
+    	{ error: `Pedido mínimo: ${MIN_CARDS} cartas` },
+    	{ status: 400 }
+  	);
+	}
 
 	const sb = supabaseAdmin();
 
@@ -84,22 +84,61 @@ if (totalQty < 9) {
   	.single();
 
 	if (error || !pedido) {
-  	console.error(error);
+  	console.error("[PEDIDO INSERT ERROR]", error);
   	return NextResponse.json(
     	{ error: "No se pudo crear el pedido" },
     	{ status: 500 }
   	);
 	}
 
-	// =========================
-	// URL del sitio
-	// =========================
 	const siteUrl =
   	process.env.NEXT_PUBLIC_SITE_URL || "https://volcanproxies.cl";
-	const seguimientoUrl = `${siteUrl}/seguimiento/${pedido.numero}`;
+
+	const seguimientoUrl = siteUrl + "/seguimiento/" + pedido.numero;
+
+	let paymentUrl: string | null = null;
 
 	// =========================
-	// Estilos compartidos
+	// Crear pago Flow.cl
+	// =========================
+	if (metodo === "flow") {
+  	try {
+    	const flowPayment = await createFlowPayment({
+      	commerceOrder: String(pedido.id),
+      	subject: `Volcán Proxies - Pedido #${pedido.numero}`,
+      	amount: total,
+      	email,
+      	urlConfirmation: siteUrl + "/api/flow/confirm",
+      	urlReturn: siteUrl + "/gracias?pedido=" + pedido.numero + "&metodo=flow",
+    	});
+
+    	paymentUrl = flowPayment.url + "?token=" + flowPayment.token;
+
+    	await sb
+      	.from("pedidos")
+      	.update({
+        	flow_token: flowPayment.token,
+        	flow_order: flowPayment.flowOrder
+          	? String(flowPayment.flowOrder)
+          	: null,
+        	metodo_pago: "flow",
+      	})
+      	.eq("id", pedido.id);
+  	} catch (flowError) {
+    	console.error("[FLOW CREATE ERROR]", flowError);
+
+    	return NextResponse.json(
+      	{
+        	error:
+          	"No se pudo iniciar el pago con Flow.cl. Intenta nuevamente o elige transferencia.",
+      	},
+      	{ status: 500 }
+    	);
+  	}
+	}
+
+	// =========================
+	// Estilos email
 	// =========================
 	const baseStyle =
   	"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #222;";
@@ -111,43 +150,51 @@ if (totalQty < 9) {
   	"background: white; padding: 16px; border-radius: 6px; margin: 16px 0; border: 1px solid #eee;";
 
 	// =========================
-	// Tabla de cartas (visual)
+	// Tabla visual de cartas
 	// =========================
 	const itemsHtml = items
-  	.map(
-    	(it) =>
-      	`<tr>
-        	<td style="padding:8px;border-bottom:1px solid #eee;">${it.quantity}×</td>
-        	<td style="padding:8px;border-bottom:1px solid #eee;">
-          	<b>${it.name}</b><br/>
-          	<span style="color:#888;font-size:12px;">${it.set_name} · #${it.collector_number}</span>
-        	</td>
-        	<td style="padding:8px;border-bottom:1px solid #eee;text-transform:capitalize;color:#FF4D1A;">
-          	${it.finish}
-        	</td>
-      	</tr>`
-  	)
+  	.map((it) => {
+    	const customLabel = it.isCustom ? "CUSTOM" : it.set_name;
+    	const collector = it.isCustom ? "" : " · #" + it.collector_number;
+
+    	return `<tr>
+      	<td style="padding:8px;border-bottom:1px solid #eee;">${it.quantity}×</td>
+      	<td style="padding:8px;border-bottom:1px solid #eee;">
+        	<b>${it.name}</b><br/>
+        	<span style="color:#888;font-size:12px;">${customLabel}${collector}</span>
+      	</td>
+      	<td style="padding:8px;border-bottom:1px solid #eee;text-transform:capitalize;color:#FF4D1A;">
+        	${it.finish}
+      	</td>
+    	</tr>`;
+  	})
   	.join("");
 
 	// =========================
-	// Lista MTGO/Arena para imprimir (admin)
+	// Lista formato MTGO/Admin
 	// =========================
 	const mtgoList = items
   	.map((it) => {
     	if (it.isCustom) {
       	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
     	}
-    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`;
+
+    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
+      	it.collector_number
+    	} [${it.finish}]`;
   	})
   	.join("\n");
+
+	const metodoLabel =
+  	metodo === "flow" ? "Flow.cl" : "Transferencia (MACH BCI)";
 
 	// =========================
 	// Mail al admin
 	// =========================
 	try {
-  	console.log("[RESEND] Enviando mail admin...");
   	const resend = new Resend(process.env.RESEND_API_KEY);
-  	const result = await resend.emails.send({
+
+  	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: process.env.EMAIL_ADMIN!,
     	subject: `🌋 Nuevo pedido #${pedido.numero} - ${nombre}`,
@@ -157,17 +204,16 @@ if (totalQty < 9) {
           	<h1 style="margin:0;">🌋 VOLCÁN <span style="color:#FF4D1A;">PROXIES</span></h1>
           	<p style="margin:8px 0 0;color:#aaa;">Nuevo pedido recibido</p>
         	</div>
+
         	<div style="${bodyStyle}">
           	<h2 style="margin-top:0;">Pedido #${pedido.numero}</h2>
-          	<p><b>Método de pago:</b> ${
-            	metodo === "transferencia"
-              	? "Transferencia (MACH BCI)"
-              	: "Mercado Pago"
-          	}</p>
+          	<p><b>Método de pago:</b> ${metodoLabel}</p>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">Cliente</h3>
-            	<p style="margin:4px 0;"><b>${nombre}</b> ${rut ? `(${rut})` : ""}</p>
+            	<p style="margin:4px 0;"><b>${nombre}</b> ${
+              	rut ? `(${rut})` : ""
+            	}</p>
             	<p style="margin:4px 0;">📧 ${email}</p>
             	<p style="margin:4px 0;">📱 ${telefono || "-"}</p>
             	<p style="margin:4px 0;">📍 ${direccion}, ${comuna}, ${region}</p>
@@ -179,11 +225,8 @@ if (totalQty < 9) {
           	</div>
 
           	<div style="${boxStyle}">
-            	<h3 style="margin-top:0;">📋 Lista para imprimir (formato MTGO)</h3>
+            	<h3 style="margin-top:0;">📋 Lista para imprimir</h3>
             	<pre style="background:#0F1115;color:#FF4D1A;padding:16px;border-radius:6px;font-family:'Courier New',monospace;font-size:13px;white-space:pre-wrap;margin:0;">${mtgoList}</pre>
-            	<p style="margin:12px 0 0;color:#666;font-size:12px;">
-              	Tip: copia y pega esta lista en Scryfall → Tools → "Card list" para verificar antes de imprimir.
-            	</p>
           	</div>
 
           	<div style="${boxStyle}">
@@ -195,25 +238,25 @@ if (totalQty < 9) {
 
           	<div style="${boxStyle}background:#0F1115;color:white;">
             	<p style="margin:0;color:#aaa;font-size:12px;">${applied}</p>
-            	<h2 style="margin:8px 0 0;color:#FF4D1A;">Total: $${total.toLocaleString("es-CL")}</h2>
+            	<h2 style="margin:8px 0 0;color:#FF4D1A;">Total: $${total.toLocaleString(
+              	"es-CL"
+            	)}</h2>
           	</div>
         	</div>
       	</div>
     	`,
   	});
-  	console.log("[RESEND] Admin OK:", JSON.stringify(result));
 	} catch (e) {
-  	console.error("[RESEND] Admin error:", e);
+  	console.error("[EMAIL ADMIN ERROR]", e);
 	}
 
 	// =========================
 	// Mail al cliente
 	// =========================
 	try {
-  	console.log("[RESEND] Enviando mail cliente...");
   	const resend = new Resend(process.env.RESEND_API_KEY);
 
-  	const transferInfo =
+  	const paymentInfo =
     	metodo === "transferencia"
       	? `
         	<div style="${boxStyle}">
@@ -230,9 +273,19 @@ if (totalQty < 9) {
           	</p>
         	</div>
       	`
-      	: `<p>Completa tu pago en Mercado Pago para que iniciemos la impresión de tus cartas.</p>`;
+      	: `
+        	<div style="${boxStyle}">
+          	<h3 style="margin-top:0;">💳 Pago con Flow.cl</h3>
+          	<p style="margin:4px 0;">
+            	Tu pedido fue creado y quedará confirmado una vez que Flow.cl informe el pago aprobado.
+          	</p>
+          	<p style="margin:8px 0 0;color:#666;font-size:13px;">
+            	Si cerraste la ventana de pago por error, puedes contactarnos indicando tu pedido <b>#${pedido.numero}</b>.
+          	</p>
+        	</div>
+      	`;
 
-  	const result = await resend.emails.send({
+  	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: email,
     	subject: `🌋 Pedido #${pedido.numero} recibido - Volcán Proxies`,
@@ -242,15 +295,22 @@ if (totalQty < 9) {
           	<h1 style="margin:0;">🌋 VOLCÁN <span style="color:#FF4D1A;">PROXIES</span></h1>
           	<p style="margin:8px 0 0;color:#aaa;">Proxies de calidad, hechas en Pucón</p>
         	</div>
+
         	<div style="${bodyStyle}">
-          	<h2 style="margin-top:0;">¡Gracias por tu compra, ${nombre.split(" ")[0]}! 🎴</h2>
-          	<p>Tu pedido <b style="color:#FF4D1A;">#${pedido.numero}</b> fue recibido correctamente.</p>
+          	<h2 style="margin-top:0;">¡Gracias por tu compra, ${
+            	nombre.split(" ")[0]
+          	}! 🎴</h2>
+
+          	<p>
+            	Tu pedido <b style="color:#FF4D1A;">#${pedido.numero}</b> fue recibido correctamente.
+          	</p>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">Resumen del pedido</h3>
             	<table style="width:100%;border-collapse:collapse;">
               	<tbody>${itemsHtml}</tbody>
             	</table>
+
             	<p style="margin:16px 0 0;text-align:right;color:#aaa;font-size:12px;">${applied}</p>
             	<h2 style="margin:8px 0 0;text-align:right;color:#FF4D1A;">
               	Total: $${total.toLocaleString("es-CL")}
@@ -262,22 +322,22 @@ if (totalQty < 9) {
             	<p style="margin:4px 0;">${direccion}</p>
             	<p style="margin:4px 0;">${comuna}, ${region}</p>
             	<p style="margin:12px 0 0;color:#666;font-size:13px;">
-              	Envío en máximo 48 hrs vía Starken/Chilexpress (por pagar al recibir).
+              	Dejamos tu pedido despachado en máximo 48 hrs desde la confirmación del pago.
             	</p>
           	</div>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">🔍 Sigue tu pedido</h3>
             	<p style="margin:4px 0;">Puedes ver el estado en cualquier momento aquí:</p>
-            	<p style="margin:12px 0;">
-              	${seguimientoUrl}" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;font-weight:bold;">Ver seguimiento →</a>
+            	<p style="margin:8px 0;color:#FF4D1A;font-weight:bold;">
+              	${seguimientoUrl}
             	</p>
             	<p style="margin:8px 0 0;color:#666;font-size:12px;">
               	Cuando despachemos tu pedido te enviaremos el número de tracking del courier.
             	</p>
           	</div>
 
-          	${transferInfo}
+          	${paymentInfo}
 
           	<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">
             	¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b><br/>
@@ -287,55 +347,22 @@ if (totalQty < 9) {
       	</div>
     	`,
   	});
-  	console.log("[RESEND] Cliente OK:", JSON.stringify(result));
 	} catch (e) {
-  	console.error("[RESEND] Cliente error:", e);
+  	console.error("[EMAIL CLIENTE ERROR]", e);
 	}
 
-	// =========================
-	// Mercado Pago
-	// =========================
-	if (metodo === "mp") {
-  	const mp = new MercadoPagoConfig({
-    	accessToken: process.env.MP_ACCESS_TOKEN!,
-  	});
-  	const pref = new Preference(mp);
-  	const result = await pref.create({
-    	body: {
-      	items: [
-        	{
-          	id: String(pedido.numero),
-          	title: `Volcán Proxies - Pedido #${pedido.numero}`,
-          	quantity: 1,
-          	unit_price: total,
-          	currency_id: "CLP",
-        	},
-      	],
-      	payer: { name: nombre, email },
-      	back_urls: {
-        	success: `${siteUrl}/gracias?pedido=${pedido.numero}`,
-        	failure: `${siteUrl}/checkout`,
-        	pending: `${siteUrl}/gracias?pedido=${pedido.numero}&estado=pendiente`,
-      	},
-      	auto_return: "approved",
-      	external_reference: String(pedido.id),
-    	},
-  	});
-
-  	await sb
-    	.from("pedidos")
-    	.update({ pago_id: result.id })
-    	.eq("id", pedido.id);
-
+	if (metodo === "flow") {
   	return NextResponse.json({
     	numero: pedido.numero,
-    	init_point: result.init_point,
+    	payment_url: paymentUrl,
   	});
 	}
 
-	return NextResponse.json({ numero: pedido.numero });
+	return NextResponse.json({
+  	numero: pedido.numero,
+	});
   } catch (err) {
-	console.error(err);
+	console.error("[PEDIDO SERVER ERROR]", err);
 	return NextResponse.json({ error: "Error servidor" }, { status: 500 });
   }
 }

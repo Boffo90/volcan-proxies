@@ -139,7 +139,7 @@ export default function Footer() {
         	<span>Métodos de pago:</span>
         	<span className="bg-white/5 px-2 py-1 rounded">Transferencia</span>
         	<span className="bg-white/5 px-2 py-1 rounded opacity-50">
-          	MercadoPago (próximo)
+          	Flow (próximo)
         	</span>
       	</div>
     	</div>
