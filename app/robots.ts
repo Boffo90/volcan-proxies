@@ -1,5 +1,12 @@
-User-agent: *
-Allow: /
+// app/robots.ts
+import type { MetadataRoute } from "next";
 
-Sitemap:
-https://volcanproxies.cl/sitemap.xml
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+    },
+    sitemap: "https://volcanproxies.cl/sitemap.xml",
+  };
+}
