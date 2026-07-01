@@ -25,6 +25,9 @@ export const PRICES = PRECIOS_DEFAULT;
 // Mínimo de cartas por pedido (1 hoja de papel = 9 cartas)
 export const MIN_CARDS = 9;
 
+// Costo único de envío (tarifa plana a todo Chile)
+export const SHIPPING_COST = 4990;
+
 let cachedPrecios: Precios | null = null;
 let cachedAt = 0;
 const TTL = 60_000;

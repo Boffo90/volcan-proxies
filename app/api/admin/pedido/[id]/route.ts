@@ -6,6 +6,7 @@ import { Resend } from "resend";
 const COURIER_NAMES: Record<string, string> = {
   starken: "Starken",
   chilexpress: "Chilexpress",
+  bluexpress: "Blue Express",
 };
 
 export async function GET(
@@ -115,23 +116,26 @@ export async function PATCH(
     	trackingLink =
       	"https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=" +
       	trackingNum;
+  	} else if (courierKey === "bluexpress") {
+    	trackingLink =
+      	"https://www.blue.cl/seguimiento/?n_seguimiento=" + trackingNum;
   	}
 
   	const seguimientoLocalUrl =
     	siteUrl + "/seguimiento/" + current.numero;
 
   	const trackingButtonHtml = trackingLink
-    	? '<p style="margin:16px 0 0;"><a href="' +
+    	? '<p style="margin:16px 0 0;">' +
       	trackingLink +
-      	'" style="background:#FF4D1A;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;">Rastrear en ' +
+      	'Rastrear en ' +
       	courierName +
       	" →</a></p>"
     	: "";
 
   	const seguimientoLinkHtml =
-    	'<a href="' +
+    	'' +
     	seguimientoLocalUrl +
-    	'" style="color:#FF4D1A;">' +
+    	'' +
     	seguimientoLocalUrl +
     	"</a>";
 

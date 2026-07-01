@@ -10,6 +10,7 @@ import {
   Check,
   Truck,
   Trash2,
+  MapPin,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -35,6 +36,7 @@ type Pedido = {
   comuna: string;
   region: string;
   total: number;
+  subtotal?: number;
   promo_aplicada?: string;
   estado: string;
   metodo_pago: string;
@@ -46,6 +48,8 @@ type Pedido = {
   tracking_numero?: string;
   tracking_courier?: string;
   fecha_envio?: string;
+  delivery_type?: string;
+  shipping_cost?: number;
 };
 
 const ESTADOS = [
@@ -57,6 +61,8 @@ const ESTADOS = [
   "entregado",
 ];
 
+type CourierKey = "starken" | "chilexpress" | "bluexpress" | "";
+
 export default function AdminPedidoDetail() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -66,9 +72,7 @@ export default function AdminPedidoDetail() {
   const [deleting, setDeleting] = useState(false);
   const [adminNotas, setAdminNotas] = useState("");
   const [trackingNum, setTrackingNum] = useState("");
-  const [trackingCourier, setTrackingCourier] = useState<
-	"starken" | "chilexpress" | ""
-  >("");
+  const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
   const [copied, setCopied] = useState(false);
 
   const fetchPedido = useCallback(async () => {
@@ -85,7 +89,7 @@ export default function AdminPedidoDetail() {
 	setPedido(data.pedido);
 	setAdminNotas(data.pedido?.admin_notas || "");
 	setTrackingNum(data.pedido?.tracking_numero || "");
-	setTrackingCourier(data.pedido?.tracking_courier || "");
+	setTrackingCourier((data.pedido?.tracking_courier as CourierKey) || "");
 	setLoading(false);
   }, [id, router]);
 
@@ -213,6 +217,8 @@ export default function AdminPedidoDetail() {
 	);
   }
 
+  const esRetiro = pedido.delivery_type === "retiro";
+
   return (
 	<main className="min-h-screen bg-[#0F1115] text-white">
   	<div className="max-w-5xl mx-auto px-6 py-6">
@@ -231,6 +237,17 @@ export default function AdminPedidoDetail() {
         	<p className="text-sm text-gray-400 mt-1">
           	{new Date(pedido.created_at).toLocaleString("es-CL")}
         	</p>
+        	<div className="mt-2 flex items-center gap-2">
+          	{esRetiro ? (
+            	<span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 text-xs px-2 py-1 rounded border border-green-500/20">
+              	<MapPin size={12} /> Retiro en Pucón
+            	</span>
+          	) : (
+            	<span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 text-xs px-2 py-1 rounded border border-blue-500/20">
+              	<Truck size={12} /> Envío a domicilio
+            	</span>
+          	)}
+        	</div>
       	</div>
 
       	<div className="flex items-center gap-3 flex-wrap">
@@ -280,68 +297,81 @@ export default function AdminPedidoDetail() {
       	</div>
     	</div>
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
-      	<h2 className="font-bold mb-3 flex items-center gap-2">
-        	<Truck size={18} className="text-[#FF4D1A]" /> Tracking de envío
-      	</h2>
-      	<p className="text-xs text-gray-400 mb-4">
-        	Al guardar, se enviará automáticamente un email al cliente con el
-        	número de seguimiento.
-      	</p>
-
-      	<div className="grid md:grid-cols-2 gap-3 mb-3">
-        	<div>
-          	<label className="block text-xs text-gray-400 mb-1">
-            	Courier
-          	</label>
-          	<select
-            	value={trackingCourier}
-            	onChange={(e) =>
-              	setTrackingCourier(
-                	e.target.value as "starken" | "chilexpress" | ""
-              	)
-            	}
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
-          	>
-            	<option value="">Elige courier</option>
-            	<option value="starken">Starken</option>
-            	<option value="chilexpress">Chilexpress</option>
-          	</select>
-        	</div>
-
-        	<div>
-          	<label className="block text-xs text-gray-400 mb-1">
-            	N° seguimiento
-          	</label>
-          	<input
-            	value={trackingNum}
-            	onChange={(e) => setTrackingNum(e.target.value)}
-            	placeholder="Ej: 1234567890"
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
-          	/>
-        	</div>
-      	</div>
-
-      	<button
-        	onClick={saveTracking}
-        	disabled={saving}
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
-      	>
-        	{saving ? (
-          	<Loader2 className="animate-spin" size={14} />
-        	) : (
-          	<Save size={14} />
-        	)}
-        	Guardar tracking y enviar email
-      	</button>
-
-      	{pedido.tracking_numero && (
-        	<p className="mt-3 text-xs text-green-400">
-          	✓ Tracking guardado: {pedido.tracking_courier} ·{" "}
-          	{pedido.tracking_numero}
+    	{!esRetiro && (
+      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
+        	<h2 className="font-bold mb-3 flex items-center gap-2">
+          	<Truck size={18} className="text-[#FF4D1A]" /> Tracking de envío
+        	</h2>
+        	<p className="text-xs text-gray-400 mb-4">
+          	Al guardar, se enviará automáticamente un email al cliente con el
+          	número de seguimiento.
         	</p>
-      	)}
-    	</div>
+
+        	<div className="grid md:grid-cols-2 gap-3 mb-3">
+          	<div>
+            	<label className="block text-xs text-gray-400 mb-1">
+              	Courier
+            	</label>
+            	<select
+              	value={trackingCourier}
+              	onChange={(e) =>
+                	setTrackingCourier(e.target.value as CourierKey)
+              	}
+              	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+            	>
+              	<option value="">Elige courier</option>
+              	<option value="starken">Starken</option>
+              	<option value="chilexpress">Chilexpress</option>
+              	<option value="bluexpress">Blue Express</option>
+            	</select>
+          	</div>
+
+          	<div>
+            	<label className="block text-xs text-gray-400 mb-1">
+              	N° seguimiento
+            	</label>
+            	<input
+              	value={trackingNum}
+              	onChange={(e) => setTrackingNum(e.target.value)}
+              	placeholder="Ej: 1234567890"
+              	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+            	/>
+          	</div>
+        	</div>
+
+        	<button
+          	onClick={saveTracking}
+          	disabled={saving}
+          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+        	>
+          	{saving ? (
+            	<Loader2 className="animate-spin" size={14} />
+          	) : (
+            	<Save size={14} />
+          	)}
+          	Guardar tracking y enviar email
+        	</button>
+
+        	{pedido.tracking_numero && (
+          	<p className="mt-3 text-xs text-green-400">
+            	✓ Tracking guardado: {pedido.tracking_courier} ·{" "}
+            	{pedido.tracking_numero}
+          	</p>
+        	)}
+      	</div>
+    	)}
+
+    	{esRetiro && (
+      	<div className="bg-green-500/10 border border-green-500/30 p-5 rounded-xl mb-6">
+        	<h2 className="font-bold mb-2 flex items-center gap-2 text-green-300">
+          	<MapPin size={18} /> Retiro en Pucón
+        	</h2>
+        	<p className="text-sm text-green-200/80">
+          	Este pedido es de retiro presencial. Coordina con el cliente por
+          	email o WhatsApp. No requiere tracking de courier.
+        	</p>
+      	</div>
+    	)}
 
     	<div className="grid lg:grid-cols-2 gap-6">
       	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
@@ -372,6 +402,20 @@ export default function AdminPedidoDetail() {
         	<p className="mb-3 capitalize">{pedido.metodo_pago}</p>
         	<p className="text-sm text-gray-400">Promo aplicada</p>
         	<p className="mb-3">{pedido.promo_aplicada || "-"}</p>
+        	{pedido.subtotal !== undefined && (
+          	<>
+            	<p className="text-sm text-gray-400">Subtotal cartas</p>
+            	<p className="mb-2 text-sm">{formatCLP(pedido.subtotal)}</p>
+          	</>
+        	)}
+        	{pedido.shipping_cost !== undefined && pedido.shipping_cost > 0 && (
+          	<>
+            	<p className="text-sm text-gray-400">Envío</p>
+            	<p className="mb-2 text-sm">
+              	{formatCLP(pedido.shipping_cost)}
+            	</p>
+          	</>
+        	)}
         	<p className="text-sm text-gray-400">Total</p>
         	<p className="text-2xl font-bold text-[#FF4D1A]">
           	{formatCLP(pedido.total)}
@@ -471,5 +515,5 @@ export default function AdminPedidoDetail() {
 	</main>
   );
 }
-``
+
 

@@ -11,16 +11,20 @@ const FAQS = [
 	a: "Un proxy es una réplica de una carta oficial, hecha para uso casual, playtest o coleccionable. En Volcán Proxies las imprimimos en papel fotográfico premium y las laminamos en calor para que se sientan como cartas reales al barajar y jugar.",
   },
   {
+	q: "¿Las cartas son indistinguibles de las reales?",
+	a: "No. Volcán Proxies son proxies artesanales hechas a mano. Aunque tienen firmeza similar a una carta real, dorso impreso (no quedan en blanco) y se ven visualmente fieles desde la distancia normal de juego, NO buscan ser indistinguibles de las oficiales. Si las miras de cerca y las comparas con una carta original, verás diferencias en los detalles finos de impresión. Son perfectas para playtest, casual, cEDH y torneos proxy-friendly. No están diseñadas para engañar ni reemplazar a las cartas oficiales en torneos sancionados.",
+  },
+  {
 	q: "¿Son legales en torneos?",
 	a: "Nuestros proxies son ideales para uso casual, partidas en casa, playtest y colección. No están autorizados en torneos sancionados por Wizards/Konami/etc. SÍ son válidos en torneos proxy-friendly o playtest tournaments, que cada vez son más comunes en formatos como cEDH. Te recomendamos consultar las reglas de tu local game store antes de usarlos en eventos.",
   },
   {
 	q: "¿Cuánto tarda mi pedido?",
-	a: "Una vez confirmado el pago, dejamos tu pedido despachado en máximo 48 horas vía Starken o Chilexpress. El tiempo de envío depende del courier y tu región: en Santiago/regiones cercanas suele tardar 3-5 días hábiles, en regiones extremas hasta 7-10 días. Te enviamos el número de seguimiento por email para que puedas tracear tu pedido.",
+	a: "Una vez confirmado el pago, dejamos tu pedido despachado en máximo 48 horas vía Starken, Chilexpress o Blue Express. El tiempo de envío depende del courier y tu región: en Santiago/regiones cercanas suele tardar 3-5 días hábiles, en regiones extremas hasta 7-10 días. Te enviamos el número de seguimiento por email para que puedas tracear tu pedido.",
   },
   {
 	q: "¿Qué métodos de pago aceptan?",
-	a: "Actualmente aceptamos transferencia bancaria (BCI/MACH). Una vez confirmes el pedido, recibirás los datos para transferir. Una vez recibido el comprobante, comenzamos la impresión. Próximamente agregaremos Mercado Pago para pagos con tarjeta.",
+	a: "Aceptamos transferencia bancaria (BCI/MACH) y Flow.cl (tarjeta de crédito/débito/Webpay). Con transferencia, una vez confirmes el pedido recibirás los datos para transferir; una vez recibido el comprobante, comenzamos la impresión. Con Flow.cl el pago se procesa inmediatamente y comenzamos a imprimir apenas se confirme.",
   },
   {
 	q: "¿Puedo devolver mi pedido?",

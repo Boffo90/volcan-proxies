@@ -32,24 +32,48 @@ export async function POST(req: Request) {
   	items,
   	metodo,
   	total,
+  	subtotal,
   	applied,
+  	deliveryType,
+  	shippingCost,
+  	aceptaTerminos,
 	} = body as {
   	nombre: string;
   	rut?: string;
   	email: string;
   	telefono?: string;
-  	direccion: string;
-  	comuna: string;
-  	region: string;
+  	direccion?: string;
+  	comuna?: string;
+  	region?: string;
   	notas?: string;
   	items: PedidoItem[];
   	metodo: "flow" | "transferencia";
   	total: number;
+  	subtotal: number;
   	applied: string;
+  	deliveryType: "retiro" | "envio";
+  	shippingCost: number;
+  	aceptaTerminos: boolean;
 	};
 
-	if (!nombre || !email || !direccion || !comuna || !items?.length) {
+	if (!nombre || !email || !items?.length) {
   	return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+	}
+
+	if (!aceptaTerminos) {
+  	return NextResponse.json(
+    	{ error: "Debes aceptar los términos del producto artesanal" },
+    	{ status: 400 }
+  	);
+	}
+
+	if (deliveryType === "envio") {
+  	if (!direccion || !comuna || !region) {
+    	return NextResponse.json(
+      	{ error: "Faltan datos de envío" },
+      	{ status: 400 }
+    	);
+  	}
 	}
 
 	const totalQty = items.reduce((s, i) => s + i.quantity, 0);
@@ -63,6 +87,14 @@ export async function POST(req: Request) {
 
 	const sb = supabaseAdmin();
 
+	const direccionFinal =
+  	deliveryType === "retiro"
+    	? "Retiro en Pucón (a coordinar)"
+    	: direccion || "";
+	const comunaFinal = deliveryType === "retiro" ? "Pucón" : comuna || "";
+	const regionFinal =
+  	deliveryType === "retiro" ? "Araucanía" : region || "";
+
 	const { data: pedido, error } = await sb
   	.from("pedidos")
   	.insert({
@@ -70,15 +102,18 @@ export async function POST(req: Request) {
     	cliente_rut: rut,
     	cliente_email: email,
     	cliente_telefono: telefono,
-    	direccion,
-    	comuna,
-    	region,
+    	direccion: direccionFinal,
+    	comuna: comunaFinal,
+    	region: regionFinal,
     	items,
-    	subtotal: total,
+    	subtotal: subtotal,
     	promo_aplicada: applied,
     	total,
     	metodo_pago: metodo,
     	notas,
+    	delivery_type: deliveryType,
+    	shipping_cost: shippingCost,
+    	acepta_terminos: aceptaTerminos,
   	})
   	.select()
   	.single();
@@ -109,7 +144,8 @@ export async function POST(req: Request) {
       	amount: total,
       	email,
       	urlConfirmation: siteUrl + "/api/flow/confirm",
-      	urlReturn: siteUrl + "/gracias?pedido=" + pedido.numero + "&metodo=flow",
+      	urlReturn:
+        	siteUrl + "/gracias?pedido=" + pedido.numero + "&metodo=flow",
     	});
 
     	paymentUrl = flowPayment.url + "?token=" + flowPayment.token;
@@ -127,10 +163,14 @@ export async function POST(req: Request) {
   	} catch (flowError) {
     	console.error("[FLOW CREATE ERROR]", flowError);
 
+    	const flowMessage =
+      	flowError instanceof Error
+        	? flowError.message
+        	: "No se pudo iniciar el pago con Flow.cl";
+
     	return NextResponse.json(
       	{
-        	error:
-          	"No se pudo iniciar el pago con Flow.cl. Intenta nuevamente o elige transferencia.",
+        	error: flowMessage,
       	},
       	{ status: 500 }
     	);
@@ -188,11 +228,21 @@ export async function POST(req: Request) {
 	const metodoLabel =
   	metodo === "flow" ? "Flow.cl" : "Transferencia (MACH BCI)";
 
+	const entregaLabel =
+  	deliveryType === "retiro"
+    	? "Retiro en Pucón (a coordinar)"
+    	: "Envío a domicilio";
+
 	// =========================
 	// Mail al admin
 	// =========================
 	try {
   	const resend = new Resend(process.env.RESEND_API_KEY);
+
+  	const direccionHtml =
+    	deliveryType === "retiro"
+      	? "<p>📍 <b>Retiro en Pucón</b> (coordinar por email)</p>"
+      	: `<p>📍 ${direccionFinal}, ${comunaFinal}, ${regionFinal}</p>`;
 
   	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
@@ -208,6 +258,7 @@ export async function POST(req: Request) {
         	<div style="${bodyStyle}">
           	<h2 style="margin-top:0;">Pedido #${pedido.numero}</h2>
           	<p><b>Método de pago:</b> ${metodoLabel}</p>
+          	<p><b>Entrega:</b> ${entregaLabel}</p>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">Cliente</h3>
@@ -216,7 +267,7 @@ export async function POST(req: Request) {
             	}</p>
             	<p style="margin:4px 0;">📧 ${email}</p>
             	<p style="margin:4px 0;">📱 ${telefono || "-"}</p>
-            	<p style="margin:4px 0;">📍 ${direccion}, ${comuna}, ${region}</p>
+            	${direccionHtml}
             	${
               	notas
                 	? `<p style="margin:8px 0 0;color:#666;"><i>Notas: ${notas}</i></p>`
@@ -238,6 +289,12 @@ export async function POST(req: Request) {
 
           	<div style="${boxStyle}background:#0F1115;color:white;">
             	<p style="margin:0;color:#aaa;font-size:12px;">${applied}</p>
+            	<p style="margin:4px 0;color:#aaa;font-size:13px;">Subtotal: $${subtotal.toLocaleString(
+              	"es-CL"
+            	)}</p>
+            	<p style="margin:4px 0;color:#aaa;font-size:13px;">Envío: $${shippingCost.toLocaleString(
+              	"es-CL"
+            	)}</p>
             	<h2 style="margin:8px 0 0;color:#FF4D1A;">Total: $${total.toLocaleString(
               	"es-CL"
             	)}</h2>
@@ -279,8 +336,28 @@ export async function POST(req: Request) {
           	<p style="margin:4px 0;">
             	Tu pedido fue creado y quedará confirmado una vez que Flow.cl informe el pago aprobado.
           	</p>
-          	<p style="margin:8px 0 0;color:#666;font-size:13px;">
-            	Si cerraste la ventana de pago por error, puedes contactarnos indicando tu pedido <b>#${pedido.numero}</b>.
+        	</div>
+      	`;
+
+  	const entregaInfo =
+    	deliveryType === "retiro"
+      	? `
+        	<div style="${boxStyle}">
+          	<h3 style="margin-top:0;">📍 Retiro en Pucón</h3>
+          	<p style="margin:4px 0;">
+            	Al confirmar tu pago te contactaremos por email para coordinar
+            	el retiro. Sin costo adicional.
+          	</p>
+        	</div>
+      	`
+      	: `
+        	<div style="${boxStyle}">
+          	<h3 style="margin-top:0;">📦 Envío</h3>
+          	<p style="margin:4px 0;">${direccionFinal}</p>
+          	<p style="margin:4px 0;">${comunaFinal}, ${regionFinal}</p>
+          	<p style="margin:12px 0 0;color:#666;font-size:13px;">
+            	Dejamos tu pedido despachado en máximo 48 hrs desde la
+            	confirmación del pago vía Starken, Chilexpress o Blue Express.
           	</p>
         	</div>
       	`;
@@ -312,28 +389,26 @@ export async function POST(req: Request) {
             	</table>
 
             	<p style="margin:16px 0 0;text-align:right;color:#aaa;font-size:12px;">${applied}</p>
+            	<p style="margin:4px 0;text-align:right;color:#666;font-size:13px;">Subtotal: $${subtotal.toLocaleString(
+              	"es-CL"
+            	)}</p>
+            	<p style="margin:4px 0;text-align:right;color:#666;font-size:13px;">${
+              	deliveryType === "retiro"
+                	? "Retiro: Gratis"
+                	: "Envío: $" + shippingCost.toLocaleString("es-CL")
+            	}</p>
             	<h2 style="margin:8px 0 0;text-align:right;color:#FF4D1A;">
               	Total: $${total.toLocaleString("es-CL")}
             	</h2>
           	</div>
 
-          	<div style="${boxStyle}">
-            	<h3 style="margin-top:0;">📦 Envío</h3>
-            	<p style="margin:4px 0;">${direccion}</p>
-            	<p style="margin:4px 0;">${comuna}, ${region}</p>
-            	<p style="margin:12px 0 0;color:#666;font-size:13px;">
-              	Dejamos tu pedido despachado en máximo 48 hrs desde la confirmación del pago.
-            	</p>
-          	</div>
+          	${entregaInfo}
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">🔍 Sigue tu pedido</h3>
             	<p style="margin:4px 0;">Puedes ver el estado en cualquier momento aquí:</p>
             	<p style="margin:8px 0;color:#FF4D1A;font-weight:bold;">
               	${seguimientoUrl}
-            	</p>
-            	<p style="margin:8px 0 0;color:#666;font-size:12px;">
-              	Cuando despachemos tu pedido te enviaremos el número de tracking del courier.
             	</p>
           	</div>
 

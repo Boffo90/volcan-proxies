@@ -38,6 +38,7 @@ const TIMELINE = [
 const COURIER_NAMES: Record<string, string> = {
   starken: "Starken",
   chilexpress: "Chilexpress",
+  bluexpress: "Blue Express",
 };
 
 export default function SeguimientoPage() {
@@ -80,6 +81,10 @@ export default function SeguimientoPage() {
 	} else if (pedido.tracking_courier === "chilexpress") {
   	url =
     	"https://www.chilexpress.cl/Views/ChilexpressCL/Seguimiento.aspx?TrackingNumber=" +
+    	pedido.tracking_numero;
+	} else if (pedido.tracking_courier === "bluexpress") {
+  	url =
+    	"https://www.blue.cl/seguimiento/?n_seguimiento=" +
     	pedido.tracking_numero;
 	}
 	if (url) window.open(url, "_blank");
@@ -137,7 +142,8 @@ export default function SeguimientoPage() {
               	<b className="text-[#FF4D1A]">{pedido.tracking_numero}</b>
             	</p>
             	{(pedido.tracking_courier === "starken" ||
-              	pedido.tracking_courier === "chilexpress") && (
+              	pedido.tracking_courier === "chilexpress" ||
+              	pedido.tracking_courier === "bluexpress") && (
               	<button
                 	onClick={openTracking}
                 	className="inline-block bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold"

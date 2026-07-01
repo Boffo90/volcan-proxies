@@ -44,7 +44,7 @@ export default function Home() {
 	{
   	icon: Truck,
   	title: "Despacho 48 hrs",
-  	desc: "Envío vía Starken o Chilexpress.",
+  	desc: "Envío vía Starken, Chilexpress o Blue Express.",
 	},
 	{
   	icon: CheckCircle2,
@@ -72,7 +72,7 @@ export default function Home() {
 	{
   	icon: Package,
   	title: "Despachamos a tu casa",
-  	desc: "Starken o Chilexpress a todo Chile, con tracking incluido.",
+  	desc: "Starken, Chilexpress o Blue Express a todo Chile, con tracking incluido.",
 	},
   ];
 
@@ -80,27 +80,27 @@ export default function Home() {
 	{
   	name: "Mazo 60",
   	subtitle: "Glossy",
-  	price: "$9.900",
+  	price: "$7.900",
   	desc: "Standard, Modern, Pioneer.",
   	qty: "60 cartas",
-  	perCard: "~$165/carta",
+  	perCard: "~$132/carta",
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Glossy",
-  	price: "$15.500",
+  	price: "$12.900",
   	desc: "Tu mazo EDH completo.",
   	qty: "100 cartas",
-  	perCard: "~$155/carta",
+  	perCard: "~$129/carta",
   	featured: true,
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Matte",
-  	price: "$19.900",
+  	price: "$17.900",
   	desc: "Acabado premium sin reflejo.",
   	qty: "100 cartas",
-  	perCard: "~$199/carta",
+  	perCard: "~$179/carta",
 	},
   ];
 
@@ -118,22 +118,15 @@ export default function Home() {
 
     	<div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
       	<div>
-        	<div
-          	className="w-28 h-28 mb-6 bg-center bg-contain bg-no-repeat"
-          	style={{ backgroundImage: "url(/logo.png)" }}
-          	role="img"
-          	aria-label="Volcán Proxies"
-        	/>
-
         	<span className="inline-block bg-[#FF4D1A]/20 text-[#FF4D1A] px-3 py-1 rounded-full text-xs font-semibold mb-6">
           	🌋 Hecho en Pucón · Envíos a todo Chile
         	</span>
         	<h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05]">
-          	Proxies MTG 
+          	Tu mazo soñado,
           	<br />
-          	<span className="text-[#FF4D1A]">Premium</span>
+          	<span className="text-[#FF4D1A]">sin venderle el alma</span>
           	<br />
-          	<span className="text-[#FF4D1A]">en Chile</span>
+          	<span className="text-[#FF4D1A]">a la billetera.</span>
         	</h1>
         	<p className="text-lg text-gray-300 mb-8 max-w-lg">
           	Proxies premium de MTG con impresión fotográfica y laminado en
@@ -358,6 +351,54 @@ export default function Home() {
     	</div>
   	</section>
 
+  	{/* DISCLAIMER ARTESANAL */}
+  	<section className="px-6 py-20 max-w-4xl mx-auto">
+    	<div className="bg-[#1E242B] border border-white/10 rounded-2xl p-8 md:p-10">
+      	<h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
+        	Sobre nuestras <span className="text-[#FF4D1A]">cartas</span>
+      	</h2>
+      	<p className="text-gray-300 mb-8 text-center max-w-2xl mx-auto">
+        	Volcán Proxies son{" "}
+        	<b className="text-white">proxies artesanales</b> hechas a mano en
+        	Pucón con impresión fotográfica y laminado en calor. Queremos ser
+        	transparentes sobre qué esperar:
+      	</p>
+
+      	<div className="grid md:grid-cols-2 gap-6">
+        	<div className="bg-[#0F1115] p-6 rounded-xl border border-green-500/20">
+          	<h3 className="font-bold text-green-400 mb-3 flex items-center gap-2">
+            	✅ Lo que sí hacemos
+          	</h3>
+          	<ul className="space-y-2 text-sm text-gray-300">
+            	<li>• Cartas con dorso impreso (no quedan en blanco)</li>
+            	<li>
+              	• Cartas dobles (Double Faced Cards) impresas correctamente
+            	</li>
+            	<li>• Firmeza similar a una carta real al barajar</li>
+            	<li>• Diseño visual fiel desde distancia normal de juego</li>
+          	</ul>
+        	</div>
+
+        	<div className="bg-[#0F1115] p-6 rounded-xl border border-yellow-500/20">
+          	<h3 className="font-bold text-yellow-400 mb-3 flex items-center gap-2">
+            	⚠️ Lo que NO buscamos
+          	</h3>
+          	<ul className="space-y-2 text-sm text-gray-300">
+            	<li>• Replicar la calidad industrial de Wizards/Konami</li>
+            	<li>• Engañar de que son cartas oficiales</li>
+            	<li>• Pasar como reales en torneos sancionados</li>
+            	<li>• Reemplazar la experiencia de una carta original</li>
+          	</ul>
+        	</div>
+      	</div>
+
+      	<p className="text-center text-gray-400 text-sm mt-6 italic">
+        	Son perfectas para playtest, casual, EDH/cEDH, kitchen table y
+        	torneos proxy-friendly.
+      	</p>
+    	</div>
+  	</section>
+
   	{/* CTA FINAL */}
   	<section className="px-6 py-20 bg-gradient-to-r from-[#FF4D1A]/20 via-transparent to-[#FF4D1A]/10">
     	<div className="max-w-3xl mx-auto text-center">
@@ -386,7 +427,7 @@ export default function Home() {
           	className="border border-white/20 hover:bg-white/5 px-7 py-4 rounded-lg font-semibold transition flex items-center justify-center gap-2"
         	>
           	<Search size={20} /> Buscar cartas
-          	</button>
+        	</button>
       	</div>
     	</div>
   	</section>

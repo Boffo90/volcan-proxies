@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Loader2, ShoppingBag, AlertCircle } from "lucide-react";
+import { Trash2, Loader2, ShoppingBag, AlertCircle, Truck } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import {
   getCart,
@@ -10,7 +10,12 @@ import {
   updateQty,
   type CartItem,
 } from "@/lib/cart";
-import { calculateTotalWith, formatCLP, MIN_CARDS } from "@/lib/pricing";
+import {
+  calculateTotalWith,
+  formatCLP,
+  MIN_CARDS,
+  SHIPPING_COST,
+} from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
 export default function CarritoPage() {
@@ -40,7 +45,11 @@ export default function CarritoPage() {
 
   const { total, applied } = calculateTotalWith(
 	precios,
-	items.map((i) => ({ finish: i.finish, quantity: i.quantity, isCustom: i.isCustom }))
+	items.map((i) => ({
+  	finish: i.finish,
+  	quantity: i.quantity,
+  	isCustom: i.isCustom,
+	}))
   );
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const faltan = Math.max(0, MIN_CARDS - totalQty);
@@ -148,17 +157,31 @@ export default function CarritoPage() {
             	</div>
           	)}
 
-          	<div className="border-t border-white/10 pt-4 mb-6">
+          	<div className="border-t border-white/10 pt-4 mb-4">
             	<div className="flex justify-between items-center">
-              	<span className="text-gray-400">Subtotal</span>
+              	<span className="text-gray-400">Subtotal cartas</span>
               	<span className="text-2xl font-bold text-[#FF4D1A]">
                 	{formatCLP(total)}
               	</span>
             	</div>
-            	<p className="text-xs text-gray-500 mt-2">
-              	Envío a calcular en el checkout.
-            	</p>
           	</div>
+
+          	<div className="bg-[#0F1115] border border-white/10 rounded-lg p-3 mb-6 flex gap-2 text-xs text-gray-300">
+            	<Truck
+              	size={16}
+              	className="text-[#FF4D1A] flex-shrink-0 mt-0.5"
+            	/>
+            	<div>
+              	<p>
+                	En el checkout puedes elegir{" "}
+                	<b className="text-white">retiro en Pucón (gratis)</b> o
+                	envío único de{" "}
+                	<b className="text-white">{formatCLP(SHIPPING_COST)}</b> a
+                	todo Chile.
+              	</p>
+            	</div>
+          	</div>
+
           	<button
             	onClick={() => router.push("/checkout")}
             	disabled={!cumpleMin}
@@ -167,7 +190,7 @@ export default function CarritoPage() {
             	{cumpleMin ? "Ir a pagar" : `Faltan ${faltan} carta(s)`}
           	</button>
           	<p className="text-xs text-gray-500 text-center mt-4">
-            	Mercado Pago o transferencia
+            	Flow.cl o transferencia
           	</p>
         	</aside>
       	</div>
