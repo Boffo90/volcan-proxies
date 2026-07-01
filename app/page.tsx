@@ -21,9 +21,12 @@ import {
   getCardImage,
   type ScryfallCard,
 } from "@/lib/scryfall";
+import { usePrecios } from "@/hooks/usePrecios";
+import { formatCLP } from "@/lib/pricing";
 
 export default function Home() {
   const router = useRouter();
+  const { precios } = usePrecios();
   const [showcase, setShowcase] = useState<ScryfallCard[]>([]);
 
   useEffect(() => {
@@ -76,31 +79,34 @@ export default function Home() {
 	},
   ];
 
+  const perCard = (total: number, cantidad: number) =>
+	"~" + formatCLP(Math.round(total / cantidad)) + "/carta";
+
   const promos = [
 	{
   	name: "Mazo 60",
   	subtitle: "Glossy",
-  	price: "$7.900",
+  	price: formatCLP(precios.mazo60_glossy),
   	desc: "Standard, Modern, Pioneer.",
   	qty: "60 cartas",
-  	perCard: "~$132/carta",
+  	perCard: perCard(precios.mazo60_glossy, 60),
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Glossy",
-  	price: "$12.900",
+  	price: formatCLP(precios.commander100_glossy),
   	desc: "Tu mazo EDH completo.",
   	qty: "100 cartas",
-  	perCard: "~$129/carta",
+  	perCard: perCard(precios.commander100_glossy, 100),
   	featured: true,
 	},
 	{
   	name: "Commander 100",
   	subtitle: "Matte",
-  	price: "$17.900",
+  	price: formatCLP(precios.commander100_matte),
   	desc: "Acabado premium sin reflejo.",
   	qty: "100 cartas",
-  	perCard: "~$179/carta",
+  	perCard: perCard(precios.commander100_matte, 100),
 	},
   ];
 
