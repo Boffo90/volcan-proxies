@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, LogOut, Settings, RefreshCw, Flame } from "lucide-react";
+import { Loader2, LogOut, Settings, RefreshCw, Flame, Palette } from "lucide-react";
 
 type Pedido = {
   id: string;
@@ -88,6 +88,12 @@ export default function AdminDashboard() {
         	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
       	>
         	<Settings size={14} /> Precios
+      	</button>
+      	<button
+        	onClick={() => router.push("/admin/customs")}
+        	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
+      	>
+        	<Palette size={14} /> Customs
       	</button>
       	<button
         	onClick={logout}
