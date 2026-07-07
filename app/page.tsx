@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 import {
   getRandomCards,
   getCardImage,
@@ -123,7 +124,7 @@ export default function Home() {
     	<div className="absolute top-20 right-0 w-96 h-96 bg-[#FF4D1A]/10 rounded-full blur-3xl" />
 
     	<div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-      	<div>
+      	<Reveal>
         	<span className="inline-block bg-[#FF4D1A]/20 text-[#FF4D1A] px-3 py-1 rounded-full text-xs font-semibold mb-6">
           	🌋 Hecho en Pucón · Envíos a todo Chile
         	</span>
@@ -153,9 +154,9 @@ export default function Home() {
             	<Search size={20} /> Buscar cartas
           	</button>
         	</div>
-      	</div>
+      	</Reveal>
 
-      	<div className="relative hidden lg:block">
+      	<Reveal delay={0.15} className="relative hidden lg:block">
         	<div className="grid grid-cols-3 gap-3">
           	{Array.from({ length: 6 }).map((_, idx) => {
             	const card = showcase[idx];
@@ -183,13 +184,13 @@ export default function Home() {
         	<div className="absolute -bottom-4 -right-4 bg-[#FF4D1A] text-white px-4 py-2 rounded-lg font-bold shadow-2xl rotate-3">
           	🎴 +30.000 cartas disponibles
         	</div>
-      	</div>
+      	</Reveal>
     	</div>
   	</section>
 
   	{/* BANNER IMPORTADOR */}
   	<section className="px-6 py-8 bg-gradient-to-r from-[#FF4D1A] to-[#e64418]">
-    	<div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    	<Reveal className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       	<div className="flex items-center gap-4">
         	<FileText size={32} className="text-white flex-shrink-0" />
         	<div>
@@ -207,37 +208,38 @@ export default function Home() {
       	>
         	Importar ahora →
       	</button>
-    	</div>
+    	</Reveal>
   	</section>
 
   	{/* FEATURES */}
   	<section className="px-6 py-16 bg-[#1E242B]">
     	<div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
-      	{features.map(({ icon: Icon, title, desc }) => (
-        	<div key={title} className="text-center">
+      	{features.map(({ icon: Icon, title, desc }, idx) => (
+        	<Reveal key={title} delay={idx * 0.08} className="text-center">
           	<Icon className="text-[#FF4D1A] mx-auto mb-3" size={36} />
           	<h3 className="font-bold mb-2">{title}</h3>
           	<p className="text-sm text-gray-400">{desc}</p>
-        	</div>
+        	</Reveal>
       	))}
     	</div>
   	</section>
 
   	{/* CÓMO FUNCIONA */}
   	<section className="px-6 py-20 max-w-6xl mx-auto">
-    	<div className="text-center mb-12">
+    	<Reveal className="text-center mb-12">
       	<h2 className="text-3xl md:text-5xl font-bold mb-3">
         	Cómo <span className="text-[#FF4D1A]">funciona</span>
       	</h2>
       	<p className="text-gray-400">4 pasos simples. Sin complicaciones.</p>
-    	</div>
+    	</Reveal>
 
     	<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
       	{pasos.map((paso, idx) => {
         	const Icon = paso.icon;
         	return (
-          	<div
+          	<Reveal
             	key={paso.title}
+            	delay={idx * 0.08}
             	className="relative bg-[#1E242B] p-6 rounded-xl border border-white/10 hover:border-[#FF4D1A]/50 transition"
           	>
             	<div className="absolute -top-3 -left-3 bg-[#FF4D1A] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
@@ -246,7 +248,7 @@ export default function Home() {
             	<Icon className="text-[#FF4D1A] mb-4" size={32} />
             	<h3 className="font-bold mb-2">{paso.title}</h3>
             	<p className="text-sm text-gray-400">{paso.desc}</p>
-          	</div>
+          	</Reveal>
         	);
       	})}
     	</div>
@@ -255,7 +257,7 @@ export default function Home() {
   	{/* PROMOS */}
   	<section className="px-6 py-20 bg-gradient-to-b from-transparent via-[#1E242B]/50 to-transparent">
     	<div className="max-w-5xl mx-auto">
-      	<div className="text-center mb-12">
+      	<Reveal className="text-center mb-12">
         	<Sparkles className="mx-auto text-[#FF4D1A] mb-3" size={36} />
         	<h2 className="text-3xl md:text-5xl font-bold mb-3">
           	Promos para <span className="text-[#FF4D1A]">armar mazo</span>
@@ -263,12 +265,13 @@ export default function Home() {
         	<p className="text-gray-400">
           	Mientras más cartas, mejor precio. Aplican automáticamente.
         	</p>
-      	</div>
+      	</Reveal>
 
       	<div className="grid md:grid-cols-3 gap-6 mb-8">
-        	{promos.map((p) => (
-          	<div
+        	{promos.map((p, idx) => (
+          	<Reveal
             	key={p.name + p.subtitle}
+            	delay={idx * 0.1}
             	className={
               	"p-6 rounded-xl border transition relative " +
               	(p.featured
@@ -303,7 +306,7 @@ export default function Home() {
                 	Mismo acabado en todas
               	</p>
             	</div>
-          	</div>
+          	</Reveal>
         	))}
       	</div>
 
@@ -320,7 +323,7 @@ export default function Home() {
 
   	{/* CATÁLOGO TEASER */}
   	<section className="px-6 py-20 max-w-6xl mx-auto">
-    	<div className="text-center mb-12">
+    	<Reveal className="text-center mb-12">
       	<h2 className="text-3xl md:text-5xl font-bold mb-3">
         	Catálogo <span className="text-[#FF4D1A]">completo</span>
       	</h2>
@@ -328,7 +331,7 @@ export default function Home() {
         	Catálogo vía Scryfall — todas las cartas, todos los sets, todos los
         	artes alternativos.
       	</p>
-    	</div>
+    	</Reveal>
 
     	<div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-8">
       	{Array.from({ length: 6 }).map((_, idx) => {
@@ -337,12 +340,13 @@ export default function Home() {
           	? { backgroundImage: `url(${getCardImage(card, "normal")})` }
           	: { background: placeholderGradient };
         	return (
-          	<div
-            	key={idx}
-            	className="aspect-[5/7] rounded-lg bg-center bg-cover bg-no-repeat hover:scale-105 transition cursor-pointer shadow-lg"
-            	style={bgStyle}
-            	onClick={() => router.push("/catalogo")}
-          	/>
+          	<Reveal key={idx} delay={idx * 0.05}>
+            	<div
+              	className="aspect-[5/7] rounded-lg bg-center bg-cover bg-no-repeat hover:scale-105 transition cursor-pointer shadow-lg"
+              	style={bgStyle}
+              	onClick={() => router.push("/catalogo")}
+            	/>
+          	</Reveal>
         	);
       	})}
     	</div>
@@ -359,7 +363,7 @@ export default function Home() {
 
   	{/* DISCLAIMER ARTESANAL */}
   	<section className="px-6 py-20 max-w-4xl mx-auto">
-    	<div className="bg-[#1E242B] border border-white/10 rounded-2xl p-8 md:p-10">
+    	<Reveal className="bg-[#1E242B] border border-white/10 rounded-2xl p-8 md:p-10">
       	<h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
         	Sobre nuestras <span className="text-[#FF4D1A]">cartas</span>
       	</h2>
@@ -376,10 +380,7 @@ export default function Home() {
             	✅ Lo que sí hacemos
           	</h3>
           	<ul className="space-y-2 text-sm text-gray-300">
-            	<li>• Cartas con dorso impreso (no quedan en blanco)</li>
-            	<li>
-              	• Cartas dobles (Double Faced Cards) impresas correctamente
-            	</li>
+            	<li>• Cartas dobles MDFC (Modal Double-Faced) con su reverso real impreso</li>
             	<li>• Firmeza similar a una carta real al barajar</li>
             	<li>• Diseño visual fiel desde distancia normal de juego</li>
           	</ul>
@@ -398,16 +399,26 @@ export default function Home() {
         	</div>
       	</div>
 
-      	<p className="text-center text-gray-400 text-sm mt-6 italic">
+      	<p className="text-center text-gray-300 text-sm mt-6">
+        	<b className="text-white">Sobre el reverso:</b> por ahora todas
+        	nuestras cartas de una sola cara llevan{" "}
+        	<b className="text-white">reverso blanco liso</b> (no el reverso
+        	oficial de Magic). Las únicas cartas de doble cara que imprimimos
+        	con su reverso real son las <b className="text-white">MDFC</b>{" "}
+        	(Modal Double-Faced Cards) — no hacemos transform, flip ni otros
+        	tipos de carta doble.
+      	</p>
+
+      	<p className="text-center text-gray-400 text-sm mt-4 italic">
         	Son perfectas para playtest, casual, EDH/cEDH, kitchen table y
         	torneos proxy-friendly.
       	</p>
-    	</div>
+    	</Reveal>
   	</section>
 
   	{/* CTA FINAL */}
   	<section className="px-6 py-20 bg-gradient-to-r from-[#FF4D1A]/20 via-transparent to-[#FF4D1A]/10">
-    	<div className="max-w-3xl mx-auto text-center">
+    	<Reveal className="max-w-3xl mx-auto text-center">
       	<div
         	className="w-20 h-20 mx-auto mb-4 bg-center bg-contain bg-no-repeat"
         	style={{ backgroundImage: "url(/logo.png)" }}
@@ -435,7 +446,7 @@ export default function Home() {
           	<Search size={20} /> Buscar cartas
         	</button>
       	</div>
-    	</div>
+    	</Reveal>
   	</section>
 
   	<Footer />

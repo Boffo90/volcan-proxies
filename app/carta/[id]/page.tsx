@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, ArrowLeft, ShoppingCart } from "lucide-react";
+import { Loader2, ArrowLeft, ShoppingCart, ChevronDown } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import ManaSymbols from "@/components/ManaSymbols";
 import {
   getCardById,
   getAllPrints,
   getCardImage,
+  getRulings,
   type ScryfallCard,
+  type ScryfallRuling,
 } from "@/lib/scryfall";
 import { formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -24,6 +26,8 @@ export default function CartaDetalle() {
   const [finish, setFinish] = useState<Finish>("glossy");
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [rulings, setRulings] = useState<ScryfallRuling[]>([]);
+  const [showRulings, setShowRulings] = useState(false);
 
   useEffect(() => {
 	(async () => {
@@ -32,8 +36,12 @@ export default function CartaDetalle() {
   	setCard(c);
   	setSelectedPrint(c);
   	if (c) {
-    	const p = await getAllPrints(c.oracle_id);
+    	const [p, r] = await Promise.all([
+      	getAllPrints(c.oracle_id),
+      	getRulings(c.id),
+    	]);
     	setPrints(p);
+    	setRulings(r);
   	}
   	setLoading(false);
 	})();
@@ -122,6 +130,40 @@ export default function CartaDetalle() {
         	{display.oracle_text ? (
           	<div className="mb-4 text-sm bg-[#1E242B] p-3 rounded-lg whitespace-pre-wrap leading-relaxed">
             	<ManaSymbols text={display.oracle_text} size={14} />
+          	</div>
+        	) : null}
+        	{rulings.length > 0 ? (
+          	<div className="mb-4">
+            	<button
+              	onClick={() => setShowRulings((v) => !v)}
+              	className="flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white transition"
+            	>
+              	<ChevronDown
+                	size={16}
+                	className={
+                  	"transition-transform " +
+                  	(showRulings ? "rotate-180" : "")
+                	}
+              	/>
+              	Rulings ({rulings.length})
+            	</button>
+            	{showRulings ? (
+              	<div className="mt-2 space-y-3 text-sm bg-[#1E242B] p-3 rounded-lg max-h-72 overflow-y-auto">
+                	{rulings.map((r, idx) => (
+                  	<div
+                    	key={idx}
+                    	className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
+                  	>
+                    	<p className="text-xs text-gray-500 mb-1">
+                      	{r.published_at}
+                    	</p>
+                    	<p className="text-gray-300 leading-relaxed">
+                      	{r.comment}
+                    	</p>
+                  	</div>
+                	))}
+              	</div>
+            	) : null}
           	</div>
         	) : null}
         	{display.power || display.toughness ? (

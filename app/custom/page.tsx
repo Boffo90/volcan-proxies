@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { Upload, Trash2, Loader2, ShoppingCart, Plus } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { addToCart } from "@/lib/cart";
@@ -24,6 +25,7 @@ export default function CustomPage() {
   const [uploads, setUploads] = useState<CustomUpload[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleFiles = async (files: FileList) => {
 	setError("");
@@ -112,10 +114,28 @@ export default function CustomPage() {
       	{formatCLP(precios.custom_surcharge)} por carta.
     	</p>
 
-    	<div className="bg-[#1E242B] border-2 border-dashed border-white/20 hover:border-[#FF4D1A]/50 transition rounded-xl p-10 text-center mb-6">
+    	<motion.div
+      	onDragOver={(e) => {
+        	e.preventDefault();
+        	setIsDragging(true);
+      	}}
+      	onDragLeave={() => setIsDragging(false)}
+      	onDrop={(e) => {
+        	e.preventDefault();
+        	setIsDragging(false);
+        	if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files);
+      	}}
+      	animate={{ scale: isDragging ? 1.02 : 1 }}
+      	className={
+        	"border-2 border-dashed rounded-xl p-10 text-center mb-6 transition-colors " +
+        	(isDragging
+          	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+          	: "bg-[#1E242B] border-white/20 hover:border-[#FF4D1A]/50")
+      	}
+    	>
       	<Upload className="mx-auto text-[#FF4D1A] mb-4" size={40} />
       	<p className="font-semibold mb-2">
-        	Arrastra tus imágenes aquí o haz click
+        	{isDragging ? "Suelta para subir" : "Arrastra tus imágenes aquí o haz click"}
       	</p>
       	<p className="text-xs text-gray-400 mb-4">
         	Formatos: JPG, PNG · Máx 5MB por archivo
@@ -143,7 +163,7 @@ export default function CustomPage() {
       	{error ? (
         	<p className="text-sm text-red-400 mt-4">{error}</p>
       	) : null}
-    	</div>
+    	</motion.div>
 
     	{uploads.length > 0 && (
       	<>

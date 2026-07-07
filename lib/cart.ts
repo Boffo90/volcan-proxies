@@ -52,6 +52,18 @@ export function clearCart() {
   setCart([]);
 }
 
+export function mergeCart(a: CartItem[], b: CartItem[]): CartItem[] {
+  const merged = [...a];
+  for (const item of b) {
+	const existing = merged.findIndex(
+  	(i) => i.id === item.id && i.finish === item.finish
+	);
+	if (existing >= 0) merged[existing].quantity += item.quantity;
+	else merged.push(item);
+  }
+  return merged;
+}
+
 export function toMtgoFormat(items: CartItem[]): string {
   return items
 	.map((it) => {

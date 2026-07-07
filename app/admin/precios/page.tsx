@@ -119,9 +119,9 @@ export default function AdminPreciosPage() {
       	</div>
     	</div>
 
-    	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg mt-6">
-      	<p className="text-sm text-yellow-300">
-        	<b>Nota:</b> Por ahora el catálogo público sigue mostrando los precios del código (`lib/pricing.ts`). En la próxima iteración los sincronizamos para que se reflejen automáticamente en el sitio.
+    	<div className="bg-green-500/10 border border-green-500/30 p-4 rounded-lg mt-6">
+      	<p className="text-sm text-green-300">
+        	<b>Nota:</b> Estos precios se reflejan automáticamente en todo el sitio (catálogo, carrito, checkout) y son los que se cobran al confirmar un pedido.
       	</p>
     	</div>
   	</div>

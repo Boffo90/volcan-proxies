@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseServer } from "@/lib/supabaseServer";
 import { createFlowPayment } from "@/lib/flow";
-import { MIN_CARDS } from "@/lib/pricing";
+import { MIN_CARDS, SHIPPING_COST, calculateTotalWith } from "@/lib/pricing";
+import { getPreciosServer } from "@/lib/pricing-server";
 
 type PedidoItem = {
   id: string;
@@ -31,11 +33,7 @@ export async function POST(req: Request) {
   	notas,
   	items,
   	metodo,
-  	total,
-  	subtotal,
-  	applied,
   	deliveryType,
-  	shippingCost,
   	aceptaTerminos,
 	} = body as {
   	nombre: string;
@@ -48,11 +46,7 @@ export async function POST(req: Request) {
   	notas?: string;
   	items: PedidoItem[];
   	metodo: "flow" | "transferencia";
-  	total: number;
-  	subtotal: number;
-  	applied: string;
   	deliveryType: "retiro" | "envio";
-  	shippingCost: number;
   	aceptaTerminos: boolean;
 	};
 
@@ -85,6 +79,25 @@ export async function POST(req: Request) {
   	);
 	}
 
+	// El total nunca se confía del cliente: se recalcula server-side con
+	// los precios vigentes en Supabase para evitar manipulación del monto a pagar.
+	const precios = await getPreciosServer();
+	const { total: subtotal, applied } = calculateTotalWith(
+  	precios,
+  	items.map((i) => ({
+    	finish: i.finish as "glossy" | "matte",
+    	quantity: i.quantity,
+    	isCustom: i.isCustom,
+  	}))
+	);
+	const shippingCost = deliveryType === "envio" ? SHIPPING_COST : 0;
+	const total = subtotal + shippingCost;
+
+	const authClient = await supabaseServer();
+	const {
+  	data: { user },
+	} = await authClient.auth.getUser();
+
 	const sb = supabaseAdmin();
 
 	const direccionFinal =
@@ -95,28 +108,41 @@ export async function POST(req: Request) {
 	const regionFinal =
   	deliveryType === "retiro" ? "Araucanía" : region || "";
 
-	const { data: pedido, error } = await sb
+	const pedidoBase = {
+  	cliente_nombre: nombre,
+  	cliente_rut: rut,
+  	cliente_email: email,
+  	cliente_telefono: telefono,
+  	direccion: direccionFinal,
+  	comuna: comunaFinal,
+  	region: regionFinal,
+  	items,
+  	subtotal: subtotal,
+  	promo_aplicada: applied,
+  	total,
+  	metodo_pago: metodo,
+  	notas,
+  	delivery_type: deliveryType,
+  	shipping_cost: shippingCost,
+  	acepta_terminos: aceptaTerminos,
+	};
+
+	let { data: pedido, error } = await sb
   	.from("pedidos")
-  	.insert({
-    	cliente_nombre: nombre,
-    	cliente_rut: rut,
-    	cliente_email: email,
-    	cliente_telefono: telefono,
-    	direccion: direccionFinal,
-    	comuna: comunaFinal,
-    	region: regionFinal,
-    	items,
-    	subtotal: subtotal,
-    	promo_aplicada: applied,
-    	total,
-    	metodo_pago: metodo,
-    	notas,
-    	delivery_type: deliveryType,
-    	shipping_cost: shippingCost,
-    	acepta_terminos: aceptaTerminos,
-  	})
+  	.insert({ ...pedidoBase, user_id: user?.id ?? null })
   	.select()
   	.single();
+
+	if (error?.code === "42703") {
+  	// La columna user_id todavía no existe en Supabase (falta correr la
+  	// migración supabase/migrations/20260707_login_carritos.sql). Reintenta
+  	// sin asociar el pedido a un usuario para no romper el checkout.
+  	({ data: pedido, error } = await sb
+    	.from("pedidos")
+    	.insert(pedidoBase)
+    	.select()
+    	.single());
+	}
 
 	if (error || !pedido) {
   	console.error("[PEDIDO INSERT ERROR]", error);

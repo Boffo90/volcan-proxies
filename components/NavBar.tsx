@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ShoppingCart, Menu, X, Flame } from "lucide-react";
+import { motion } from "motion/react";
+import { Search, ShoppingCart, Menu, X, Flame, User } from "lucide-react";
 import { autocomplete } from "@/lib/scryfall";
 import { getCart } from "@/lib/cart";
+import { useUser } from "@/hooks/useUser";
 import CartDrawer from "@/components/CartDrawer";
 
 export default function NavBar() {
   const router = useRouter();
+  const { user } = useUser();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -105,7 +108,8 @@ export default function NavBar() {
 	{ slug: "catalogo", label: "Catálogo" },
 	{ slug: "importar", label: "Importar lista" },
 	{ slug: "promos", label: "Promos" },
-	{ slug: "custom", label: "Custom" },
+	{ slug: "customs", label: "Galería Custom" },
+	{ slug: "custom", label: "Sube tu diseño" },
 	{ slug: "nosotros", label: "Nosotros" },
   ];
 
@@ -194,15 +198,29 @@ export default function NavBar() {
       	</div>
 
       	<button
+        	onClick={() => router.push(user ? "/mi-cuenta" : "/login")}
+        	className="hidden sm:flex items-center gap-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex-shrink-0 ml-auto"
+      	>
+        	<User size={18} />
+        	{user ? "Mi cuenta" : "Iniciar sesión"}
+      	</button>
+
+      	<button
         	onClick={() => setDrawerOpen(true)}
-        	className="relative bg-[#FF4D1A] hover:bg-[#e64418] px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold flex-shrink-0 ml-auto"
+        	className="relative bg-[#FF4D1A] hover:bg-[#e64418] px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold flex-shrink-0 sm:ml-0 ml-auto"
       	>
         	<ShoppingCart size={18} />
         	<span className="hidden sm:inline">Carrito</span>
         	{cartCount > 0 && (
-          	<span className="absolute -top-2 -right-2 bg-white text-[#FF4D1A] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          	<motion.span
+            	key={cartCount}
+            	initial={{ scale: 1.4 }}
+            	animate={{ scale: 1 }}
+            	transition={{ type: "spring", stiffness: 500, damping: 15 }}
+            	className="absolute -top-2 -right-2 bg-white text-[#FF4D1A] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+          	>
             	{cartCount}
-          	</span>
+          	</motion.span>
         	)}
       	</button>
 
@@ -245,6 +263,15 @@ export default function NavBar() {
               	{n.label}
             	</button>
           	))}
+          	<button
+            	onClick={() => {
+              	setMobileMenuOpen(false);
+              	router.push(user ? "/mi-cuenta" : "/login");
+            	}}
+            	className="text-left px-6 py-3 hover:bg-white/5"
+          	>
+            	{user ? "Mi cuenta" : "Iniciar sesión"}
+          	</button>
         	</div>
       	</div>
     	)}

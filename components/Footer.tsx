@@ -43,10 +43,18 @@ export default function Footer() {
           	</li>
           	<li>
             	<a
+              	href="/customs"
+              	className="text-gray-400 hover:text-[#FF4D1A]"
+            	>
+              	Galería Custom
+            	</a>
+          	</li>
+          	<li>
+            	<a
               	href="/custom"
               	className="text-gray-400 hover:text-[#FF4D1A]"
             	>
-              	Cartas Custom
+              	Sube tu diseño
             	</a>
           	</li>
         	</ul>
@@ -138,9 +146,7 @@ export default function Footer() {
       	<div className="flex items-center gap-3 text-xs text-gray-500">
         	<span>Métodos de pago:</span>
         	<span className="bg-white/5 px-2 py-1 rounded">Transferencia</span>
-        	<span className="bg-white/5 px-2 py-1 rounded opacity-50">
-          	Flow (próximo)
-        	</span>
+        	<span className="bg-white/5 px-2 py-1 rounded">Flow.cl</span>
       	</div>
     	</div>
   	</div>

@@ -52,6 +52,11 @@ export type ScryfallSymbol = {
   english: string;
 };
 
+export type ScryfallRuling = {
+  published_at: string;
+  comment: string;
+};
+
 type SearchResponse = {
   object: "list";
   total_cards: number;
@@ -117,6 +122,20 @@ export async function getAllPrints(oracleId: string): Promise<ScryfallCard[]> {
 	if (!res.ok) return [];
 	const json: SearchResponse = await res.json();
 	return json.data;
+  } catch {
+	return [];
+  }
+}
+
+export async function getRulings(cardId: string): Promise<ScryfallRuling[]> {
+  try {
+	const res = await fetch(`${BASE}/cards/${cardId}/rulings`, {
+  	headers,
+  	next: { revalidate: 3600 },
+	});
+	if (!res.ok) return [];
+	const json = await res.json();
+	return json.data ?? [];
   } catch {
 	return [];
   }

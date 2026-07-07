@@ -17,7 +17,7 @@ import {
   resolveDeck,
   type ImportedCard,
 } from "@/lib/deckParser";
-import { getCardImage } from "@/lib/scryfall";
+import { getCardImage, getAllPrints, type ScryfallCard } from "@/lib/scryfall";
 import { addToCart } from "@/lib/cart";
 import { formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -38,6 +38,29 @@ export default function ImportarPage() {
   const [cards, setCards] = useState<CardWithFinish[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [printPickerIdx, setPrintPickerIdx] = useState<number | null>(null);
+  const [printsByOracle, setPrintsByOracle] = useState<
+	Record<string, ScryfallCard[]>
+  >({});
+  const [loadingPrints, setLoadingPrints] = useState(false);
+
+  const openPrintPicker = async (idx: number, oracleId: string) => {
+	setPrintPickerIdx(idx);
+	if (printsByOracle[oracleId]) return;
+	setLoadingPrints(true);
+	const prints = await getAllPrints(oracleId);
+	setPrintsByOracle((prev) => ({ ...prev, [oracleId]: prints }));
+	setLoadingPrints(false);
+  };
+
+  const chooseArt = (idx: number, print: ScryfallCard) => {
+	setCards((prev) => {
+  	const next = [...prev];
+  	next[idx] = { ...next[idx], card: print };
+  	return next;
+	});
+	setPrintPickerIdx(null);
+  };
 
   const handleAnalyze = async () => {
 	const parsed = parseDeck(text);
@@ -322,6 +345,50 @@ export default function ImportarPage() {
                       	Matte
                     	</button>
                   	</div>
+                  	<button
+                    	onClick={() =>
+                      	printPickerIdx === idx
+                        	? setPrintPickerIdx(null)
+                        	: openPrintPicker(idx, c.card!.oracle_id)
+                    	}
+                    	className="w-full mt-1 py-1 text-[10px] rounded bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition"
+                  	>
+                    	{printPickerIdx === idx
+                      	? "Cerrar"
+                      	: "🎨 Cambiar arte"}
+                  	</button>
+                  	{printPickerIdx === idx ? (
+                    	<div className="mt-2 flex gap-1 overflow-x-auto pb-1">
+                      	{loadingPrints && !printsByOracle[c.card.oracle_id] ? (
+                        	<Loader2
+                          	className="animate-spin text-[#FF4D1A] mx-auto my-2"
+                          	size={16}
+                        	/>
+                      	) : (
+                        	(printsByOracle[c.card.oracle_id] || []).map(
+                          	(p) => (
+                            	<button
+                              	key={p.id}
+                              	onClick={() => chooseArt(idx, p)}
+                              	aria-label={p.set_name}
+                              	className={
+                                	"relative flex-shrink-0 w-10 aspect-[5/7] rounded border overflow-hidden bg-center bg-cover bg-no-repeat transition " +
+                                	(p.id === c.card!.id
+                                  	? "border-[#FF4D1A]"
+                                  	: "border-white/10 hover:border-white/30")
+                              	}
+                              	style={{
+                                	backgroundImage: `url(${getCardImage(
+                                  	p,
+                                  	"small"
+                                	)})`,
+                              	}}
+                            	/>
+                          	)
+                        	)
+                      	)}
+                    	</div>
+                  	) : null}
                   	{c.isSideboard && (
                     	<p className="text-[9px] text-yellow-400 mt-1">
                       	SIDEBOARD

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { Search, Loader2, Shuffle } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import {
@@ -132,16 +133,19 @@ function CatalogoContent() {
           	{cards.map((card) => {
             	const imgSrc = getCardImage(card, "normal");
             	return (
-              	<button
+              	<motion.button
                 	key={card.id}
                 	onClick={() => router.push("/carta/" + card.id)}
-                	className="group relative bg-[#1E242B] rounded-lg overflow-hidden border border-white/5 hover:border-[#FF4D1A]/50 transition text-left"
+                	whileHover={{ y: -4, scale: 1.02 }}
+                	whileTap={{ scale: 0.98 }}
+                	transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                	className="group relative bg-[#1E242B] rounded-lg overflow-hidden border border-white/5 hover:border-[#FF4D1A]/50 transition-colors text-left"
               	>
                 	<div className="aspect-[5/7] relative overflow-hidden">
                   	<img
                     	src={imgSrc}
                     	alt={card.name}
-                    	className="w-full h-full object-cover group-hover:scale-105 transition"
+                    	className="w-full h-full object-cover"
                   	/>
                 	</div>
                 	<div className="p-3">
@@ -152,7 +156,7 @@ function CatalogoContent() {
                     	{card.set_name}
                   	</p>
                 	</div>
-              	</button>
+              	</motion.button>
             	);
           	})}
         	</div>

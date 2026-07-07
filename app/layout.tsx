@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import AuthListener from "@/components/AuthListener";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -89,7 +90,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={montserrat.variable}>
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        <AuthListener />
+        {children}
+      </body>
     </html>
   );
 }
