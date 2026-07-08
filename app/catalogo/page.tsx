@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Search, Loader2, Shuffle } from "lucide-react";
 import NavBar from "@/components/NavBar";
+import Reveal from "@/components/animation/Reveal";
 import {
   searchCards,
   getRandomCards,
@@ -58,14 +59,14 @@ function CatalogoContent() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-10 max-w-6xl mx-auto">
-    	<div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
+    	<Reveal className="flex items-start justify-between gap-4 mb-2 flex-wrap">
       	<div>
-        	<h1 className="text-3xl md:text-4xl font-bold">
-          	Catálogo <span className="text-[#FF4D1A]">MTG</span>
+        	<h1 className="font-display font-extrabold text-3xl md:text-4xl">
+          	Catálogo <span className="text-lava">MTG</span>
         	</h1>
         	<p className="text-gray-400 mt-2">
           	{mode === "random"
@@ -76,12 +77,12 @@ function CatalogoContent() {
       	{mode === "random" && (
         	<button
           	onClick={loadRandom}
-          	className="bg-[#1E242B] hover:bg-[#FF4D1A]/10 border border-white/10 hover:border-[#FF4D1A] px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition"
+          	className="glass-card hover:border-[#FF4D1A]/50 px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
         	>
           	<Shuffle size={16} /> Otras aleatorias
         	</button>
       	)}
-    	</div>
+    	</Reveal>
 
     	<form onSubmit={onSubmit} className="flex gap-2 mb-4 mt-6">
       	<div className="relative flex-1">
@@ -93,12 +94,12 @@ function CatalogoContent() {
           	value={query}
           	onChange={(e) => setQuery(e.target.value)}
           	placeholder='Ej: "Lightning Bolt", "t:dragon", "set:dom"'
-          	className="w-full bg-[#1E242B] border border-white/10 rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full glass-card rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-[#FF4D1A]/60 transition-colors"
         	/>
       	</div>
       	<button
         	type="submit"
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold transition"
+        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold transition-all shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)]"
       	>
         	Buscar
       	</button>
@@ -139,7 +140,7 @@ function CatalogoContent() {
                 	whileHover={{ y: -4, scale: 1.02 }}
                 	whileTap={{ scale: 0.98 }}
                 	transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                	className="group relative bg-[#1E242B] rounded-lg overflow-hidden border border-white/5 hover:border-[#FF4D1A]/50 transition-colors text-left"
+                	className="group relative glass-card rounded-lg overflow-hidden hover:border-[#FF4D1A]/50 transition-colors text-left"
               	>
                 	<div className="aspect-[5/7] relative overflow-hidden">
                   	<img
@@ -171,7 +172,7 @@ export default function CatalogoPage() {
   return (
 	<Suspense
   	fallback={
-    	<main className="min-h-screen bg-[#0F1115] text-white">
+    	<main className="min-h-screen bg-[#0b0d11] text-white">
       	<NavBar />
       	<div className="flex items-center justify-center py-32">
         	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />

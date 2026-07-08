@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Loader2, ArrowLeft, ShoppingCart, ChevronDown } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import ManaSymbols from "@/components/ManaSymbols";
+import Reveal from "@/components/animation/Reveal";
 import {
   getCardById,
   getAllPrints,
@@ -66,7 +67,7 @@ export default function CartaDetalle() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
       	<Loader2 className="animate-spin text-[#FF4D1A]" size={40} />
@@ -77,7 +78,7 @@ export default function CartaDetalle() {
 
   if (!card) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<p className="text-center py-32">Carta no encontrada.</p>
   	</main>
@@ -89,7 +90,7 @@ export default function CartaDetalle() {
   const mainImg = getCardImage(display, "large");
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<div className="max-w-6xl mx-auto px-6 py-8">
@@ -100,16 +101,16 @@ export default function CartaDetalle() {
       	<ArrowLeft size={16} /> Volver al catálogo
     	</button>
 
-    	<div className="grid md:grid-cols-2 gap-10">
+    	<Reveal className="grid grid-cols-1 md:grid-cols-2 gap-10">
       	<div
         	role="img"
         	aria-label={display.name}
-        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#1E242B] bg-center bg-cover bg-no-repeat"
+        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat"
         	style={{ backgroundImage: `url(${mainImg})` }}
       	/>
 
       	<div>
-        	<h1 className="text-3xl font-bold mb-1">{display.name}</h1>
+        	<h1 className="font-display font-extrabold text-3xl mb-1">{display.name}</h1>
         	<p className="text-sm text-gray-400 mb-4">
           	{display.set_name} · #{display.collector_number} ·{" "}
           	<span className="capitalize">{display.rarity}</span>
@@ -128,16 +129,22 @@ export default function CartaDetalle() {
           	</p>
         	) : null}
         	{display.oracle_text ? (
-          	<div className="mb-4 text-sm bg-[#1E242B] p-3 rounded-lg whitespace-pre-wrap leading-relaxed">
+          	<div className="mb-4 text-sm glass-card p-3 rounded-lg whitespace-pre-wrap leading-relaxed">
             	<ManaSymbols text={display.oracle_text} size={14} />
           	</div>
         	) : null}
-        	{rulings.length > 0 ? (
-          	<div className="mb-4">
-            	<button
-              	onClick={() => setShowRulings((v) => !v)}
-              	className="flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white transition"
-            	>
+        	<div className="mb-4">
+          	<button
+            	onClick={() => rulings.length > 0 && setShowRulings((v) => !v)}
+            	disabled={rulings.length === 0}
+            	className={
+              	"flex items-center gap-2 text-sm font-semibold transition " +
+              	(rulings.length > 0
+                	? "text-gray-300 hover:text-white cursor-pointer"
+                	: "text-gray-500 cursor-default")
+            	}
+          	>
+            	{rulings.length > 0 ? (
               	<ChevronDown
                 	size={16}
                 	className={
@@ -145,27 +152,29 @@ export default function CartaDetalle() {
                   	(showRulings ? "rotate-180" : "")
                 	}
               	/>
-              	Rulings ({rulings.length})
-            	</button>
-            	{showRulings ? (
-              	<div className="mt-2 space-y-3 text-sm bg-[#1E242B] p-3 rounded-lg max-h-72 overflow-y-auto">
-                	{rulings.map((r, idx) => (
-                  	<div
-                    	key={idx}
-                    	className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
-                  	>
-                    	<p className="text-xs text-gray-500 mb-1">
-                      	{r.published_at}
-                    	</p>
-                    	<p className="text-gray-300 leading-relaxed">
-                      	{r.comment}
-                    	</p>
-                  	</div>
-                	))}
-              	</div>
             	) : null}
-          	</div>
-        	) : null}
+            	{rulings.length > 0
+              	? `Rulings (${rulings.length})`
+              	: "Sin rulings publicados para esta carta"}
+          	</button>
+          	{showRulings && rulings.length > 0 ? (
+            	<div className="mt-2 space-y-3 text-sm glass-card p-3 rounded-lg max-h-72 overflow-y-auto">
+              	{rulings.map((r, idx) => (
+                	<div
+                  	key={idx}
+                  	className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
+                	>
+                  	<p className="text-xs text-gray-500 mb-1">
+                    	{r.published_at}
+                  	</p>
+                  	<p className="text-gray-300 leading-relaxed">
+                    	{r.comment}
+                  	</p>
+                	</div>
+              	))}
+            	</div>
+          	) : null}
+        	</div>
         	{display.power || display.toughness ? (
           	<p className="mb-2">
             	<span className="text-gray-400 text-sm">P/R: </span>
@@ -212,7 +221,7 @@ export default function CartaDetalle() {
           	</div>
         	) : null}
 
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
+        	<div className="glass-card p-5 rounded-xl">
           	<p className="text-sm font-semibold mb-3">Acabado</p>
           	<div className="flex gap-2 mb-4">
             	<button
@@ -220,7 +229,7 @@ export default function CartaDetalle() {
               	className={
                 	"flex-1 py-2 rounded-lg border transition " +
                 	(finish === "glossy"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -231,7 +240,7 @@ export default function CartaDetalle() {
               	className={
                 	"flex-1 py-2 rounded-lg border transition " +
                 	(finish === "matte"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -246,19 +255,19 @@ export default function CartaDetalle() {
             	max={20}
             	value={qty}
             	onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 mb-4"
+            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 mb-4"
           	/>
 
           	<div className="flex justify-between items-center mb-4">
             	<span className="text-gray-400">Subtotal</span>
-            	<span className="text-2xl font-bold text-[#FF4D1A]">
+            	<span className="text-2xl font-display font-bold text-lava">
               	{formatCLP(unitPrice * qty)}
             	</span>
           	</div>
 
           	<button
             	onClick={addToCart}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
+            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
           	>
             	<ShoppingCart size={18} /> Agregar al carrito
           	</button>
@@ -267,7 +276,7 @@ export default function CartaDetalle() {
           	</p>
         	</div>
       	</div>
-    	</div>
+    	</Reveal>
   	</div>
 	</main>
   );

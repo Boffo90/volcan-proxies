@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Loader2, ArrowLeft, ShoppingCart } from "lucide-react";
 import NavBar from "@/components/NavBar";
+import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
 import { formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -46,7 +47,7 @@ export default function CustomDetalle() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
       	<Loader2 className="animate-spin text-[#FF4D1A]" size={40} />
@@ -57,7 +58,7 @@ export default function CustomDetalle() {
 
   if (!custom) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<p className="text-center py-32">Diseño no encontrado.</p>
   	</main>
@@ -84,7 +85,7 @@ export default function CustomDetalle() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<div className="max-w-6xl mx-auto px-6 py-8">
@@ -95,16 +96,16 @@ export default function CustomDetalle() {
       	<ArrowLeft size={16} /> Volver a la galería
     	</button>
 
-    	<div className="grid md:grid-cols-2 gap-10">
+    	<Reveal className="grid grid-cols-1 md:grid-cols-2 gap-10">
       	<div
         	role="img"
         	aria-label={custom.name}
-        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#1E242B] bg-center bg-cover bg-no-repeat"
+        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat"
         	style={{ backgroundImage: `url(${custom.image_url})` }}
       	/>
 
       	<div>
-        	<h1 className="text-3xl font-bold mb-1">{custom.name}</h1>
+        	<h1 className="font-display font-extrabold text-3xl mb-1">{custom.name}</h1>
         	{custom.tags.length > 0 ? (
           	<p className="text-sm text-gray-400 mb-4">
             	{custom.tags.join(" · ")}
@@ -116,7 +117,7 @@ export default function CustomDetalle() {
           	</p>
         	) : null}
 
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
+        	<div className="glass-card p-5 rounded-xl">
           	<p className="text-sm font-semibold mb-3">Acabado</p>
           	<div className="flex gap-2 mb-4">
             	{custom.finish_options.includes("glossy") ? (
@@ -125,7 +126,7 @@ export default function CustomDetalle() {
                 	className={
                   	"flex-1 py-2 rounded-lg border transition " +
                   	(finish === "glossy"
-                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                     	: "border-white/10")
                 	}
               	>
@@ -138,7 +139,7 @@ export default function CustomDetalle() {
                 	className={
                   	"flex-1 py-2 rounded-lg border transition " +
                   	(finish === "matte"
-                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                     	: "border-white/10")
                 	}
               	>
@@ -154,26 +155,26 @@ export default function CustomDetalle() {
             	max={20}
             	value={qty}
             	onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 mb-4"
+            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 mb-4"
           	/>
 
           	<div className="flex justify-between items-center mb-4">
             	<span className="text-gray-400">Subtotal</span>
-            	<span className="text-2xl font-bold text-[#FF4D1A]">
+            	<span className="text-2xl font-display font-bold text-lava">
               	{formatCLP(unitPrice * qty)}
             	</span>
           	</div>
 
           	<button
             	onClick={handleAddToCart}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
+            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
           	>
             	<ShoppingCart size={18} />
             	{added ? "¡Agregado!" : "Agregar al carrito"}
           	</button>
         	</div>
       	</div>
-    	</div>
+    	</Reveal>
   	</div>
 	</main>
   );

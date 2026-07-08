@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Montserrat, Syne } from "next/font/google";
 import "./globals.css";
 import AuthListener from "@/components/AuthListener";
 
@@ -8,6 +8,13 @@ const montserrat = Montserrat({
   weight: ["400", "600", "700"],
   display: "swap",
   variable: "--font-montserrat",
+});
+
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  display: "swap",
+  variable: "--font-syne",
 });
 
 export const metadata: Metadata = {
@@ -89,7 +96,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={montserrat.variable}>
+    <html lang="es" className={montserrat.variable + " " + syne.variable}>
       <body className={montserrat.className}>
         <AuthListener />
         {children}

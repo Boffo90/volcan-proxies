@@ -55,7 +55,7 @@ export default function MiCuentaPage() {
 
   if (loadingUser || !user) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
       	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
@@ -65,7 +65,7 @@ export default function MiCuentaPage() {
   }
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
   	<div className="max-w-3xl mx-auto px-6 py-10">
     	<div className="flex items-center justify-between mb-8">
@@ -74,7 +74,7 @@ export default function MiCuentaPage() {
           	<UserIcon className="text-[#FF4D1A]" size={24} />
         	</div>
         	<div>
-          	<h1 className="text-xl font-bold">Mi cuenta</h1>
+          	<h1 className="text-xl font-display font-extrabold">Mi cuenta</h1>
           	<p className="text-sm text-gray-400">{user.email}</p>
         	</div>
       	</div>
@@ -86,7 +86,7 @@ export default function MiCuentaPage() {
       	</button>
     	</div>
 
-    	<h2 className="font-bold text-lg mb-4 flex items-center gap-2">
+    	<h2 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
       	<Package size={18} className="text-[#FF4D1A]" /> Mis pedidos
     	</h2>
 
@@ -95,11 +95,11 @@ export default function MiCuentaPage() {
         	<Loader2 className="animate-spin text-[#FF4D1A]" size={24} />
       	</div>
     	) : pedidos.length === 0 ? (
-      	<div className="bg-[#1E242B] border border-white/10 rounded-xl p-8 text-center">
+      	<div className="glass-card rounded-xl p-8 text-center">
         	<p className="text-gray-400 mb-4">Aún no tienes pedidos.</p>
         	<button
           	onClick={() => router.push("/catalogo")}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2.5 rounded-lg font-semibold transition"
+          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
         	>
           	Explorar catálogo
         	</button>
@@ -110,7 +110,7 @@ export default function MiCuentaPage() {
           	<button
             	key={p.id}
             	onClick={() => router.push("/seguimiento/" + p.numero)}
-            	className="w-full flex items-center justify-between bg-[#1E242B] border border-white/10 hover:border-[#FF4D1A]/50 rounded-xl p-4 transition text-left"
+            	className="w-full flex items-center justify-between glass-card hover:border-[#FF4D1A]/50 rounded-xl p-4 transition-colors text-left"
           	>
             	<div>
               	<p className="font-semibold">Pedido #{p.numero}</p>
@@ -120,7 +120,7 @@ export default function MiCuentaPage() {
               	</p>
             	</div>
             	<div className="text-right">
-              	<p className="font-bold text-[#FF4D1A]">
+              	<p className="font-display font-bold text-lava">
                 	{formatCLP(p.total)}
               	</p>
               	<p className="text-xs text-gray-400">

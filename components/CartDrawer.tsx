@@ -48,10 +48,10 @@ export default function CartDrawer({
         	animate={{ x: 0 }}
         	exit={{ x: "100%" }}
         	transition={{ type: "tween", duration: 0.25 }}
-        	className="fixed top-0 right-0 h-full w-full md:w-96 bg-[#0F1115] z-50 border-l border-white/10 shadow-2xl flex flex-col"
+        	className="fixed top-0 right-0 h-full w-full md:w-96 bg-[#0b0d11]/95 backdrop-blur-xl z-50 border-l border-white/10 shadow-2xl flex flex-col"
       	>
         	<div className="flex items-center justify-between p-4 border-b border-white/10">
-          	<h2 className="font-bold text-lg flex items-center gap-2">
+          	<h2 className="font-display font-bold text-lg flex items-center gap-2">
             	<ShoppingBag size={20} className="text-[#FF4D1A]" />
             	Carrito ({totalQty})
           	</h2>
@@ -76,7 +76,7 @@ export default function CartDrawer({
                     	animate={{ opacity: 1, height: "auto" }}
                     	exit={{ opacity: 0, height: 0 }}
                     	transition={{ duration: 0.2 }}
-                    	className="flex gap-3 bg-[#1E242B] p-3 rounded-lg border border-white/5 overflow-hidden"
+                    	className="flex gap-3 glass-card p-3 rounded-lg overflow-hidden"
                   	>
                     	<div
                       	role="img"
@@ -107,11 +107,11 @@ export default function CartDrawer({
         	</div>
 
         	{items.length > 0 && (
-          	<div className="p-4 border-t border-white/10 bg-[#0F1115]">
+          	<div className="p-4 border-t border-white/10 bg-[#0b0d11]">
             	<p className="text-xs text-[#FF4D1A] mb-1">{applied}</p>
             	<div className="flex justify-between items-center mb-3">
               	<span className="text-gray-400">Total</span>
-              	<span className="text-xl font-bold text-[#FF4D1A]">
+              	<span className="text-xl font-display font-bold text-lava">
                 	{formatCLP(total)}
               	</span>
             	</div>
@@ -120,7 +120,7 @@ export default function CartDrawer({
                 	onClose();
                 	router.push("/carrito");
               	}}
-              	className="w-full bg-white/5 hover:bg-white/10 border border-white/10 py-2 rounded-lg text-sm mb-2"
+              	className="w-full glass-card hover:border-[#FF4D1A]/40 py-2 rounded-lg text-sm mb-2 transition-colors"
             	>
               	Ver carrito completo
             	</button>
@@ -129,7 +129,7 @@ export default function CartDrawer({
                 	onClose();
                 	router.push("/checkout");
               	}}
-              	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-2.5 rounded-lg font-semibold"
+              	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
             	>
               	Ir a pagar
             	</button>

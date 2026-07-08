@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 
 type PedidoPublico = {
   numero: number;
@@ -91,7 +92,7 @@ export default function SeguimientoPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-3xl mx-auto">
@@ -109,10 +110,10 @@ export default function SeguimientoPage() {
       	</div>
     	) : pedido ? (
       	<>
-        	<div className="text-center mb-10">
-          	<h1 className="text-3xl md:text-4xl font-bold mb-2">
+        	<Reveal className="text-center mb-10">
+          	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-2">
             	Pedido{" "}
-            	<span className="text-[#FF4D1A]">#{pedido.numero}</span>
+            	<span className="text-lava">#{pedido.numero}</span>
           	</h1>
           	<p className="text-sm text-gray-400">
             	Realizado el{" "}
@@ -122,7 +123,7 @@ export default function SeguimientoPage() {
               	year: "numeric",
             	})}
           	</p>
-        	</div>
+        	</Reveal>
 
         	{pedido.tracking_numero && (
           	<div className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-5 rounded-xl mb-8">
@@ -146,7 +147,7 @@ export default function SeguimientoPage() {
               	pedido.tracking_courier === "bluexpress") && (
               	<button
                 	onClick={openTracking}
-                	className="inline-block bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold"
+                	className="inline-block bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-4 py-2 rounded-lg text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
               	>
                 	Rastrear en{" "}
                 	{COURIER_NAMES[pedido.tracking_courier]} →
@@ -155,7 +156,7 @@ export default function SeguimientoPage() {
           	</div>
         	)}
 
-        	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 mb-6">
+        	<div className="glass-card p-6 rounded-xl mb-6">
           	<h3 className="font-bold mb-6">Estado del pedido</h3>
           	<div className="space-y-1">
             	{TIMELINE.map((step, idx) => {
@@ -210,15 +211,15 @@ export default function SeguimientoPage() {
           	</div>
         	</div>
 
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
+        	<div className="glass-card p-5 rounded-xl mb-6">
           	<p className="text-sm text-gray-400 mb-1">Total del pedido</p>
-          	<p className="text-2xl font-bold text-[#FF4D1A]">
+          	<p className="text-2xl font-display font-bold text-lava">
             	{formatCLP(pedido.total)}
           	</p>
         	</div>
 
         	{pedido.historial && pedido.historial.length > 0 && (
-          	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
+          	<div className="glass-card p-5 rounded-xl">
             	<h3 className="font-bold mb-3 flex items-center gap-2">
               	<Clock size={16} /> Historial
             	</h3>

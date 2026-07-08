@@ -11,6 +11,7 @@ import {
   MapPin,
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
+import Reveal from "@/components/animation/Reveal";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import {
   calculateTotalWith,
@@ -162,13 +163,13 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<div className="text-center py-32">
       	<p className="text-gray-400 mb-6">Tu carrito está vacío.</p>
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold transition"
+        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
       	>
         	Ir al catálogo
       	</button>
@@ -178,7 +179,7 @@ export default function CheckoutPage() {
   }
 
   const inputClass =
-	"w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2";
+	"w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2";
 
   const esRetiro = deliveryType === "retiro";
 
@@ -210,13 +211,15 @@ export default function CheckoutPage() {
   ];
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<div className="max-w-5xl mx-auto px-6 py-10">
-    	<h1 className="text-3xl md:text-4xl font-bold mb-8">
-      	Finaliza tu <span className="text-[#FF4D1A]">pedido</span>
-    	</h1>
+    	<Reveal>
+      	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-8">
+        	Finaliza tu <span className="text-lava">pedido</span>
+      	</h1>
+    	</Reveal>
 
     	{!cumpleMinimo && (
       	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl mb-6 flex gap-3">
@@ -236,8 +239,9 @@ export default function CheckoutPage() {
     	<form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
       	<div className="lg:col-span-2 space-y-6">
         	{/* TIPO DE ENTREGA */}
-        	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
-          	<h2 className="font-bold mb-4">Tipo de entrega</h2>
+        	<Reveal delay={0}>
+        	<section className="glass-card p-6 rounded-xl">
+          	<h2 className="font-display font-bold mb-4">Tipo de entrega</h2>
 
           	<div className="grid md:grid-cols-2 gap-3 mb-4">
             	<button
@@ -246,7 +250,7 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-start gap-3 text-left " +
                 	(deliveryType === "envio"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -268,7 +272,7 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-start gap-3 text-left " +
                 	(deliveryType === "retiro"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -286,14 +290,14 @@ export default function CheckoutPage() {
           	</div>
 
           	{esRetiro && (
-            	<div className="bg-[#0F1115] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
+            	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
               	📍 Al confirmar tu pedido, te contactaremos por email para
               	coordinar el retiro en Pucón centro.
             	</div>
           	)}
 
           	{!esRetiro && (
-            	<div className="bg-[#0F1115] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
+            	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
               	🚚 Envío único de{" "}
               	<b className="text-white">{formatCLP(SHIPPING_COST)}</b> a
               	todo Chile. Despachamos en máximo 48 hrs vía Starken,
@@ -302,10 +306,12 @@ export default function CheckoutPage() {
             	</div>
           	)}
         	</section>
+        	</Reveal>
 
         	{/* DATOS DE ENVÍO */}
-        	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
-          	<h2 className="font-bold mb-4">
+        	<Reveal delay={0.08}>
+        	<section className="glass-card p-6 rounded-xl">
+          	<h2 className="font-display font-bold mb-4">
             	{esRetiro ? "Datos de contacto" : "Datos de envío"}
           	</h2>
 
@@ -358,7 +364,7 @@ export default function CheckoutPage() {
               	<textarea
                 	value={form.notas}
                 	onChange={(e) => handleChange("notas", e.target.value)}
-                	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 min-h-[80px]"
+                	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 min-h-[80px]"
                 	placeholder={
                   	esRetiro
                     	? "Ej: prefiero coordinar por WhatsApp"
@@ -368,10 +374,12 @@ export default function CheckoutPage() {
             	</div>
           	</div>
         	</section>
+        	</Reveal>
 
         	{/* MÉTODO DE PAGO */}
-        	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
-          	<h2 className="font-bold mb-4">Método de pago</h2>
+        	<Reveal delay={0.16}>
+        	<section className="glass-card p-6 rounded-xl">
+          	<h2 className="font-display font-bold mb-4">Método de pago</h2>
 
           	<div className="grid md:grid-cols-2 gap-3">
             	<button
@@ -380,7 +388,7 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-center gap-3 " +
                 	(metodo === "transferencia"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -397,7 +405,7 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-center gap-3 " +
                 	(metodo === "flow"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
+                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
                   	: "border-white/10")
               	}
             	>
@@ -411,10 +419,12 @@ export default function CheckoutPage() {
             	</button>
           	</div>
         	</section>
+        	</Reveal>
 
         	{/* DISCLAIMER ARTESANAL */}
-        	<section className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
-          	<h2 className="font-bold mb-4">Antes de continuar</h2>
+        	<Reveal delay={0.24}>
+        	<section className="glass-card p-6 rounded-xl">
+          	<h2 className="font-display font-bold mb-4">Antes de continuar</h2>
 
           	<label className="flex items-start gap-3 cursor-pointer">
             	<input
@@ -434,11 +444,13 @@ export default function CheckoutPage() {
             	</span>
           	</label>
         	</section>
+        	</Reveal>
       	</div>
 
       	{/* RESUMEN */}
-      	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
-        	<h2 className="font-bold mb-4">Resumen</h2>
+      	<Reveal delay={0.3}>
+      	<aside className="glass-card p-6 rounded-xl h-fit sticky top-24">
+        	<h2 className="font-display font-bold mb-4">Resumen</h2>
 
         	<div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
           	{items.map((it, idx) => (
@@ -484,7 +496,7 @@ export default function CheckoutPage() {
 
           	<div className="flex justify-between items-center mb-4 border-t border-white/10 pt-3">
             	<span className="font-semibold">Total</span>
-            	<span className="text-2xl font-bold text-[#FF4D1A]">
+            	<span className="text-2xl font-display font-bold text-lava">
               	{formatCLP(total)}
             	</span>
           	</div>
@@ -492,7 +504,7 @@ export default function CheckoutPage() {
           	<button
             	type="submit"
             	disabled={loading || !cumpleMinimo || !aceptaTerminos}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
           	>
             	{loading ? <Loader2 className="animate-spin" size={18} /> : null}
             	{!cumpleMinimo
@@ -509,6 +521,7 @@ export default function CheckoutPage() {
           	</p>
         	</div>
       	</aside>
+      	</Reveal>
     	</form>
   	</div>
 	</main>

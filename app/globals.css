@@ -1,11 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #0F1115;
-  --color-bf-secondary: #1E242b;
+  --color-bg: #0b0d11;
+  --color-bg-secondary: #1a1f26;
   --color-accent: #ff4f1a;
+  --color-accent-deep: #c92a1f;
+  --color-accent-glow: #ff8a3d;
   --color-gray: #e6e6e6;
   --color-white: #ffffff;
+  --font-display: var(--font-syne);
+  --glass-blur: 16px;
+  --glass-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+}
+
+/* backdrop-filter es caro en GPUs de gama media/baja, sobre todo cuando hay
+   muchas glass-card a la vez (grids de catálogo) o detrás de elementos sticky
+   que repintan en cada scroll. En mobile bajamos el blur vía variable CSS
+   (declarar backdrop-filter dentro de un @media hace que el compilador de
+   Tailwind v4 (Lightning CSS) omita el prefijo estándar en algunos casos). */
+@media (max-width: 767px) {
+  :root {
+	--glass-blur: 4px;
+	--glass-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+  }
 }
 
 @theme inline {
@@ -13,16 +30,81 @@
   --color-volcan-secondary: var(--color-bg-secondary);
   --color-volcan-accent: var(--color-accent);
   --color-volcan-gray: var(--color-gray);
+  --font-family-display: var(--font-display), sans-serif;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-white);
   font-family: 'Montserrat', sans-serif;
+  position: relative;
+}
+
+/* Malla de gradientes "lava/obsidiana" fija detrás de todo el sitio */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+	radial-gradient(60rem 40rem at 85% -10%, rgba(255, 79, 26, 0.16), transparent 60%),
+	radial-gradient(50rem 35rem at -10% 25%, rgba(201, 42, 31, 0.12), transparent 55%),
+	radial-gradient(40rem 30rem at 50% 110%, rgba(255, 138, 61, 0.08), transparent 60%),
+	var(--color-bg);
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-white);
+}
+
+/* Scrollbar con acento de marca (soportado en navegadores WebKit/Chromium) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-deep));
+  border-radius: 999px;
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Texto con degradé lava, para titulares destacados */
+.text-lava {
+  background: linear-gradient(100deg, var(--color-accent-glow), var(--color-accent) 45%, var(--color-accent-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Tarjeta con efecto vidrio esmerilado, reemplaza el bg plano bg-[#1E242B].
+   Usa background-image (no el shorthand background:) porque esta regla vive
+   fuera de las cascade layers de Tailwind y el shorthand pisaría el
+   background-size/position de utilidades como bg-cover/bg-center. */
+.glass-card {
+  background-image: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Resplandor cálido al hacer hover, para cards y botones destacados */
+.glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.glow-hover:hover {
+  box-shadow: 0 0 0 1px rgba(255, 79, 26, 0.4), 0 20px 60px -15px rgba(255, 79, 26, 0.35);
+  border-color: rgba(255, 79, 26, 0.5);
 }
 
 @media (prefers-reduced-motion: reduce) {

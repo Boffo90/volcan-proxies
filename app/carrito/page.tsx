@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, Loader2, ShoppingBag, AlertCircle, Truck } from "lucide-react";
 import NavBar from "@/components/NavBar";
+import Reveal from "@/components/animation/Reveal";
 import {
   getCart,
   removeFromCart,
@@ -34,7 +35,7 @@ export default function CarritoPage() {
 
   if (!mounted) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white">
+  	<main className="min-h-screen bg-[#0b0d11] text-white">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
       	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
@@ -56,39 +57,41 @@ export default function CarritoPage() {
   const cumpleMin = totalQty >= MIN_CARDS;
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<div className="max-w-5xl mx-auto px-6 py-10">
-    	<h1 className="text-3xl md:text-4xl font-bold mb-8">
-      	Tu <span className="text-[#FF4D1A]">carrito</span>
-    	</h1>
+    	<Reveal>
+      	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-8">
+        	Tu <span className="text-lava">carrito</span>
+      	</h1>
+    	</Reveal>
 
     	{items.length === 0 ? (
-      	<div className="text-center py-20">
+      	<Reveal className="text-center py-20">
         	<ShoppingBag className="mx-auto text-gray-500 mb-4" size={48} />
         	<p className="text-gray-400 mb-6">Tu carrito está vacío</p>
         	<button
           	onClick={() => router.push("/catalogo")}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold transition"
+          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
         	>
           	Ir al catálogo
         	</button>
-      	</div>
+      	</Reveal>
     	) : (
-      	<div className="grid lg:grid-cols-3 gap-8">
+      	<Reveal className="grid lg:grid-cols-3 gap-8">
         	<div className="lg:col-span-2 space-y-4">
           	{items.map((it, idx) => {
             	const key = it.id + "-" + it.finish + "-" + idx;
             	return (
               	<div
                 	key={key}
-                	className="flex gap-4 bg-[#1E242B] p-4 rounded-xl border border-white/10"
+                	className="flex gap-4 glass-card p-4 rounded-xl"
               	>
                 	<div
                   	role="img"
                   	aria-label={it.name}
-                  	className="w-[60px] h-[84px] rounded bg-[#0F1115] flex-shrink-0 bg-center bg-contain bg-no-repeat"
+                  	className="w-[60px] h-[84px] rounded bg-[#0b0d11] flex-shrink-0 bg-center bg-contain bg-no-repeat"
                   	style={{ backgroundImage: `url(${it.image})` }}
                 	/>
                 	<div className="flex-1">
@@ -109,7 +112,7 @@ export default function CarritoPage() {
                       	onChange={(e) =>
                         	updateQty(idx, Number(e.target.value) || 1)
                       	}
-                      	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1 text-sm"
+                      	className="w-20 bg-[#0b0d11] border border-white/10 rounded px-2 py-1 text-sm"
                     	/>
                     	<button
                       	onClick={() => removeFromCart(idx)}
@@ -125,8 +128,8 @@ export default function CarritoPage() {
           	})}
         	</div>
 
-        	<aside className="bg-[#1E242B] p-6 rounded-xl border border-white/10 h-fit sticky top-24">
-          	<h2 className="font-bold text-lg mb-4">Resumen</h2>
+        	<aside className="glass-card p-6 rounded-xl h-fit sticky top-24">
+          	<h2 className="font-display font-bold text-lg mb-4">Resumen</h2>
 
           	<div className="flex justify-between text-sm mb-2">
             	<span className="text-gray-400">Cartas totales</span>
@@ -160,13 +163,13 @@ export default function CarritoPage() {
           	<div className="border-t border-white/10 pt-4 mb-4">
             	<div className="flex justify-between items-center">
               	<span className="text-gray-400">Subtotal cartas</span>
-              	<span className="text-2xl font-bold text-[#FF4D1A]">
+              	<span className="text-2xl font-display font-bold text-lava">
                 	{formatCLP(total)}
               	</span>
             	</div>
           	</div>
 
-          	<div className="bg-[#0F1115] border border-white/10 rounded-lg p-3 mb-6 flex gap-2 text-xs text-gray-300">
+          	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 mb-6 flex gap-2 text-xs text-gray-300">
             	<Truck
               	size={16}
               	className="text-[#FF4D1A] flex-shrink-0 mt-0.5"
@@ -185,7 +188,7 @@ export default function CarritoPage() {
           	<button
             	onClick={() => router.push("/checkout")}
             	disabled={!cumpleMin}
-            	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-3 rounded-lg font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed"
+            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           	>
             	{cumpleMin ? "Ir a pagar" : `Faltan ${faltan} carta(s)`}
           	</button>
@@ -193,7 +196,7 @@ export default function CarritoPage() {
             	Flow.cl o transferencia
           	</p>
         	</aside>
-      	</div>
+      	</Reveal>
     	)}
   	</div>
 	</main>

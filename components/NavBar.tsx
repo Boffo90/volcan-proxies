@@ -115,15 +115,18 @@ export default function NavBar() {
 
   return (
 	<>
-  	<nav className="bg-[#0F1115] border-b border-white/10 sticky top-0 z-30">
+  	<nav className="bg-[#0b0d11]/90 md:bg-[#0b0d11]/70 backdrop-blur-sm md:backdrop-blur-xl border-b border-white/10 sticky top-0 z-30">
     	<div className="flex items-center px-4 md:px-6 py-3 gap-3">
       	<button
         	onClick={() => router.push("/")}
-        	className="flex items-center gap-2 flex-shrink-0"
+        	className="flex items-center gap-2 flex-shrink-0 group"
       	>
-        	<Flame className="text-[#FF4D1A]" size={26} />
-        	<span className="font-bold text-lg tracking-wide hidden sm:inline">
-          	VOLCÁN <span className="text-[#FF4D1A]">PROXIES</span>
+        	<Flame
+          	className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)] group-hover:scale-110 transition-transform"
+          	size={26}
+        	/>
+        	<span className="font-display font-extrabold text-lg tracking-wide hidden sm:inline">
+          	VOLCÁN <span className="text-lava">PROXIES</span>
         	</span>
       	</button>
 
@@ -145,7 +148,7 @@ export default function NavBar() {
             	onFocus={() => setShowSuggestions(true)}
             	onKeyDown={handleKeyDown}
             	placeholder="Busca una carta..."
-            	className="w-full bg-[#1E242B] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full glass-card rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:border-[#FF4D1A]/60 transition-colors"
             	aria-autocomplete="list"
             	aria-expanded={showSuggestions && suggestions.length > 0}
           	/>
@@ -153,7 +156,7 @@ export default function NavBar() {
         	{showSuggestions && suggestions.length > 0 && (
           	<div
             	role="listbox"
-            	className="absolute top-full left-0 right-0 mt-1 bg-[#1E242B] border border-white/10 rounded-lg shadow-xl overflow-hidden max-h-80 overflow-y-auto"
+            	className="absolute top-full left-0 right-0 mt-1 glass-card !bg-[#0b0d11]/95 rounded-lg shadow-2xl overflow-hidden max-h-80 overflow-y-auto"
           	>
             	{suggestions.map((s, idx) => {
               	const isActive = idx === activeIdx;
@@ -185,21 +188,22 @@ export default function NavBar() {
         	)}
       	</div>
 
-      	<div className="hidden lg:flex gap-5 text-sm flex-shrink-0">
+      	<div className="hidden lg:flex gap-6 text-sm flex-shrink-0">
         	{navLinks.map((n) => (
           	<button
             	key={n.slug}
             	onClick={() => router.push("/" + n.slug)}
-            	className="hover:text-[#FF4D1A] transition"
+            	className="relative py-1 text-gray-300 hover:text-white transition-colors group"
           	>
             	{n.label}
+            	<span className="absolute left-0 -bottom-0.5 h-[1.5px] w-0 bg-[#FF4D1A] shadow-[0_0_8px_rgba(255,79,26,0.8)] transition-all duration-300 group-hover:w-full" />
           	</button>
         	))}
       	</div>
 
       	<button
         	onClick={() => router.push(user ? "/mi-cuenta" : "/login")}
-        	className="hidden sm:flex items-center gap-2 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex-shrink-0 ml-auto"
+        	className="hidden sm:flex items-center gap-2 text-sm text-gray-300 hover:text-white glass-card hover:border-[#FF4D1A]/40 px-3 py-2 rounded-lg flex-shrink-0 ml-auto transition-colors"
       	>
         	<User size={18} />
         	{user ? "Mi cuenta" : "Iniciar sesión"}
@@ -207,7 +211,7 @@ export default function NavBar() {
 
       	<button
         	onClick={() => setDrawerOpen(true)}
-        	className="relative bg-[#FF4D1A] hover:bg-[#e64418] px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold flex-shrink-0 sm:ml-0 ml-auto"
+        	className="relative bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold flex-shrink-0 sm:ml-0 ml-auto shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
       	>
         	<ShoppingCart size={18} />
         	<span className="hidden sm:inline">Carrito</span>
@@ -243,13 +247,13 @@ export default function NavBar() {
           	onChange={(e) => setQuery(e.target.value)}
           	onKeyDown={handleKeyDown}
           	placeholder="Busca una carta..."
-          	className="w-full bg-[#1E242B] border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm"
+          	className="w-full glass-card rounded-lg pl-9 pr-3 py-2 text-sm"
         	/>
       	</form>
     	</div>
 
     	{mobileMenuOpen && (
-      	<div className="lg:hidden border-t border-white/10 bg-[#0F1115]">
+      	<div className="lg:hidden border-t border-white/10 bg-[#0b0d11]/95 backdrop-blur-xl">
         	<div className="flex flex-col py-2">
           	{navLinks.map((n) => (
             	<button

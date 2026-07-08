@@ -2,14 +2,18 @@ import { Flame, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
-	<footer className="bg-[#1E242B] border-t border-white/10 mt-16">
-  	<div className="max-w-6xl mx-auto px-6 py-12">
+	<footer className="relative bg-[#0d1015]/80 backdrop-blur-xl border-t border-white/10 mt-16 overflow-hidden">
+  	<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF4D1A]/60 to-transparent" />
+  	<div className="max-w-6xl mx-auto px-6 py-12 relative">
     	<div className="grid md:grid-cols-4 gap-8 mb-8">
       	<div className="md:col-span-1">
         	<div className="flex items-center gap-2 mb-3">
-          	<Flame className="text-[#FF4D1A]" size={24} />
-          	<span className="font-bold text-lg">
-            	VOLCÁN <span className="text-[#FF4D1A]">PROXIES</span>
+          	<Flame
+            	className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]"
+            	size={24}
+          	/>
+          	<span className="font-display font-extrabold text-lg">
+            	VOLCÁN <span className="text-lava">PROXIES</span>
           	</span>
         	</div>
         	<p className="text-sm text-gray-400 mb-4">
@@ -145,8 +149,8 @@ export default function Footer() {
       	</p>
       	<div className="flex items-center gap-3 text-xs text-gray-500">
         	<span>Métodos de pago:</span>
-        	<span className="bg-white/5 px-2 py-1 rounded">Transferencia</span>
-        	<span className="bg-white/5 px-2 py-1 rounded">Flow.cl</span>
+        	<span className="glass-card px-2 py-1 rounded">Transferencia</span>
+        	<span className="glass-card px-2 py-1 rounded">Flow.cl</span>
       	</div>
     	</div>
   	</div>

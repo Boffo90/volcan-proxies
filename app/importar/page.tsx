@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 import {
   parseDeck,
   resolveDeck,
@@ -125,20 +126,20 @@ export default function ImportarPage() {
   }, 0);
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-10 max-w-5xl mx-auto">
-    	<div className="mb-8">
-      	<FileText className="text-[#FF4D1A] mb-3" size={40} />
-      	<h1 className="text-3xl md:text-4xl font-bold mb-2">
+    	<Reveal className="mb-8">
+      	<FileText className="text-[#FF4D1A] mb-3 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={40} />
+      	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-2 break-words">
         	Importar lista{" "}
-        	<span className="text-[#FF4D1A]">MTGO/Moxfield/Archidekt</span>
+        	<span className="text-lava">MTGO/Moxfield/Archidekt</span>
       	</h1>
       	<p className="text-gray-400">
         	Pega tu lista de mazo y armamos tu pedido en segundos.
       	</p>
-    	</div>
+    	</Reveal>
 
     	<div className="grid lg:grid-cols-3 gap-6 mb-6">
       	<div className="lg:col-span-2">
@@ -147,7 +148,7 @@ export default function ImportarPage() {
           	value={text}
           	onChange={(e) => setText(e.target.value)}
           	placeholder={EXAMPLE}
-          	className="w-full bg-[#1E242B] border border-white/10 rounded-lg p-4 text-sm font-mono min-h-[280px] focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full glass-card rounded-lg p-4 text-sm font-mono min-h-[280px] focus:outline-none focus:border-[#FF4D1A]/60"
         	/>
         	<p className="text-xs text-gray-500 mt-2">
           	Acepta <code>1 Carta</code>, <code>1 Carta (SET)</code>,{" "}
@@ -155,7 +156,7 @@ export default function ImportarPage() {
         	</p>
       	</div>
 
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 h-fit">
+      	<div className="glass-card p-5 rounded-xl h-fit">
         	<h3 className="font-bold mb-3">Configuración</h3>
 
         	<label className="block text-xs text-gray-400 mb-1">
@@ -207,7 +208,7 @@ export default function ImportarPage() {
         	<button
           	onClick={handleAnalyze}
           	disabled={loading || !text.trim()}
-          	className="w-full bg-[#FF4D1A] hover:bg-[#e64418] py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 transition disabled:opacity-50"
+          	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50 disabled:shadow-none"
         	>
           	{loading ? (
             	<>
@@ -223,7 +224,7 @@ export default function ImportarPage() {
     	</div>
 
     	{loading && progress.total > 0 && (
-      	<div className="bg-[#1E242B] p-4 rounded-xl border border-white/10 mb-6">
+      	<div className="glass-card p-4 rounded-xl mb-6">
         	<div className="flex items-center justify-between mb-2 text-sm">
           	<span className="text-gray-400">Buscando en Scryfall...</span>
           	<span className="text-[#FF4D1A] font-semibold">
@@ -244,7 +245,7 @@ export default function ImportarPage() {
     	{!loading && cards.length > 0 && (
       	<>
         	<div className="grid sm:grid-cols-3 gap-3 mb-6">
-          	<div className="bg-[#1E242B] p-4 rounded-xl border border-white/10">
+          	<div className="glass-card p-4 rounded-xl">
             	<p className="text-xs text-gray-400 uppercase">Encontradas</p>
             	<p className="text-2xl font-bold text-green-400 mt-1">
               	{okCards.length}{" "}
@@ -253,17 +254,17 @@ export default function ImportarPage() {
               	</span>
             	</p>
           	</div>
-          	<div className="bg-[#1E242B] p-4 rounded-xl border border-white/10">
+          	<div className="glass-card p-4 rounded-xl">
             	<p className="text-xs text-gray-400 uppercase">No encontradas</p>
             	<p className="text-2xl font-bold text-red-400 mt-1">
               	{notFoundCards.length}
             	</p>
           	</div>
-          	<div className="bg-[#1E242B] p-4 rounded-xl border border-white/10">
+          	<div className="glass-card p-4 rounded-xl">
             	<p className="text-xs text-gray-400 uppercase">
               	Total estimado
             	</p>
-            	<p className="text-2xl font-bold text-[#FF4D1A] mt-1">
+            	<p className="text-2xl font-display font-bold text-lava mt-1">
               	{formatCLP(estimateTotal)}
             	</p>
           	</div>
@@ -300,12 +301,12 @@ export default function ImportarPage() {
             	return (
               	<div
                 	key={idx}
-                	className="bg-[#1E242B] rounded-lg border border-white/10 overflow-hidden"
+                	className="glass-card rounded-lg overflow-hidden"
               	>
                 	<div
                   	role="img"
                   	aria-label={c.card.name}
-                  	className="aspect-[5/7] bg-[#0F1115] bg-center bg-cover bg-no-repeat"
+                  	className="aspect-[5/7] bg-[#0b0d11] bg-center bg-cover bg-no-repeat"
                   	style={{ backgroundImage: "url(" + imgSrc + ")" }}
                 	/>
                 	<div className="p-2">
@@ -400,10 +401,10 @@ export default function ImportarPage() {
           	})}
         	</div>
 
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
+        	<div className="glass-card p-5 rounded-xl flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
           	<div>
             	<p className="text-xs text-gray-400">Estimado total</p>
-            	<p className="text-2xl font-bold text-[#FF4D1A]">
+            	<p className="text-2xl font-display font-bold text-lava">
               	{formatCLP(estimateTotal)}
             	</p>
             	<p className="text-xs text-gray-500">
@@ -412,7 +413,7 @@ export default function ImportarPage() {
           	</div>
           	<button
             	onClick={addAllToCart}
-            	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
+            	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
           	>
             	<ShoppingCart size={18} /> Agregar todo al carrito
           	</button>
@@ -421,7 +422,7 @@ export default function ImportarPage() {
     	)}
 
     	{!loading && cards.length === 0 && (
-      	<div className="bg-[#1E242B] border border-white/10 p-6 rounded-xl">
+      	<div className="glass-card p-6 rounded-xl">
         	<h3 className="font-bold mb-3">📖 Cómo exportar tu lista</h3>
         	<div className="grid md:grid-cols-3 gap-4 text-sm">
           	<div>

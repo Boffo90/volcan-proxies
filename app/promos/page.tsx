@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Sparkles, Check } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 import { usePrecios } from "@/hooks/usePrecios";
 import { formatCLP } from "@/lib/pricing";
 
@@ -20,7 +21,6 @@ export default function PromosPage() {
   	price: formatCLP(precios.mazo60_glossy),
   	unitEquiv: perCard(precios.mazo60_glossy, 60),
   	desc: "60 cartas con acabado brillante. Ideal para Modern, Standard, Pioneer.",
-  	color: "#FF4D1A",
   	features: [
     	"60 cartas a elección",
     	"Acabado glossy (brillante)",
@@ -33,7 +33,6 @@ export default function PromosPage() {
   	price: formatCLP(precios.mazo60_matte),
   	unitEquiv: perCard(precios.mazo60_matte, 60),
   	desc: "60 cartas con acabado mate. Sin reflejo bajo luz.",
-  	color: "#FF4D1A",
   	features: [
     	"60 cartas a elección",
     	"Acabado matte (mate)",
@@ -46,7 +45,6 @@ export default function PromosPage() {
   	price: formatCLP(precios.commander100_glossy),
   	unitEquiv: perCard(precios.commander100_glossy, 100),
   	desc: "100 cartas Glossy para tu mazo EDH/Commander completo.",
-  	color: "#FF4D1A",
   	features: [
     	"100 cartas a elección",
     	"Acabado glossy (brillante)",
@@ -60,7 +58,6 @@ export default function PromosPage() {
   	price: formatCLP(precios.commander100_matte),
   	unitEquiv: perCard(precios.commander100_matte, 100),
   	desc: "Acabado mate premium, ideal contra reflejos en torneos.",
-  	color: "#FF4D1A",
   	features: [
     	"100 cartas a elección",
     	"Acabado matte (mate)",
@@ -71,39 +68,40 @@ export default function PromosPage() {
   ];
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-6xl mx-auto">
-    	<div className="text-center mb-12">
-      	<Sparkles className="mx-auto text-[#FF4D1A] mb-4" size={40} />
-      	<h1 className="text-4xl md:text-5xl font-bold mb-4">
-        	Promos para <span className="text-[#FF4D1A]">armar mazo</span>
+    	<Reveal className="text-center mb-12">
+      	<Sparkles className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={40} />
+      	<h1 className="font-display font-extrabold text-4xl md:text-5xl mb-4">
+        	Promos para <span className="text-lava">armar mazo</span>
       	</h1>
       	<p className="text-gray-400 max-w-2xl mx-auto">
         	Mientras más cartas, mejor precio. Estas promos aplican
         	automáticamente al armar tu pedido en el carrito.
       	</p>
-    	</div>
+    	</Reveal>
 
-    	<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-      	{PROMOS.map((p) => (
-        	<div
+    	<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      	{PROMOS.map((p, idx) => (
+        	<Reveal
           	key={p.name}
+          	delay={idx * 0.08}
           	className={
-            	"p-6 rounded-xl border transition relative " +
+            	"p-6 rounded-xl relative transition " +
             	(p.featured
-              	? "bg-gradient-to-b from-[#FF4D1A]/20 to-[#1E242B] border-[#FF4D1A] scale-105"
-              	: "bg-[#1E242B] border-white/10")
+              	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
+              	: "glass-card glow-hover")
           	}
         	>
           	{p.featured && (
-            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF4D1A] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
               	⭐ MÁS POPULAR
             	</span>
           	)}
-          	<h3 className="font-bold text-lg mb-2">{p.name}</h3>
-          	<p className="text-3xl font-bold text-[#FF4D1A] mb-1">
+          	<h3 className="font-display font-bold text-lg mb-2">{p.name}</h3>
+          	<p className="text-3xl font-display font-extrabold text-lava mb-1">
             	{p.price}
           	</p>
           	<p className="text-xs text-gray-400 mb-4">{p.unitEquiv}</p>
@@ -119,12 +117,12 @@ export default function PromosPage() {
               	</li>
             	))}
           	</ul>
-        	</div>
+        	</Reveal>
       	))}
     	</div>
 
-    	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 mb-8">
-      	<h2 className="font-bold text-lg mb-4">
+    	<Reveal className="glass-card p-6 rounded-xl mb-8">
+      	<h2 className="font-display font-bold text-lg mb-4">
         	💡 Cómo funcionan las promos
       	</h2>
       	<ul className="space-y-2 text-sm text-gray-300">
@@ -143,42 +141,41 @@ export default function PromosPage() {
           	agregas custom, la promo no aplica al pedido completo.
         	</li>
       	</ul>
-    	</div>
+    	</Reveal>
 
-    	<div className="bg-[#0F1115] p-6 rounded-xl border border-white/10 mb-8">
-      	<h2 className="font-bold text-lg mb-4">
+    	<Reveal className="bg-[#0b0d11]/60 p-6 rounded-xl border border-white/10 mb-8">
+      	<h2 className="font-display font-bold text-lg mb-4">
         	Precio por carta unitaria
       	</h2>
       	<div className="grid grid-cols-2 gap-4">
         	<div className="text-center">
           	<p className="text-xs text-gray-400 uppercase mb-1">Glossy</p>
-          	<p className="text-2xl font-bold text-[#FF4D1A]">
+          	<p className="text-2xl font-display font-bold text-lava">
             	{formatCLP(precios.glossy)}
           	</p>
           	<p className="text-xs text-gray-500 mt-1">por carta</p>
         	</div>
         	<div className="text-center">
           	<p className="text-xs text-gray-400 uppercase mb-1">Matte</p>
-          	<p className="text-2xl font-bold text-[#FF4D1A]">
+          	<p className="text-2xl font-display font-bold text-lava">
             	{formatCLP(precios.matte)}
           	</p>
           	<p className="text-xs text-gray-500 mt-1">por carta</p>
         	</div>
       	</div>
-    	</div>
+    	</Reveal>
 
-    	<div className="text-center">
+    	<Reveal className="text-center">
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-8 py-4 rounded-lg font-semibold text-lg transition"
+        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-8 py-4 rounded-lg font-semibold text-lg shadow-[0_10px_30px_-10px_rgba(255,79,26,0.6)] transition-all"
       	>
         	Armar mi pedido →
       	</button>
-    	</div>
+    	</Reveal>
   	</section>
 
   	<Footer />
 	</main>
   );
 }
-

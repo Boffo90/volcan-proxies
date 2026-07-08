@@ -1,6 +1,7 @@
 import { Flame, Heart, Printer, Users } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 
 export const metadata = {
   title: "Nosotros · Volcán Proxies",
@@ -9,20 +10,20 @@ export const metadata = {
 
 export default function NosotrosPage() {
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-4xl mx-auto">
-    	<div className="text-center mb-12">
-      	<Flame className="mx-auto text-[#FF4D1A] mb-4" size={48} />
-      	<h1 className="text-4xl md:text-5xl font-bold mb-4">Quiénes somos</h1>
+    	<Reveal className="text-center mb-12">
+      	<Flame className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={48} />
+      	<h1 className="font-display font-extrabold text-4xl md:text-5xl mb-4">Quiénes somos</h1>
       	<p className="text-xl text-gray-300 italic">
         	Que ganes por jugar contra mí, no contra mi billetera.
       	</p>
-    	</div>
+    	</Reveal>
 
-    	<div className="bg-[#1E242B] p-8 rounded-xl border border-white/10 mb-8">
-      	<h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+    	<Reveal className="glass-card p-8 rounded-xl mb-8">
+      	<h2 className="font-display font-bold text-2xl mb-4 flex items-center gap-2">
         	<Heart className="text-[#FF4D1A]" size={24} /> La historia
       	</h2>
       	<div className="space-y-4 text-gray-300 leading-relaxed">
@@ -46,36 +47,36 @@ export default function NosotrosPage() {
           	formato que permita playtest cards, esto es para ti.
         	</p>
       	</div>
-    	</div>
+    	</Reveal>
 
-    	<div className="grid md:grid-cols-3 gap-4 mb-8">
-      	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 text-center">
+    	<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      	<Reveal delay={0} className="glass-card glow-hover p-6 rounded-xl text-center">
         	<Printer className="mx-auto text-[#FF4D1A] mb-3" size={32} />
-        	<h3 className="font-bold mb-2">Impresión premium</h3>
+        	<h3 className="font-display font-bold mb-2">Impresión premium</h3>
         	<p className="text-sm text-gray-400">
           	Papel fotográfico + laminado en calor para que se sientan como
           	cartas reales.
         	</p>
-      	</div>
-      	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 text-center">
+      	</Reveal>
+      	<Reveal delay={0.08} className="glass-card glow-hover p-6 rounded-xl text-center">
         	<Flame className="mx-auto text-[#FF4D1A] mb-3" size={32} />
-        	<h3 className="font-bold mb-2">Hecho en Pucón</h3>
+        	<h3 className="font-display font-bold mb-2">Hecho en Pucón</h3>
         	<p className="text-sm text-gray-400">
           	Producción artesanal desde el sur de Chile, despacho a todo el
           	país.
         	</p>
-      	</div>
-      	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 text-center">
+      	</Reveal>
+      	<Reveal delay={0.16} className="glass-card glow-hover p-6 rounded-xl text-center">
         	<Users className="mx-auto text-[#FF4D1A] mb-3" size={32} />
-        	<h3 className="font-bold mb-2">Para la comunidad</h3>
+        	<h3 className="font-display font-bold mb-2">Para la comunidad</h3>
         	<p className="text-sm text-gray-400">
           	Precios justos para que jugar sea accesible para todos.
         	</p>
-      	</div>
+      	</Reveal>
     	</div>
 
-    	<div className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent p-8 rounded-xl border border-[#FF4D1A]/30">
-      	<h2 className="text-2xl font-bold mb-3">¿Cómo funciona?</h2>
+    	<Reveal className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent p-8 rounded-xl border border-[#FF4D1A]/30">
+      	<h2 className="font-display font-bold text-2xl mb-3">¿Cómo funciona?</h2>
       	<ol className="space-y-3 text-gray-200">
         	<li>
           	<b className="text-[#FF4D1A]">1.</b> Eliges tus cartas desde
@@ -96,11 +97,10 @@ export default function NosotrosPage() {
           	seguimiento por correo para que las sigas hasta tu puerta.
         	</li>
       	</ol>
-    	</div>
+    	</Reveal>
   	</section>
 
   	<Footer />
 	</main>
   );
 }
-

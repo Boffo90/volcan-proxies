@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Upload, Trash2, Loader2, ShoppingCart, Plus } from "lucide-react";
 import NavBar from "@/components/NavBar";
+import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
 import { formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -102,17 +103,19 @@ export default function CustomPage() {
   }, 0);
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<div className="max-w-5xl mx-auto px-6 py-10">
-    	<h1 className="text-3xl md:text-4xl font-bold mb-2">
-      	Cartas <span className="text-[#FF4D1A]">Custom</span>
-    	</h1>
-    	<p className="text-gray-400 mb-8">
-      	Sube tus propias imágenes (JPG/PNG, máx 5MB). Recargo de{" "}
-      	{formatCLP(precios.custom_surcharge)} por carta.
-    	</p>
+    	<Reveal>
+      	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-2">
+        	Cartas <span className="text-lava">Custom</span>
+      	</h1>
+      	<p className="text-gray-400 mb-8">
+        	Sube tus propias imágenes (JPG/PNG, máx 5MB). Recargo de{" "}
+        	{formatCLP(precios.custom_surcharge)} por carta.
+      	</p>
+    	</Reveal>
 
     	<motion.div
       	onDragOver={(e) => {
@@ -130,7 +133,7 @@ export default function CustomPage() {
         	"border-2 border-dashed rounded-xl p-10 text-center mb-6 transition-colors " +
         	(isDragging
           	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-          	: "bg-[#1E242B] border-white/20 hover:border-[#FF4D1A]/50")
+          	: "bg-white/[0.03] backdrop-blur-md border-white/20 hover:border-[#FF4D1A]/50")
       	}
     	>
       	<Upload className="mx-auto text-[#FF4D1A] mb-4" size={40} />
@@ -151,7 +154,7 @@ export default function CustomPage() {
       	/>
       	<label
         	htmlFor="file-input"
-        	className="inline-flex items-center gap-2 bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2.5 rounded-lg font-semibold cursor-pointer transition"
+        	className="inline-flex items-center gap-2 bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2.5 rounded-lg font-semibold cursor-pointer shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
       	>
         	{uploading ? (
           	<Loader2 className="animate-spin" size={16} />
@@ -167,19 +170,19 @@ export default function CustomPage() {
 
     	{uploads.length > 0 && (
       	<>
-        	<h2 className="font-bold text-lg mb-4">
+        	<h2 className="font-display font-bold text-lg mb-4">
           	Tus cartas ({uploads.length})
         	</h2>
-        	<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        	<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           	{uploads.map((u, idx) => (
             	<div
               	key={u.filename}
-              	className="bg-[#1E242B] p-4 rounded-xl border border-white/10"
+              	className="glass-card p-4 rounded-xl"
             	>
               	<div
                 	role="img"
                 	aria-label={u.cardName}
-                	className="w-full aspect-[5/7] rounded-lg mb-3 bg-[#0F1115] bg-center bg-contain bg-no-repeat"
+                	className="w-full aspect-[5/7] rounded-lg mb-3 bg-[#0b0d11] bg-center bg-contain bg-no-repeat"
                 	style={{ backgroundImage: `url(${u.url})` }}
               	/>
 
@@ -192,7 +195,7 @@ export default function CustomPage() {
                   	updateUpload(idx, "cardName", e.target.value)
                 	}
                 	placeholder="Mi token, alter, etc."
-                	className="w-full bg-[#0F1115] border border-white/10 rounded px-2 py-1.5 text-sm mb-3"
+                	className="w-full bg-[#0b0d11] border border-white/10 rounded px-2 py-1.5 text-sm mb-3"
               	/>
 
               	<label className="block text-xs text-gray-400 mb-1">
@@ -239,7 +242,7 @@ export default function CustomPage() {
                       	Math.max(1, Number(e.target.value) || 1)
                     	)
                   	}
-                  	className="flex-1 bg-[#0F1115] border border-white/10 rounded px-2 py-1.5 text-sm"
+                  	className="flex-1 bg-[#0b0d11] border border-white/10 rounded px-2 py-1.5 text-sm"
                 	/>
                 	<button
                   	onClick={() => removeUpload(idx)}
@@ -253,18 +256,18 @@ export default function CustomPage() {
           	))}
         	</div>
 
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
+        	<div className="glass-card p-5 rounded-xl flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
           	<div>
             	<p className="text-xs text-gray-400">
               	Subtotal estimado (sin promos)
             	</p>
-            	<p className="text-2xl font-bold text-[#FF4D1A]">
+            	<p className="text-2xl font-display font-bold text-lava">
               	{formatCLP(subtotal)}
             	</p>
           	</div>
           	<button
             	onClick={addAllToCart}
-            	className="bg-[#FF4D1A] hover:bg-[#e64418] px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
+            	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
           	>
             	<ShoppingCart size={18} /> Agregar todas al carrito
           	</button>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
+import Reveal from "@/components/animation/Reveal";
 import { usePrecios } from "@/hooks/usePrecios";
 import { formatCLP } from "@/lib/pricing";
 
@@ -81,27 +82,27 @@ export default function FAQPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-3xl mx-auto">
-    	<div className="text-center mb-12">
-      	<HelpCircle className="mx-auto text-[#FF4D1A] mb-4" size={48} />
-      	<h1 className="text-4xl md:text-5xl font-bold mb-3">
-        	Preguntas <span className="text-[#FF4D1A]">frecuentes</span>
+    	<Reveal className="text-center mb-12">
+      	<HelpCircle className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={48} />
+      	<h1 className="font-display font-extrabold text-4xl md:text-5xl mb-3">
+        	Preguntas <span className="text-lava">frecuentes</span>
       	</h1>
       	<p className="text-gray-400">
         	Todo lo que necesitas saber antes de tu primer pedido.
       	</p>
-    	</div>
+    	</Reveal>
 
-    	<div className="space-y-3">
+    	<Reveal className="space-y-3">
       	{FAQS.map((faq, idx) => {
         	const isOpen = open === idx;
         	return (
           	<div
             	key={idx}
-            	className="bg-[#1E242B] rounded-xl border border-white/10 overflow-hidden"
+            	className="glass-card rounded-xl overflow-hidden"
           	>
             	<button
               	onClick={() => setOpen(isOpen ? null : idx)}
@@ -124,17 +125,17 @@ export default function FAQPage() {
           	</div>
         	);
       	})}
-    	</div>
+    	</Reveal>
 
-    	<div className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-6 rounded-xl mt-10 text-center">
-      	<h3 className="font-bold mb-2">¿No encontraste tu respuesta?</h3>
+    	<Reveal className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-6 rounded-xl mt-10 text-center">
+      	<h3 className="font-display font-bold mb-2">¿No encontraste tu respuesta?</h3>
       	<p className="text-sm text-gray-300 mb-4">
         	Escríbenos directamente, respondemos rápido.
       	</p>
       	<div className="flex flex-wrap gap-3 justify-center">
         	<button
           	onClick={openMail}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2 rounded-lg text-sm font-semibold transition"
+          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2 rounded-lg text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
         	>
           	📧 smyanezo@gmail.com
         	</button>
@@ -145,7 +146,7 @@ export default function FAQPage() {
           	📱 @volcanproxies
         	</button>
       	</div>
-    	</div>
+    	</Reveal>
   	</section>
 
   	<Footer />

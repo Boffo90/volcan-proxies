@@ -14,9 +14,11 @@ import {
   CheckCircle2,
   ShoppingCart,
 } from "lucide-react";
+import { motion } from "motion/react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/animation/Reveal";
+import Embers from "@/components/animation/Embers";
 import {
   getRandomCards,
   getCardImage,
@@ -112,28 +114,30 @@ export default function Home() {
   ];
 
   const placeholderGradient =
-	"linear-gradient(135deg, #1E242B 0%, #0F1115 100%)";
+	"linear-gradient(135deg, #1a1f26 0%, #0b0d11 100%)";
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
 
   	{/* HERO */}
-  	<section className="relative px-6 pt-16 pb-24 overflow-hidden">
+  	<section className="relative px-6 pt-20 pb-28 overflow-hidden">
     	<div className="absolute inset-0 bg-gradient-to-br from-[#FF4D1A]/15 via-transparent to-transparent" />
-    	<div className="absolute top-20 right-0 w-96 h-96 bg-[#FF4D1A]/10 rounded-full blur-3xl" />
+    	<div className="absolute top-20 right-0 w-96 h-96 bg-[#FF4D1A]/15 rounded-full blur-[100px]" />
+    	<div className="absolute bottom-0 left-0 w-72 h-72 bg-[#c92a1f]/10 rounded-full blur-[100px]" />
+    	<Embers count={16} />
 
     	<div className="relative z-10 max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
       	<Reveal>
-        	<span className="inline-block bg-[#FF4D1A]/20 text-[#FF4D1A] px-3 py-1 rounded-full text-xs font-semibold mb-6">
+        	<span className="inline-block glass-card text-[#ffb088] px-3 py-1.5 rounded-full text-xs font-semibold mb-6 tracking-wide">
           	🌋 Hecho en Pucón · Envíos a todo Chile
         	</span>
-        	<h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05]">
+        	<h1 className="font-display font-extrabold text-5xl md:text-6xl lg:text-7xl mb-6 leading-[1.02]">
           	Tu mazo soñado,
           	<br />
-          	<span className="text-[#FF4D1A]">sin venderle el alma</span>
+          	<span className="text-lava">sin venderle el alma</span>
           	<br />
-          	<span className="text-[#FF4D1A]">a la billetera.</span>
+          	<span className="text-lava">a la billetera.</span>
         	</h1>
         	<p className="text-lg text-gray-300 mb-8 max-w-lg">
           	Proxies premium de MTG con impresión fotográfica y laminado en
@@ -141,18 +145,22 @@ export default function Home() {
           	segundos.
         	</p>
         	<div className="flex flex-col sm:flex-row gap-3">
-          	<button
+          	<motion.button
+            	whileHover={{ scale: 1.03 }}
+            	whileTap={{ scale: 0.97 }}
             	onClick={() => router.push("/importar")}
-            	className="bg-[#FF4D1A] hover:bg-[#e64418] px-7 py-4 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+            	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] px-7 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_10px_40px_-10px_rgba(255,79,26,0.7)]"
           	>
             	<FileText size={20} /> Importar mi mazo
-          	</button>
-          	<button
+          	</motion.button>
+          	<motion.button
+            	whileHover={{ scale: 1.03 }}
+            	whileTap={{ scale: 0.97 }}
             	onClick={() => router.push("/catalogo")}
-            	className="border border-white/20 hover:bg-white/5 px-7 py-4 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+            	className="glass-card hover:border-[#FF4D1A]/40 px-7 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
           	>
             	<Search size={20} /> Buscar cartas
-          	</button>
+          	</motion.button>
         	</div>
       	</Reveal>
 
@@ -169,7 +177,7 @@ export default function Home() {
               	<div
                 	key={idx}
                 	className={
-                  	"aspect-[5/7] rounded-xl bg-center bg-cover bg-no-repeat shadow-xl transform transition " +
+                  	"aspect-[5/7] rounded-xl bg-center bg-cover bg-no-repeat shadow-xl ring-1 ring-white/10 transform transition " +
                   	(idx === 1
                     	? "translate-y-8 scale-105"
                     	: idx === 4
@@ -181,7 +189,7 @@ export default function Home() {
             	);
           	})}
         	</div>
-        	<div className="absolute -bottom-4 -right-4 bg-[#FF4D1A] text-white px-4 py-2 rounded-lg font-bold shadow-2xl rotate-3">
+        	<div className="absolute -bottom-4 -right-4 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white px-4 py-2 rounded-lg font-display font-bold shadow-2xl rotate-3">
           	🎴 +30.000 cartas disponibles
         	</div>
       	</Reveal>
@@ -189,12 +197,12 @@ export default function Home() {
   	</section>
 
   	{/* BANNER IMPORTADOR */}
-  	<section className="px-6 py-8 bg-gradient-to-r from-[#FF4D1A] to-[#e64418]">
+  	<section className="px-6 py-8 bg-gradient-to-r from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f]">
     	<Reveal className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       	<div className="flex items-center gap-4">
         	<FileText size={32} className="text-white flex-shrink-0" />
         	<div>
-          	<h3 className="font-bold text-lg">
+          	<h3 className="font-display font-bold text-lg">
             	¿Ya tienes tu mazo en Moxfield o Archidekt?
           	</h3>
           	<p className="text-sm text-white/90">
@@ -202,22 +210,26 @@ export default function Home() {
           	</p>
         	</div>
       	</div>
-      	<button
+      	<motion.button
+        	whileHover={{ scale: 1.03 }}
+        	whileTap={{ scale: 0.97 }}
         	onClick={() => router.push("/importar")}
-        	className="bg-white text-[#FF4D1A] px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition whitespace-nowrap"
+        	className="bg-[#0b0d11] text-white px-6 py-3 rounded-lg font-bold whitespace-nowrap shadow-lg"
       	>
         	Importar ahora →
-      	</button>
+      	</motion.button>
     	</Reveal>
   	</section>
 
   	{/* FEATURES */}
-  	<section className="px-6 py-16 bg-[#1E242B]">
+  	<section className="px-6 py-16 glass-card !bg-[#12151b]/60 !border-0 border-y border-white/5">
     	<div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
       	{features.map(({ icon: Icon, title, desc }, idx) => (
         	<Reveal key={title} delay={idx * 0.08} className="text-center">
-          	<Icon className="text-[#FF4D1A] mx-auto mb-3" size={36} />
-          	<h3 className="font-bold mb-2">{title}</h3>
+          	<div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#FF4D1A]/10 mb-3">
+            	<Icon className="text-[#FF4D1A]" size={28} />
+          	</div>
+          	<h3 className="font-display font-bold mb-2">{title}</h3>
           	<p className="text-sm text-gray-400">{desc}</p>
         	</Reveal>
       	))}
@@ -227,8 +239,8 @@ export default function Home() {
   	{/* CÓMO FUNCIONA */}
   	<section className="px-6 py-20 max-w-6xl mx-auto">
     	<Reveal className="text-center mb-12">
-      	<h2 className="text-3xl md:text-5xl font-bold mb-3">
-        	Cómo <span className="text-[#FF4D1A]">funciona</span>
+      	<h2 className="font-display font-extrabold text-3xl md:text-5xl mb-3">
+        	Cómo <span className="text-lava">funciona</span>
       	</h2>
       	<p className="text-gray-400">4 pasos simples. Sin complicaciones.</p>
     	</Reveal>
@@ -240,13 +252,13 @@ export default function Home() {
           	<Reveal
             	key={paso.title}
             	delay={idx * 0.08}
-            	className="relative bg-[#1E242B] p-6 rounded-xl border border-white/10 hover:border-[#FF4D1A]/50 transition"
+            	className="relative glass-card glow-hover rounded-xl p-6"
           	>
-            	<div className="absolute -top-3 -left-3 bg-[#FF4D1A] text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+            	<div className="absolute -top-3 -left-3 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white w-8 h-8 rounded-full flex items-center justify-center font-display font-bold text-sm shadow-lg">
               	{idx + 1}
             	</div>
             	<Icon className="text-[#FF4D1A] mb-4" size={32} />
-            	<h3 className="font-bold mb-2">{paso.title}</h3>
+            	<h3 className="font-display font-bold mb-2">{paso.title}</h3>
             	<p className="text-sm text-gray-400">{paso.desc}</p>
           	</Reveal>
         	);
@@ -255,12 +267,12 @@ export default function Home() {
   	</section>
 
   	{/* PROMOS */}
-  	<section className="px-6 py-20 bg-gradient-to-b from-transparent via-[#1E242B]/50 to-transparent">
+  	<section className="px-6 py-20 bg-gradient-to-b from-transparent via-[#12151b]/60 to-transparent">
     	<div className="max-w-5xl mx-auto">
       	<Reveal className="text-center mb-12">
         	<Sparkles className="mx-auto text-[#FF4D1A] mb-3" size={36} />
-        	<h2 className="text-3xl md:text-5xl font-bold mb-3">
-          	Promos para <span className="text-[#FF4D1A]">armar mazo</span>
+        	<h2 className="font-display font-extrabold text-3xl md:text-5xl mb-3">
+          	Promos para <span className="text-lava">armar mazo</span>
         	</h2>
         	<p className="text-gray-400">
           	Mientras más cartas, mejor precio. Aplican automáticamente.
@@ -273,22 +285,22 @@ export default function Home() {
             	key={p.name + p.subtitle}
             	delay={idx * 0.1}
             	className={
-              	"p-6 rounded-xl border transition relative " +
+              	"p-6 rounded-xl relative transition " +
               	(p.featured
-                	? "bg-gradient-to-b from-[#FF4D1A]/20 to-[#1E242B] border-[#FF4D1A] scale-105 shadow-2xl"
-                	: "bg-[#1E242B] border-white/10")
+                	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
+                	: "glass-card glow-hover")
             	}
           	>
             	{p.featured && (
-              	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FF4D1A] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+              	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
                 	⭐ MÁS POPULAR
               	</span>
             	)}
             	<p className="text-xs text-gray-400 uppercase tracking-wide">
               	{p.subtitle}
             	</p>
-            	<h3 className="font-bold text-2xl mt-1 mb-3">{p.name}</h3>
-            	<p className="text-4xl font-bold text-[#FF4D1A] mb-1">
+            	<h3 className="font-display font-bold text-2xl mt-1 mb-3">{p.name}</h3>
+            	<p className="text-4xl font-display font-extrabold text-lava mb-1">
               	{p.price}
             	</p>
             	<p className="text-xs text-gray-400 mb-4">{p.perCard}</p>
@@ -324,8 +336,8 @@ export default function Home() {
   	{/* CATÁLOGO TEASER */}
   	<section className="px-6 py-20 max-w-6xl mx-auto">
     	<Reveal className="text-center mb-12">
-      	<h2 className="text-3xl md:text-5xl font-bold mb-3">
-        	Catálogo <span className="text-[#FF4D1A]">completo</span>
+      	<h2 className="font-display font-extrabold text-3xl md:text-5xl mb-3">
+        	Catálogo <span className="text-lava">completo</span>
       	</h2>
       	<p className="text-gray-400 mb-2">
         	Catálogo vía Scryfall — todas las cartas, todos los sets, todos los
@@ -341,8 +353,9 @@ export default function Home() {
           	: { background: placeholderGradient };
         	return (
           	<Reveal key={idx} delay={idx * 0.05}>
-            	<div
-              	className="aspect-[5/7] rounded-lg bg-center bg-cover bg-no-repeat hover:scale-105 transition cursor-pointer shadow-lg"
+            	<motion.div
+              	whileHover={{ y: -4, scale: 1.03 }}
+              	className="aspect-[5/7] rounded-lg bg-center bg-cover bg-no-repeat ring-1 ring-white/10 hover:ring-[#FF4D1A]/50 cursor-pointer shadow-lg"
               	style={bgStyle}
               	onClick={() => router.push("/catalogo")}
             	/>
@@ -354,7 +367,7 @@ export default function Home() {
     	<div className="text-center">
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-7 py-3.5 rounded-lg font-semibold transition inline-flex items-center gap-2"
+        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-7 py-3.5 rounded-lg font-semibold transition inline-flex items-center gap-2 shadow-[0_10px_30px_-10px_rgba(255,79,26,0.6)]"
       	>
         	<Search size={18} /> Explorar catálogo
       	</button>
@@ -363,9 +376,9 @@ export default function Home() {
 
   	{/* DISCLAIMER ARTESANAL */}
   	<section className="px-6 py-20 max-w-4xl mx-auto">
-    	<Reveal className="bg-[#1E242B] border border-white/10 rounded-2xl p-8 md:p-10">
-      	<h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
-        	Sobre nuestras <span className="text-[#FF4D1A]">cartas</span>
+    	<Reveal className="glass-card rounded-2xl p-8 md:p-10">
+      	<h2 className="font-display font-extrabold text-2xl md:text-3xl mb-6 text-center">
+        	Sobre nuestras <span className="text-lava">cartas</span>
       	</h2>
       	<p className="text-gray-300 mb-8 text-center max-w-2xl mx-auto">
         	Volcán Proxies son{" "}
@@ -375,8 +388,8 @@ export default function Home() {
       	</p>
 
       	<div className="grid md:grid-cols-2 gap-6">
-        	<div className="bg-[#0F1115] p-6 rounded-xl border border-green-500/20">
-          	<h3 className="font-bold text-green-400 mb-3 flex items-center gap-2">
+        	<div className="bg-[#0b0d11]/60 p-6 rounded-xl border border-green-500/20">
+          	<h3 className="font-display font-bold text-green-400 mb-3 flex items-center gap-2">
             	✅ Lo que sí hacemos
           	</h3>
           	<ul className="space-y-2 text-sm text-gray-300">
@@ -386,8 +399,8 @@ export default function Home() {
           	</ul>
         	</div>
 
-        	<div className="bg-[#0F1115] p-6 rounded-xl border border-yellow-500/20">
-          	<h3 className="font-bold text-yellow-400 mb-3 flex items-center gap-2">
+        	<div className="bg-[#0b0d11]/60 p-6 rounded-xl border border-yellow-500/20">
+          	<h3 className="font-display font-bold text-yellow-400 mb-3 flex items-center gap-2">
             	⚠️ Lo que NO buscamos
           	</h3>
           	<ul className="space-y-2 text-sm text-gray-300">
@@ -417,15 +430,17 @@ export default function Home() {
   	</section>
 
   	{/* CTA FINAL */}
-  	<section className="px-6 py-20 bg-gradient-to-r from-[#FF4D1A]/20 via-transparent to-[#FF4D1A]/10">
-    	<Reveal className="max-w-3xl mx-auto text-center">
+  	<section className="relative px-6 py-24 overflow-hidden">
+    	<div className="absolute inset-0 bg-gradient-to-r from-[#FF4D1A]/20 via-transparent to-[#c92a1f]/15" />
+    	<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[24rem] bg-[#FF4D1A]/10 rounded-full blur-[100px]" />
+    	<Reveal className="relative max-w-3xl mx-auto text-center">
       	<div
-        	className="w-20 h-20 mx-auto mb-4 bg-center bg-contain bg-no-repeat"
+        	className="w-20 h-20 mx-auto mb-4 bg-center bg-contain bg-no-repeat drop-shadow-[0_0_20px_rgba(255,79,26,0.5)]"
         	style={{ backgroundImage: "url(/logo.png)" }}
         	role="img"
         	aria-label="Volcán Proxies"
       	/>
-      	<h2 className="text-3xl md:text-5xl font-bold mb-4">
+      	<h2 className="font-display font-extrabold text-3xl md:text-5xl mb-4">
         	¿Listo para armar tu próximo mazo?
       	</h2>
       	<p className="text-gray-300 mb-8 text-lg">
@@ -433,18 +448,22 @@ export default function Home() {
         	hoja completa).
       	</p>
       	<div className="flex flex-col sm:flex-row gap-3 justify-center">
-        	<button
+        	<motion.button
+          	whileHover={{ scale: 1.03 }}
+          	whileTap={{ scale: 0.97 }}
           	onClick={() => router.push("/importar")}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-7 py-4 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] px-7 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_10px_40px_-10px_rgba(255,79,26,0.7)]"
         	>
           	<FileText size={20} /> Importar mi mazo
-        	</button>
-        	<button
+        	</motion.button>
+        	<motion.button
+          	whileHover={{ scale: 1.03 }}
+          	whileTap={{ scale: 0.97 }}
           	onClick={() => router.push("/catalogo")}
-          	className="border border-white/20 hover:bg-white/5 px-7 py-4 rounded-lg font-semibold transition flex items-center justify-center gap-2"
+          	className="glass-card hover:border-[#FF4D1A]/40 px-7 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
         	>
           	<Search size={20} /> Buscar cartas
-        	</button>
+        	</motion.button>
       	</div>
     	</Reveal>
   	</section>
@@ -453,4 +472,3 @@ export default function Home() {
 	</main>
   );
 }
-
