@@ -152,8 +152,12 @@ export async function POST(req: Request) {
   	);
 	}
 
-	const siteUrl =
-  	process.env.NEXT_PUBLIC_SITE_URL || "https://volcanproxies.cl";
+	// Siempre el host www: el dominio raíz responde 308 hacia www y el
+	// cliente de webhooks de Flow no sigue redirecciones en el POST de
+	// confirmación de pago.
+	const siteUrl = (
+  	process.env.NEXT_PUBLIC_SITE_URL || "https://www.volcanproxies.cl"
+	).replace("://volcanproxies.cl", "://www.volcanproxies.cl");
 
 	const seguimientoUrl = siteUrl + "/seguimiento/" + pedido.numero;
 

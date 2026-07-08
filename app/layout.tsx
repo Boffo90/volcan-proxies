@@ -18,7 +18,7 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://volcanproxies.cl"),
+  metadataBase: new URL("https://www.volcanproxies.cl"),
 
   title: {
     default: "Volcán Proxies | Proxies MTG Premium en Chile",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_CL",
-    url: "https://volcanproxies.cl",
+    url: "https://www.volcanproxies.cl",
     siteName: "Volcán Proxies",
     title: "Volcán Proxies | Proxies MTG Premium en Chile",
     description:
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://volcanproxies.cl",
+    canonical: "https://www.volcanproxies.cl",
   },
 
   category: "shopping",
