@@ -7,6 +7,7 @@ import { Upload, Trash2, Loader2, ShoppingCart, Plus } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
+import { uploadImage } from "@/lib/imageUpload";
 import { formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
@@ -34,15 +35,8 @@ export default function CustomPage() {
 	const newUploads: CustomUpload[] = [];
 
 	for (const file of Array.from(files)) {
-  	const fd = new FormData();
-  	fd.append("file", file);
   	try {
-    	const res = await fetch("/api/custom/upload", {
-      	method: "POST",
-      	body: fd,
-    	});
-    	const data = await res.json();
-    	if (!res.ok) throw new Error(data.error || "Error al subir");
+    	const data = await uploadImage(file);
 
     	newUploads.push({
       	url: data.url,
@@ -112,7 +106,7 @@ export default function CustomPage() {
         	Cartas <span className="text-lava">Custom</span>
       	</h1>
       	<p className="text-gray-400 mb-8">
-        	Sube tus propias imágenes (JPG/PNG, máx 5MB). Recargo de{" "}
+        	Sube tus propias imágenes (JPG o PNG). Recargo de{" "}
         	{formatCLP(precios.custom_surcharge)} por carta.
       	</p>
     	</Reveal>
@@ -141,7 +135,7 @@ export default function CustomPage() {
         	{isDragging ? "Suelta para subir" : "Arrastra tus imágenes aquí o haz click"}
       	</p>
       	<p className="text-xs text-gray-400 mb-4">
-        	Formatos: JPG, PNG · Máx 5MB por archivo
+        	Formatos: JPG, PNG · Las imágenes grandes se optimizan solas
       	</p>
       	<input
         	ref={fileInputRef}

@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import { uploadImage } from "@/lib/imageUpload";
 
 type Custom = {
   id: string;
@@ -62,11 +63,7 @@ export default function AdminCustomsPage() {
 	setError("");
 	setUploading(true);
 	try {
-  	const fd = new FormData();
-  	fd.append("file", file);
-  	const res = await fetch("/api/custom/upload", { method: "POST", body: fd });
-  	const data = await res.json();
-  	if (!res.ok) throw new Error(data.error || "Error al subir");
+  	const data = await uploadImage(file);
   	setForm((f) => ({ ...f, image_url: data.url }));
 	} catch (err: unknown) {
   	setError(err instanceof Error ? err.message : "Error al subir imagen");
