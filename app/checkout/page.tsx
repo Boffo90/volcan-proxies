@@ -99,7 +99,7 @@ export default function CheckoutPage() {
   const total = subtotal + shippingCost;
 
   const handleChange = (k: keyof FormData, v: string) => {
-	setForm((f) => ({ ...f, v }));
+	setForm((f) => ({ ...f, [k]: v }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
