@@ -8,6 +8,8 @@ export type CartItem = {
   finish: "glossy" | "matte";
   quantity: number;
   isCustom?: boolean;
+  /** Identificador de MPCFill cuando el cliente eligió un arte HD de ahí. */
+  mpcfillId?: string;
 };
 
 const KEY = "cart";
@@ -45,6 +47,12 @@ export function removeFromCart(idx: number) {
 export function updateQty(idx: number, qty: number) {
   const cart = getCart();
   if (cart[idx]) cart[idx].quantity = Math.max(1, qty);
+  setCart(cart);
+}
+
+export function updateFinish(idx: number, finish: "glossy" | "matte") {
+  const cart = getCart();
+  if (cart[idx]) cart[idx].finish = finish;
   setCart(cart);
 }
 

@@ -50,6 +50,7 @@ type Pedido = {
   fecha_envio?: string;
   delivery_type?: string;
   shipping_cost?: number;
+  idioma?: string;
 };
 
 const ESTADOS = [
@@ -400,6 +401,8 @@ export default function AdminPedidoDetail() {
         	<h2 className="font-bold mb-3">Pago</h2>
         	<p className="text-sm text-gray-400">Método</p>
         	<p className="mb-3 capitalize">{pedido.metodo_pago}</p>
+        	<p className="text-sm text-gray-400">Idioma de las cartas</p>
+        	<p className="mb-3">{pedido.idioma || "Inglés"}</p>
         	<p className="text-sm text-gray-400">Promo aplicada</p>
         	<p className="mb-3">{pedido.promo_aplicada || "-"}</p>
         	{pedido.subtotal !== undefined && (

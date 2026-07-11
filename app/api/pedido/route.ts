@@ -3,7 +3,12 @@ import { Resend } from "resend";
 import { supabaseAdmin } from "@/lib/supabase";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { createFlowPayment } from "@/lib/flow";
-import { MIN_CARDS, SHIPPING_COST, calculateTotalWith } from "@/lib/pricing";
+import {
+  MIN_CARDS,
+  SHIPPING_COST,
+  calculateTotalWith,
+  finishDisponible,
+} from "@/lib/pricing";
 import { getPreciosServer } from "@/lib/pricing-server";
 
 type PedidoItem = {
@@ -16,6 +21,7 @@ type PedidoItem = {
   finish: string;
   quantity: number;
   isCustom?: boolean;
+  mpcfillId?: string;
 };
 
 export async function POST(req: Request) {
@@ -35,6 +41,7 @@ export async function POST(req: Request) {
   	metodo,
   	deliveryType,
   	aceptaTerminos,
+  	idioma,
 	} = body as {
   	nombre: string;
   	rut?: string;
@@ -48,7 +55,10 @@ export async function POST(req: Request) {
   	metodo: "flow" | "transferencia";
   	deliveryType: "retiro" | "envio";
   	aceptaTerminos: boolean;
+  	idioma?: string;
 	};
+
+	const idiomaFinal = (idioma || "Inglés").slice(0, 30);
 
 	if (!nombre || !email || !items?.length) {
   	return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
@@ -82,6 +92,20 @@ export async function POST(req: Request) {
 	// El total nunca se confía del cliente: se recalcula server-side con
 	// los precios vigentes en Supabase para evitar manipulación del monto a pagar.
 	const precios = await getPreciosServer();
+
+	// Acabados desactivados desde el admin: rechazar el pedido completo.
+	const finishesPedidos = new Set(items.map((i) => i.finish));
+	for (const f of ["glossy", "matte"] as const) {
+  	if (finishesPedidos.has(f) && !finishDisponible(precios, f)) {
+    	return NextResponse.json(
+      	{
+        	error: `El acabado ${f === "glossy" ? "Glossy" : "Matte"} no está disponible por ahora. Cambia esas cartas al otro acabado en tu carrito.`,
+      	},
+      	{ status: 400 }
+    	);
+  	}
+	}
+
 	const { total: subtotal, applied } = calculateTotalWith(
   	precios,
   	items.map((i) => ({
@@ -129,17 +153,20 @@ export async function POST(req: Request) {
 
 	let { data: pedido, error } = await sb
   	.from("pedidos")
-  	.insert({ ...pedidoBase, user_id: user?.id ?? null })
+  	.insert({ ...pedidoBase, user_id: user?.id ?? null, idioma: idiomaFinal })
   	.select()
   	.single();
 
 	if (error?.code === "42703") {
-  	// La columna user_id todavía no existe en Supabase (falta correr la
-  	// migración supabase/migrations/20260707_login_carritos.sql). Reintenta
-  	// sin asociar el pedido a un usuario para no romper el checkout.
+  	// Alguna columna opcional (user_id o idioma) todavía no existe en
+  	// Supabase (migración pendiente). Reintenta con lo básico, guardando el
+  	// idioma dentro de las notas para no perder el dato.
   	({ data: pedido, error } = await sb
     	.from("pedidos")
-    	.insert(pedidoBase)
+    	.insert({
+      	...pedidoBase,
+      	notas: `[Idioma: ${idiomaFinal}] ${notas || ""}`.trim(),
+    	})
     	.select()
     	.single());
 	}
@@ -249,9 +276,15 @@ export async function POST(req: Request) {
       	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
     	}
 
-    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
+    	const base = `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
       	it.collector_number
     	} [${it.finish}]`;
+
+    	// Arte HD elegido en MPCFill: incluir el link de descarga en alta
+    	// resolución para imprimir desde esa versión.
+    	return it.mpcfillId
+      	? `${base}\n   ↳ MPCFill HD: https://drive.google.com/uc?id=${it.mpcfillId}&export=download`
+      	: base;
   	})
   	.join("\n");
 
@@ -289,6 +322,7 @@ export async function POST(req: Request) {
           	<h2 style="margin-top:0;">Pedido #${pedido.numero}</h2>
           	<p><b>Método de pago:</b> ${metodoLabel}</p>
           	<p><b>Entrega:</b> ${entregaLabel}</p>
+          	<p><b>Idioma de las cartas:</b> ${idiomaFinal} (las no disponibles van en inglés)</p>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">Cliente</h3>
@@ -410,6 +444,10 @@ export async function POST(req: Request) {
 
           	<p>
             	Tu pedido <b style="color:#FF4D1A;">#${pedido.numero}</b> fue recibido correctamente.
+          	</p>
+          	<p style="color:#666;font-size:13px;">
+            	Idioma de las cartas: <b>${idiomaFinal}</b> — las cartas sin
+            	versión en ese idioma se imprimen en inglés.
           	</p>
 
           	<div style="${boxStyle}">

@@ -14,8 +14,16 @@ import {
   type ScryfallCard,
   type ScryfallRuling,
 } from "@/lib/scryfall";
-import { formatCLP, type Finish } from "@/lib/pricing";
+import {
+  defaultFinish,
+  finishDisponible,
+  formatCLP,
+  type Finish,
+} from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
+import FinishButtons from "@/components/FinishButtons";
+import { addToCart as addItemToCart } from "@/lib/cart";
+import type { MpcCard } from "@/app/api/mpcfill/route";
 
 export default function CartaDetalle() {
   const router = useRouter();
@@ -29,6 +37,18 @@ export default function CartaDetalle() {
   const [loading, setLoading] = useState(true);
   const [rulings, setRulings] = useState<ScryfallRuling[]>([]);
   const [showRulings, setShowRulings] = useState(false);
+  const [mpcCards, setMpcCards] = useState<MpcCard[]>([]);
+  const [mpcLoading, setMpcLoading] = useState(false);
+  const [mpcSearched, setMpcSearched] = useState(false);
+  const [mpcError, setMpcError] = useState("");
+  const [mpcSelected, setMpcSelected] = useState<MpcCard | null>(null);
+
+  // Si el acabado elegido se desactiva desde el admin, saltar al disponible.
+  useEffect(() => {
+	if (!finishDisponible(precios, finish)) {
+  	setFinish(defaultFinish(precios));
+	}
+  }, [precios, finish]);
 
   useEffect(() => {
 	(async () => {
@@ -48,10 +68,43 @@ export default function CartaDetalle() {
 	})();
   }, [id]);
 
+  const buscarMpc = async () => {
+	if (!card) return;
+	setMpcLoading(true);
+	setMpcError("");
+	try {
+  	const nombre = card.name.split(" // ")[0];
+  	const res = await fetch("/api/mpcfill?q=" + encodeURIComponent(nombre));
+  	const data = await res.json();
+  	if (!res.ok) throw new Error(data.error || "Error al buscar en MPCFill");
+  	setMpcCards(data.cards || []);
+	} catch (err: unknown) {
+  	setMpcError(err instanceof Error ? err.message : "Error al buscar");
+	} finally {
+  	setMpcLoading(false);
+  	setMpcSearched(true);
+	}
+  };
+
   const addToCart = () => {
 	if (!selectedPrint) return;
-	const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-	cart.push({
+	if (mpcSelected) {
+  	// Arte HD de MPCFill: id propio para que no se mezcle con la versión
+  	// Scryfall de la misma carta en el carrito.
+  	addItemToCart({
+    	id: `${selectedPrint.id}-mpc-${mpcSelected.id}`,
+    	name: selectedPrint.name,
+    	set: selectedPrint.set,
+    	set_name: `MPCFill HD · ${mpcSelected.name}`,
+    	collector_number: selectedPrint.collector_number,
+    	image: mpcSelected.thumb,
+    	finish,
+    	quantity: qty,
+    	mpcfillId: mpcSelected.id,
+  	});
+  	return;
+	}
+	addItemToCart({
   	id: selectedPrint.id,
   	name: selectedPrint.name,
   	set: selectedPrint.set,
@@ -61,8 +114,6 @@ export default function CartaDetalle() {
   	finish,
   	quantity: qty,
 	});
-	localStorage.setItem("cart", JSON.stringify(cart));
-	window.dispatchEvent(new Event("cart-updated"));
   };
 
   if (loading) {
@@ -87,7 +138,9 @@ export default function CartaDetalle() {
 
   const display = selectedPrint || card;
   const unitPrice = finish === "glossy" ? precios.glossy : precios.matte;
-  const mainImg = getCardImage(display, "large");
+  const mainImg = mpcSelected
+	? mpcSelected.thumb
+	: getCardImage(display, "large");
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -210,7 +263,10 @@ export default function CartaDetalle() {
                 	return (
                   	<button
                     	key={p.id}
-                    	onClick={() => setSelectedPrint(p)}
+                    	onClick={() => {
+                      	setSelectedPrint(p);
+                      	setMpcSelected(null);
+                    	}}
                     	aria-label={p.name}
                     	className={btnClass}
                     	style={{ backgroundImage: `url(${thumbImg})` }}
@@ -221,31 +277,91 @@ export default function CartaDetalle() {
           	</div>
         	) : null}
 
+        	{/* ARTES HD DE MPCFILL */}
+        	<div className="mb-6">
+          	{!mpcSearched && !mpcLoading ? (
+            	<button
+              	onClick={buscarMpc}
+              	className="w-full glass-card hover:border-[#FF4D1A]/50 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+            	>
+              	✨ Buscar artes HD en MPCFill
+            	</button>
+          	) : null}
+          	{mpcLoading ? (
+            	<div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+              	<Loader2 className="animate-spin text-[#FF4D1A]" size={16} />
+              	Buscando en MPCFill...
+            	</div>
+          	) : null}
+          	{mpcError ? (
+            	<p className="text-sm text-red-400 py-2">{mpcError}</p>
+          	) : null}
+          	{mpcSearched && !mpcLoading && mpcCards.length === 0 && !mpcError ? (
+            	<p className="text-sm text-gray-500 py-2">
+              	No hay versiones de esta carta en MPCFill — el arte de
+              	Scryfall se ve excelente igual.
+            	</p>
+          	) : null}
+          	{mpcCards.length > 0 ? (
+            	<>
+              	<p className="text-sm font-semibold mb-1">
+                	Artes HD de MPCFill ({mpcCards.length})
+              	</p>
+              	<p className="text-xs text-gray-500 mb-2">
+                	Réplicas digitales en alta resolución — mayor nitidez de
+                	impresión que los escaneos de Scryfall (la diferencia es
+                	sutil, pero existe).
+              	</p>
+              	<div className="flex gap-2 overflow-x-auto pb-2">
+                	{mpcCards.map((m) => {
+                  	const isSel = mpcSelected?.id === m.id;
+                  	return (
+                    	<button
+                      	key={m.id}
+                      	onClick={() =>
+                        	setMpcSelected(isSel ? null : m)
+                      	}
+                      	aria-label={m.name}
+                      	title={`${m.name} · ${m.dpi} DPI · ${m.language}`}
+                      	className={
+                        	"relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition " +
+                        	(isSel
+                          	? "border-[#FF4D1A]"
+                          	: "border-white/10 hover:border-white/30")
+                      	}
+                    	>
+                      	{/* eslint-disable-next-line @next/next/no-img-element */}
+                      	<img
+                        	src={m.thumb}
+                        	alt={m.name}
+                        	loading="lazy"
+                        	className="w-full aspect-[5/7] object-cover"
+                      	/>
+                      	<span className="absolute bottom-0 inset-x-0 bg-black/70 text-[8px] text-center py-0.5">
+                        	{m.dpi} DPI · {m.language}
+                      	</span>
+                    	</button>
+                  	);
+                	})}
+              	</div>
+              	{mpcSelected ? (
+                	<p className="text-xs text-[#FF4D1A] mt-1">
+                  	Arte HD seleccionado: {mpcSelected.name} (
+                  	{mpcSelected.dpi} DPI)
+                	</p>
+              	) : null}
+            	</>
+          	) : null}
+        	</div>
+
         	<div className="glass-card p-5 rounded-xl">
           	<p className="text-sm font-semibold mb-3">Acabado</p>
-          	<div className="flex gap-2 mb-4">
-            	<button
-              	onClick={() => setFinish("glossy")}
-              	className={
-                	"flex-1 py-2 rounded-lg border transition " +
-                	(finish === "glossy"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
-              	}
-            	>
-              	Glossy · {formatCLP(precios.glossy)}
-            	</button>
-            	<button
-              	onClick={() => setFinish("matte")}
-              	className={
-                	"flex-1 py-2 rounded-lg border transition " +
-                	(finish === "matte"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
-              	}
-            	>
-              	Matte · {formatCLP(precios.matte)}
-            	</button>
+          	<div className="mb-4">
+            	<FinishButtons
+              	precios={precios}
+              	value={finish}
+              	onChange={setFinish}
+            	/>
           	</div>
 
           	<p className="text-sm font-semibold mb-2">Cantidad</p>

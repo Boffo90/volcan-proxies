@@ -9,15 +9,18 @@ import {
   getCart,
   removeFromCart,
   updateQty,
+  updateFinish,
   type CartItem,
 } from "@/lib/cart";
 import {
   calculateTotalWith,
+  finishDisponible,
   formatCLP,
   MIN_CARDS,
   SHIPPING_COST,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
+import FinishButtons from "@/components/FinishButtons";
 
 export default function CarritoPage() {
   const router = useRouter();
@@ -55,6 +58,9 @@ export default function CarritoPage() {
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const faltan = Math.max(0, MIN_CARDS - totalQty);
   const cumpleMin = totalQty >= MIN_CARDS;
+  const hayBloqueados = items.some(
+	(i) => !finishDisponible(precios, i.finish)
+  );
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -99,9 +105,20 @@ export default function CarritoPage() {
                   	<p className="text-xs text-gray-400 uppercase">
                     	{it.set_name}
                   	</p>
-                  	<p className="text-xs text-[#FF4D1A] mt-1 capitalize">
-                    	{it.finish}
-                  	</p>
+                  	<div className="mt-2 max-w-[180px]">
+                    	<FinishButtons
+                      	precios={precios}
+                      	value={it.finish}
+                      	onChange={(f) => updateFinish(idx, f)}
+                      	size="xs"
+                    	/>
+                    	{!finishDisponible(precios, it.finish) ? (
+                      	<p className="text-[10px] text-red-400 mt-1">
+                        	Este acabado no está disponible — cámbialo para
+                        	poder pagar.
+                      	</p>
+                    	) : null}
+                  	</div>
                   	<div className="flex items-center gap-3 mt-3">
                     	<label className="text-xs text-gray-400">Cant:</label>
                     	<input
@@ -187,10 +204,14 @@ export default function CarritoPage() {
 
           	<button
             	onClick={() => router.push("/checkout")}
-            	disabled={!cumpleMin}
+            	disabled={!cumpleMin || hayBloqueados}
             	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           	>
-            	{cumpleMin ? "Ir a pagar" : `Faltan ${faltan} carta(s)`}
+            	{hayBloqueados
+              	? "Hay acabados no disponibles"
+              	: cumpleMin
+              	? "Ir a pagar"
+              	: `Faltan ${faltan} carta(s)`}
           	</button>
           	<p className="text-xs text-gray-500 text-center mt-4">
             	Flow.cl o transferencia

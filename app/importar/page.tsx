@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Loader2,
@@ -20,7 +20,13 @@ import {
 } from "@/lib/deckParser";
 import { getCardImage, getAllPrints, type ScryfallCard } from "@/lib/scryfall";
 import { addToCart } from "@/lib/cart";
-import { formatCLP, type Finish } from "@/lib/pricing";
+import {
+  defaultFinish,
+  finishDisponible,
+  formatCLP,
+  type Finish,
+} from "@/lib/pricing";
+import FinishButtons from "@/components/FinishButtons";
 import { usePrecios } from "@/hooks/usePrecios";
 
 type CardWithFinish = ImportedCard & { finish?: Finish };
@@ -44,6 +50,23 @@ export default function ImportarPage() {
 	Record<string, ScryfallCard[]>
   >({});
   const [loadingPrints, setLoadingPrints] = useState(false);
+
+  // Si un acabado se desactiva desde el admin, corregir el global y limpiar
+  // los overrides por carta que quedaron apuntando al acabado bloqueado.
+  useEffect(() => {
+	if (!finishDisponible(precios, globalFinish)) {
+  	setGlobalFinish(defaultFinish(precios));
+	}
+	setCards((prev) =>
+  	prev.some((c) => c.finish && !finishDisponible(precios, c.finish))
+    	? prev.map((c) =>
+        	c.finish && !finishDisponible(precios, c.finish)
+          	? { ...c, finish: undefined }
+          	: c
+      	)
+    	: prev
+	);
+  }, [precios, globalFinish]);
 
   const openPrintPicker = async (idx: number, oracleId: string) => {
 	setPrintPickerIdx(idx);
@@ -162,37 +185,12 @@ export default function ImportarPage() {
         	<label className="block text-xs text-gray-400 mb-1">
           	Acabado por defecto
         	</label>
-        	<div className="flex gap-2 mb-4">
-          	<button
-            	onClick={() => setGlobalFinish("glossy")}
-            	className={
-              	"flex-1 py-2 rounded border text-xs transition " +
-              	(globalFinish === "glossy"
-                	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-                	: "border-white/10")
-            	}
-          	>
-            	Glossy
-            	<br />
-            	<span className="text-[10px] text-gray-400">
-              	{formatCLP(precios.glossy)}
-            	</span>
-          	</button>
-          	<button
-            	onClick={() => setGlobalFinish("matte")}
-            	className={
-              	"flex-1 py-2 rounded border text-xs transition " +
-              	(globalFinish === "matte"
-                	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-                	: "border-white/10")
-            	}
-          	>
-            	Matte
-            	<br />
-            	<span className="text-[10px] text-gray-400">
-              	{formatCLP(precios.matte)}
-            	</span>
-          	</button>
+        	<div className="mb-4">
+          	<FinishButtons
+            	precios={precios}
+            	value={globalFinish}
+            	onChange={setGlobalFinish}
+          	/>
         	</div>
 
         	<label className="flex items-center gap-2 text-sm mb-4 cursor-pointer">
@@ -322,29 +320,13 @@ export default function ImportarPage() {
                   	<p className="text-[10px] text-gray-400 truncate">
                     	{c.card.set_name}
                   	</p>
-                  	<div className="flex gap-1 mt-2">
-                    	<button
-                      	onClick={() => updateCardFinish(idx, "glossy")}
-                      	className={
-                        	"flex-1 py-1 text-[10px] rounded transition " +
-                        	(cardFinish === "glossy"
-                          	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
-                          	: "bg-white/5 text-gray-400")
-                      	}
-                    	>
-                      	Glossy
-                    	</button>
-                    	<button
-                      	onClick={() => updateCardFinish(idx, "matte")}
-                      	className={
-                        	"flex-1 py-1 text-[10px] rounded transition " +
-                        	(cardFinish === "matte"
-                          	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
-                          	: "bg-white/5 text-gray-400")
-                      	}
-                    	>
-                      	Matte
-                    	</button>
+                  	<div className="mt-2">
+                    	<FinishButtons
+                      	precios={precios}
+                      	value={cardFinish}
+                      	onChange={(f) => updateCardFinish(idx, f)}
+                      	size="xs"
+                    	/>
                   	</div>
                   	<button
                     	onClick={() =>

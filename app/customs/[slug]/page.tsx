@@ -6,8 +6,14 @@ import { Loader2, ArrowLeft, ShoppingCart } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
-import { formatCLP, type Finish } from "@/lib/pricing";
+import {
+  defaultFinish,
+  finishDisponible,
+  formatCLP,
+  type Finish,
+} from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
+import FinishButtons from "@/components/FinishButtons";
 
 type Custom = {
   id: string;
@@ -29,6 +35,13 @@ export default function CustomDetalle() {
   const [finish, setFinish] = useState<Finish>("glossy");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+
+  // Si el acabado elegido se desactiva desde el admin, saltar al disponible.
+  useEffect(() => {
+	if (!finishDisponible(precios, finish)) {
+  	setFinish(defaultFinish(precios));
+	}
+  }, [precios, finish]);
 
   useEffect(() => {
 	(async () => {
@@ -119,33 +132,14 @@ export default function CustomDetalle() {
 
         	<div className="glass-card p-5 rounded-xl">
           	<p className="text-sm font-semibold mb-3">Acabado</p>
-          	<div className="flex gap-2 mb-4">
-            	{custom.finish_options.includes("glossy") ? (
-              	<button
-                	onClick={() => setFinish("glossy")}
-                	className={
-                  	"flex-1 py-2 rounded-lg border transition " +
-                  	(finish === "glossy"
-                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                    	: "border-white/10")
-                	}
-              	>
-                	Glossy · {formatCLP(precios.glossy + surcharge)}
-              	</button>
-            	) : null}
-            	{custom.finish_options.includes("matte") ? (
-              	<button
-                	onClick={() => setFinish("matte")}
-                	className={
-                  	"flex-1 py-2 rounded-lg border transition " +
-                  	(finish === "matte"
-                    	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                    	: "border-white/10")
-                	}
-              	>
-                	Matte · {formatCLP(precios.matte + surcharge)}
-              	</button>
-            	) : null}
+          	<div className="mb-4">
+            	<FinishButtons
+              	precios={precios}
+              	value={finish}
+              	onChange={setFinish}
+              	surcharge={surcharge}
+              	allowed={custom.finish_options as Finish[]}
+            	/>
           	</div>
 
           	<p className="text-sm font-semibold mb-2">Cantidad</p>

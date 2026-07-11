@@ -27,6 +27,7 @@ export default function PromosPage() {
     	"Impresión fotográfica",
     	"Laminado en calor",
   	],
+  	disponible: precios.glossy_disponible,
 	},
 	{
   	name: "Mazo 60 Matte",
@@ -39,6 +40,7 @@ export default function PromosPage() {
     	"Sin reflejo bajo luz",
     	"Sensación premium",
   	],
+  	disponible: precios.matte_disponible,
 	},
 	{
   	name: "Commander 100 Glossy",
@@ -51,7 +53,8 @@ export default function PromosPage() {
     	"Incluye comandante",
     	"Para EDH/Commander",
   	],
-  	featured: true,
+  	featured: precios.glossy_disponible,
+  	disponible: precios.glossy_disponible,
 	},
 	{
   	name: "Commander 100 Matte",
@@ -64,6 +67,7 @@ export default function PromosPage() {
     	"Sin reflejo bajo luz",
     	"Sensación premium",
   	],
+  	disponible: precios.matte_disponible,
 	},
   ];
 
@@ -90,16 +94,22 @@ export default function PromosPage() {
           	delay={idx * 0.08}
           	className={
             	"p-6 rounded-xl relative transition " +
-            	(p.featured
+            	(!p.disponible
+              	? "glass-card opacity-60 "
+              	: p.featured
               	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
               	: "glass-card glow-hover")
           	}
         	>
-          	{p.featured && (
+          	{!p.disponible ? (
+            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white/10 text-gray-300 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap border border-white/20">
+              	No disponible por ahora
+            	</span>
+          	) : p.featured ? (
             	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
               	⭐ MÁS POPULAR
             	</span>
-          	)}
+          	) : null}
           	<h3 className="font-display font-bold text-lg mb-2">{p.name}</h3>
           	<p className="text-3xl font-display font-extrabold text-lava mb-1">
             	{p.price}

@@ -55,7 +55,15 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Puedo elegir el arte de la carta?",
-  	a: "¡Sí! Al entrar al detalle de cualquier carta verás todas las versiones disponibles (arte original, arte alternativo, showcase, borderless, etc.). Toda esa info viene directo de Scryfall, así que siempre estará actualizada con los sets más nuevos.",
+  	a: "¡Sí! Al entrar al detalle de cualquier carta verás todas las versiones disponibles (arte original, arte alternativo, showcase, borderless, etc.). Toda esa info viene directo de Scryfall, así que siempre estará actualizada con los sets más nuevos. Además puedes buscar versiones HD de la comunidad de MPCFill desde la misma página.",
+	},
+	{
+  	q: "¿Qué diferencia hay entre las ilustraciones de Scryfall y las de MPCFill?",
+  	a: "Las ilustraciones de MPCFill son réplicas digitales creadas por la comunidad en alta resolución (600-1200 DPI), pensadas específicamente para impresión — se ven más nítidas al imprimir. Las de Scryfall en su mayoría son escaneos o imágenes en calidad media, lo que puede repercutir levemente en la nitidez final. Ojo: las de Scryfall igual se ven súper bien impresas — la diferencia es mínima y para ojos quisquillosos. En el detalle de cada carta puedes buscar si existe versión MPCFill y elegirla.",
+	},
+	{
+  	q: "¿Puedo pedir las cartas en español u otro idioma?",
+  	a: "Sí. Al hacer tu pedido en el checkout eliges el idioma preferido (español, inglés, portugués, japonés y más). Eso sí: no todas las cartas existen en todos los idiomas — imprimiremos en el idioma elegido todas las que estén disponibles, y las que no, van en inglés como estándar.",
 	},
 	{
   	q: "¿Puedo subir mi propio diseño?",

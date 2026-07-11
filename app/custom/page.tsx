@@ -8,7 +8,8 @@ import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
 import { uploadImage } from "@/lib/imageUpload";
-import { formatCLP, type Finish } from "@/lib/pricing";
+import FinishButtons from "@/components/FinishButtons";
+import { defaultFinish, formatCLP, type Finish } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
 type CustomUpload = {
@@ -43,7 +44,7 @@ export default function CustomPage() {
       	filename: data.filename,
       	originalName: data.originalName,
       	cardName: file.name.replace(/\.[^/.]+$/, ""),
-      	finish: "glossy",
+      	finish: defaultFinish(precios),
       	quantity: 1,
     	});
   	} catch (err: unknown) {
@@ -195,29 +196,13 @@ export default function CustomPage() {
               	<label className="block text-xs text-gray-400 mb-1">
                 	Acabado
               	</label>
-              	<div className="flex gap-2 mb-3">
-                	<button
-                  	onClick={() => updateUpload(idx, "finish", "glossy")}
-                  	className={
-                    	"flex-1 py-1.5 rounded border text-xs transition " +
-                    	(u.finish === "glossy"
-                      	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-                      	: "border-white/10")
-                  	}
-                	>
-                  	Glossy
-                	</button>
-                	<button
-                  	onClick={() => updateUpload(idx, "finish", "matte")}
-                  	className={
-                    	"flex-1 py-1.5 rounded border text-xs transition " +
-                    	(u.finish === "matte"
-                      	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-                      	: "border-white/10")
-                  	}
-                	>
-                  	Matte
-                	</button>
+              	<div className="mb-3">
+                	<FinishButtons
+                  	precios={precios}
+                  	value={u.finish}
+                  	onChange={(f) => updateUpload(idx, "finish", f)}
+                  	size="xs"
+                	/>
               	</div>
 
               	<label className="block text-xs text-gray-400 mb-1">

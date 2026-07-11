@@ -8,6 +8,10 @@ export type Precios = {
   commander100_glossy: number;
   commander100_matte: number;
   custom_surcharge: number;
+  // Disponibilidad de acabados, controlada desde el admin. Viven en el mismo
+  // JSON de la tabla config, así que no requieren migración.
+  glossy_disponible: boolean;
+  matte_disponible: boolean;
 };
 
 export const PRECIOS_DEFAULT: Precios = {
@@ -18,7 +22,22 @@ export const PRECIOS_DEFAULT: Precios = {
   commander100_glossy: 12900,
   commander100_matte: 17900,
   custom_surcharge: 50,
+  glossy_disponible: true,
+  matte_disponible: true,
 };
+
+/** Acabado por defecto según disponibilidad (glossy si está, si no matte). */
+export function defaultFinish(precios: Precios): Finish {
+  return precios.glossy_disponible || !precios.matte_disponible
+	? "glossy"
+	: "matte";
+}
+
+export function finishDisponible(precios: Precios, finish: Finish): boolean {
+  return finish === "glossy"
+	? precios.glossy_disponible
+	: precios.matte_disponible;
+}
 
 export const PRICES = PRECIOS_DEFAULT;
 

@@ -93,6 +93,7 @@ export default function Home() {
   	desc: "Standard, Modern, Pioneer.",
   	qty: "60 cartas",
   	perCard: perCard(precios.mazo60_glossy, 60),
+  	disponible: precios.glossy_disponible,
 	},
 	{
   	name: "Commander 100",
@@ -101,7 +102,8 @@ export default function Home() {
   	desc: "Tu mazo EDH completo.",
   	qty: "100 cartas",
   	perCard: perCard(precios.commander100_glossy, 100),
-  	featured: true,
+  	featured: precios.glossy_disponible,
+  	disponible: precios.glossy_disponible,
 	},
 	{
   	name: "Commander 100",
@@ -110,6 +112,7 @@ export default function Home() {
   	desc: "Acabado premium sin reflejo.",
   	qty: "100 cartas",
   	perCard: perCard(precios.commander100_matte, 100),
+  	disponible: precios.matte_disponible,
 	},
   ];
 
@@ -286,16 +289,22 @@ export default function Home() {
             	delay={idx * 0.1}
             	className={
               	"p-6 rounded-xl relative transition " +
-              	(p.featured
+              	(!p.disponible
+                	? "glass-card opacity-60 "
+                	: p.featured
                 	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
                 	: "glass-card glow-hover")
             	}
           	>
-            	{p.featured && (
+            	{!p.disponible ? (
+              	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white/10 text-gray-300 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap border border-white/20">
+                	No disponible por ahora
+              	</span>
+            	) : p.featured ? (
               	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
                 	⭐ MÁS POPULAR
               	</span>
-            	)}
+            	) : null}
             	<p className="text-xs text-gray-400 uppercase tracking-wide">
               	{p.subtitle}
             	</p>

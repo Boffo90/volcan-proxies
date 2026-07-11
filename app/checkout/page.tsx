@@ -15,6 +15,7 @@ import Reveal from "@/components/animation/Reveal";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import {
   calculateTotalWith,
+  finishDisponible,
   formatCLP,
   MIN_CARDS,
   SHIPPING_COST,
@@ -70,6 +71,7 @@ export default function CheckoutPage() {
   });
 
   const [deliveryType, setDeliveryType] = useState<DeliveryType>("envio");
+  const [idioma, setIdioma] = useState("Inglés");
   const [metodo, setMetodo] = useState<"flow" | "transferencia">(
 	"transferencia"
   );
@@ -84,6 +86,9 @@ export default function CheckoutPage() {
 
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const cumpleMinimo = totalQty >= MIN_CARDS;
+  const hayBloqueados = items.some(
+	(i) => !finishDisponible(precios, i.finish)
+  );
   const faltan = Math.max(0, MIN_CARDS - totalQty);
 
   const { total: subtotal, applied } = calculateTotalWith(
@@ -133,6 +138,7 @@ export default function CheckoutPage() {
       	deliveryType,
       	shippingCost,
       	aceptaTerminos,
+      	idioma,
     	}),
   	});
 
@@ -359,6 +365,36 @@ export default function CheckoutPage() {
 
             	<div className="md:col-span-2">
               	<label className="block text-xs text-gray-400 mb-1">
+                	Idioma de las cartas
+              	</label>
+              	<select
+                	value={idioma}
+                	onChange={(e) => setIdioma(e.target.value)}
+                	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
+              	>
+                	{[
+                  	"Inglés",
+                  	"Español",
+                  	"Portugués",
+                  	"Japonés",
+                  	"Alemán",
+                  	"Francés",
+                  	"Italiano",
+                	].map((l) => (
+                  	<option key={l} value={l}>
+                    	{l}
+                  	</option>
+                	))}
+              	</select>
+              	<p className="text-xs text-gray-500 mt-1">
+                	No todas las cartas existen en todos los idiomas: las que
+                	estén disponibles irán en el idioma elegido y el resto en
+                	inglés (estándar).
+              	</p>
+            	</div>
+
+            	<div className="md:col-span-2">
+              	<label className="block text-xs text-gray-400 mb-1">
                 	Notas (opcional)
               	</label>
               	<textarea
@@ -503,11 +539,13 @@ export default function CheckoutPage() {
 
           	<button
             	type="submit"
-            	disabled={loading || !cumpleMinimo || !aceptaTerminos}
+            	disabled={loading || !cumpleMinimo || !aceptaTerminos || hayBloqueados}
             	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
           	>
             	{loading ? <Loader2 className="animate-spin" size={18} /> : null}
-            	{!cumpleMinimo
+            	{hayBloqueados
+              	? "Hay acabados no disponibles en tu carrito"
+              	: !cumpleMinimo
               	? `Faltan ${faltan} carta${faltan !== 1 ? "s" : ""}`
               	: !aceptaTerminos
               	? "Debes aceptar los términos"
