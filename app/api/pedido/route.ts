@@ -157,10 +157,17 @@ export async function POST(req: Request) {
   	.select()
   	.single();
 
-	if (error?.code === "42703") {
-  	// Alguna columna opcional (user_id o idioma) todavía no existe en
-  	// Supabase (migración pendiente). Reintenta con lo básico, guardando el
+	// Alguna columna opcional (user_id o idioma) todavía no existe en Supabase
+  	// (migración pendiente). PostgREST reporta esto con PGRST204 en un INSERT
+  	// (schema cache) o 42703 (columna inexistente); cubrimos ambos y también el
+  	// mensaje por si el código cambia. Reintenta con lo básico, guardando el
   	// idioma dentro de las notas para no perder el dato.
+	const esColumnaFaltante =
+  	error?.code === "PGRST204" ||
+  	error?.code === "42703" ||
+  	/column|schema cache/i.test(error?.message || "");
+
+	if (error && esColumnaFaltante) {
   	({ data: pedido, error } = await sb
     	.from("pedidos")
     	.insert({
