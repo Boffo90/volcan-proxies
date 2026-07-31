@@ -11,6 +11,7 @@ import {
   Truck,
   Trash2,
   MapPin,
+  Download,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -23,6 +24,8 @@ type PedidoItem = {
   quantity: number;
   image: string;
   isCustom?: boolean;
+  /** ID de la imagen en MPCFill (file-id de Drive) cuando el cliente eligió un arte HD. */
+  mpcfillId?: string;
 };
 
 type Pedido = {
@@ -64,6 +67,55 @@ const ESTADOS = [
 
 type CourierKey = "starken" | "chilexpress" | "bluexpress" | "";
 
+function xmlEscape(s: string): string {
+  return s
+	.replace(/&/g, "&amp;")
+	.replace(/</g, "&lt;")
+	.replace(/>/g, "&gt;")
+	.replace(/"/g, "&quot;");
+}
+
+/**
+* Genera un XML de orden MPCFill (formato mpc-autofill) con solo las cartas
+* cuyo arte HD eligió el cliente en MPCFill. Cada <card> lleva el <id> (file-id
+* de Drive) del diseño exacto, así al importarlo en mpcfill.com → Import → XML
+* se reconstruyen las ilustraciones que quiere el cliente.
+*/
+function buildMpcfillXml(items: PedidoItem[]): string {
+  let slot = 0;
+  const total = items.reduce((s, it) => s + it.quantity, 0);
+
+  const cards = items
+	.map((it) => {
+  	const slots: number[] = [];
+  	for (let i = 0; i < it.quantity; i++) slots.push(slot++);
+  	// Cara frontal para el query (MPCFill busca por nombre en minúsculas).
+  	const front = it.name.split(" // ")[0].trim();
+  	return [
+    	"	<card>",
+    	`  	<id>${xmlEscape(it.mpcfillId || "")}</id>`,
+    	`  	<slots>${slots.join(",")}</slots>`,
+    	`  	<name>${xmlEscape(front)}.png</name>`,
+    	`  	<query>${xmlEscape(front.toLowerCase())}</query>`,
+    	"	</card>",
+  	].join("\n");
+	})
+	.join("\n");
+
+  return [
+	"<order>",
+	"  <details>",
+	`	<quantity>${total}</quantity>`,
+	"	<stock>(S30) Standard Smooth</stock>",
+	"	<foil>false</foil>",
+	"  </details>",
+	"  <fronts>",
+	cards,
+	"  </fronts>",
+	"</order>",
+  ].join("\n");
+}
+
 export default function AdminPedidoDetail() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -75,6 +127,7 @@ export default function AdminPedidoDetail() {
   const [trackingNum, setTrackingNum] = useState("");
   const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
   const [copied, setCopied] = useState(false);
+  const [copiedXml, setCopiedXml] = useState(false);
 
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
@@ -200,6 +253,27 @@ export default function AdminPedidoDetail() {
 	await navigator.clipboard.writeText(mtgoList);
 	setCopied(true);
 	setTimeout(() => setCopied(false), 2000);
+  };
+
+  const mpcfillItems =
+	pedido?.items.filter((it) => it.mpcfillId && !it.isCustom) || [];
+  const hasMpcfill = mpcfillItems.length > 0;
+  const mpcfillXml = hasMpcfill ? buildMpcfillXml(mpcfillItems) : "";
+
+  const copyMpcXml = async () => {
+	await navigator.clipboard.writeText(mpcfillXml);
+	setCopiedXml(true);
+	setTimeout(() => setCopiedXml(false), 2000);
+  };
+
+  const downloadMpcXml = () => {
+	const blob = new Blob([mpcfillXml], { type: "application/xml" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `pedido-${pedido?.numero ?? "mpcfill"}-mpcfill.xml`;
+	a.click();
+	URL.revokeObjectURL(url);
   };
 
   if (loading) {
@@ -442,6 +516,43 @@ export default function AdminPedidoDetail() {
 {mtgoList}
       	</pre>
     	</div>
+
+    	{hasMpcfill && (
+      	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mt-6">
+        	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
+          	<h2 className="font-bold flex items-center gap-2">
+            	🎨 Diseños MPCFill ({mpcfillItems.length})
+          	</h2>
+          	<div className="flex gap-2">
+            	<button
+              	onClick={copyMpcXml}
+              	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+            	>
+              	{copiedXml ? <Check size={14} /> : <Copy size={14} />}
+              	{copiedXml ? "Copiado!" : "Copiar XML"}
+            	</button>
+            	<button
+              	onClick={downloadMpcXml}
+              	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+            	>
+              	<Download size={14} /> Descargar .xml
+            	</button>
+          	</div>
+        	</div>
+
+        	<p className="text-xs text-gray-400 mb-3">
+          	Este pedido tiene {mpcfillItems.length} carta(s) con arte HD
+          	elegido en MPCFill. Impórtalo en{" "}
+          	<span className="text-[#FF4D1A]">mpcfill.com → Import → XML</span>{" "}
+          	(o descarga el .xml y súbelo) para cargar los diseños exactos que
+          	quiere el cliente.
+        	</p>
+
+        	<pre className="bg-[#0F1115] text-[#8fd3ff] p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-72 overflow-auto">
+{mpcfillXml}
+        	</pre>
+      	</div>
+    	)}
 
     	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
       	<h2 className="font-bold mb-3">
