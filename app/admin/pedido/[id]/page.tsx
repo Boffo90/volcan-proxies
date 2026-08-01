@@ -11,6 +11,7 @@ import {
   Truck,
   Trash2,
   MapPin,
+  Download,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -66,6 +67,54 @@ const ESTADOS = [
 
 type CourierKey = "starken" | "chilexpress" | "bluexpress" | "";
 
+function xmlEscape(s: string): string {
+  return s
+	.replace(/&/g, "&amp;")
+	.replace(/</g, "&lt;")
+	.replace(/>/g, "&gt;")
+	.replace(/"/g, "&quot;");
+}
+
+/**
+* Genera un XML de orden MPCFill (formato mpc-autofill) con las cartas cuyo
+* arte HD eligió el cliente en MPCFill. Cada <card> lleva el <id> (file-id de
+* Drive) del diseño exacto. Se importa en Cardwright con el botón "MPC XML…".
+*/
+function buildMpcfillXml(items: PedidoItem[]): string {
+  let slot = 0;
+  const total = items.reduce((s, it) => s + it.quantity, 0);
+
+  const cards = items
+	.map((it) => {
+  	const slots: number[] = [];
+  	for (let i = 0; i < it.quantity; i++) slots.push(slot++);
+  	// Cara frontal para el query (MPCFill busca por nombre en minúsculas).
+  	const front = it.name.split(" // ")[0].trim();
+  	return [
+    	"	<card>",
+    	`  	<id>${xmlEscape(it.mpcfillId || "")}</id>`,
+    	`  	<slots>${slots.join(",")}</slots>`,
+    	`  	<name>${xmlEscape(front)}.png</name>`,
+    	`  	<query>${xmlEscape(front.toLowerCase())}</query>`,
+    	"	</card>",
+  	].join("\n");
+	})
+	.join("\n");
+
+  return [
+	"<order>",
+	"  <details>",
+	`	<quantity>${total}</quantity>`,
+	"	<stock>(S30) Standard Smooth</stock>",
+	"	<foil>false</foil>",
+	"  </details>",
+	"  <fronts>",
+	cards,
+	"  </fronts>",
+	"</order>",
+  ].join("\n");
+}
+
 export default function AdminPedidoDetail() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -76,7 +125,8 @@ export default function AdminPedidoDetail() {
   const [adminNotas, setAdminNotas] = useState("");
   const [trackingNum, setTrackingNum] = useState("");
   const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
-  const [copied, setCopied] = useState(false);
+  const [copiedDeck, setCopiedDeck] = useState(false);
+  const [copiedXml, setCopiedXml] = useState(false);
 
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
@@ -186,32 +236,48 @@ export default function AdminPedidoDetail() {
   	maximumFractionDigits: 0,
 	}).format(n);
 
-  const mtgoList =
-	pedido?.items
-  	.map((it) => {
-    	if (it.isCustom) {
-      	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
-    	}
-    	return `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
-      	it.collector_number
-    	} [${it.finish}]`;
-  	})
-  	.join("\n") || "";
+  // --- Cartas agrupadas por fuente, para importar por separado en Cardwright ---
+  // MPCFill (arte HD por Drive id) → botón "MPC XML…".
+  // Scryfall/Gatherer (printing por set+número) → textbox "Resolve & add".
+  // Custom (imagen propia) → se cargan a mano.
+  const allItems = pedido?.items || [];
+  const mpcItems = allItems.filter((it) => it.mpcfillId && !it.isCustom);
+  const scryfallItems = allItems.filter((it) => !it.mpcfillId && !it.isCustom);
+  const customItems = allItems.filter((it) => it.isCustom);
+  const sumQty = (arr: PedidoItem[]) => arr.reduce((s, it) => s + it.quantity, 0);
 
-  const copyMtgo = async () => {
-	await navigator.clipboard.writeText(mtgoList);
-	setCopied(true);
-	setTimeout(() => setCopied(false), 2000);
+  // Decklist (formato MTGO) de las cartas Scryfall/Gatherer.
+  const scryfallDeck = scryfallItems
+	.map(
+  	(it) =>
+    	`${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${it.collector_number} [${it.finish}]`
+	)
+	.join("\n");
+
+  // XML de orden MPCFill con los diseños HD que eligió el cliente.
+  const mpcXml = mpcItems.length ? buildMpcfillXml(mpcItems) : "";
+
+  const copyDeck = async () => {
+	await navigator.clipboard.writeText(scryfallDeck);
+	setCopiedDeck(true);
+	setTimeout(() => setCopiedDeck(false), 2000);
   };
 
-  // Total de cartas y cuántas son custom (imagen propia): Cardwright resuelve
-  // por Scryfall, así que las custom no las trae de la lista y se cargan aparte.
-  const totalQty =
-	pedido?.items.reduce((s, it) => s + it.quantity, 0) || 0;
-  const customQty =
-	pedido?.items
-  	.filter((it) => it.isCustom)
-  	.reduce((s, it) => s + it.quantity, 0) || 0;
+  const copyXml = async () => {
+	await navigator.clipboard.writeText(mpcXml);
+	setCopiedXml(true);
+	setTimeout(() => setCopiedXml(false), 2000);
+  };
+
+  const downloadXml = () => {
+	const blob = new Blob([mpcXml], { type: "application/xml" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = `pedido-${pedido?.numero ?? "mpcfill"}-mpcfill.xml`;
+	a.click();
+	URL.revokeObjectURL(url);
+  };
 
   if (loading) {
 	return (
@@ -437,39 +503,93 @@ export default function AdminPedidoDetail() {
       	</div>
     	</div>
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mt-6">
-      	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
-        	<h2 className="font-bold flex items-center gap-2">
-          	🃏 Lista para Cardwright ({totalQty} cartas)
-        	</h2>
-        	<button
-          	onClick={copyMtgo}
-          	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
-        	>
-          	{copied ? <Check size={14} /> : <Copy size={14} />}
-          	{copied ? "Copiado!" : "Copiar lista"}
-        	</button>
-      	</div>
-
-      	<p className="text-xs text-gray-400 mb-3">
-        	Cópiala y pégala en <b>Cardwright → Import</b> (&quot;Resolve &amp;
-        	add&quot;). Resuelve el printing exacto por set + número y lo sube a
-        	1200 DPI — arte y cantidad tal cual los pidió el cliente. Formato MTGO
-        	estándar, sirve igual para Moxfield/Archidekt.
-        	{customQty > 0 && (
-          	<>
-            	{" "}
-            	<span className="text-yellow-300">
-              	⚠️ {customQty} carta(s) custom (marcadas [CUSTOM]) no salen de
-              	Scryfall — cárgalas aparte en Cardwright con su imagen propia.
-            	</span>
-          	</>
-        	)}
+    	<div className="mt-6">
+      	<h2 className="font-bold text-lg mb-1">Importar a Cardwright</h2>
+      	<p className="text-xs text-gray-400 mb-4">
+        	Pedido separado por fuente. Cada bloque se importa por su vía en
+        	Cardwright y ambos caen en la misma cola.
       	</p>
 
-      	<pre className="bg-[#0F1115] text-[#FF4D1A] p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-auto">
-{mtgoList}
-      	</pre>
+      	{/* MPCFill: arte HD exacto por Drive id → botón "MPC XML…" */}
+      	{mpcItems.length > 0 && (
+        	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mb-4">
+          	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
+            	<h3 className="font-bold flex items-center gap-2">
+              	🎨 MPCFill ({sumQty(mpcItems)} cartas)
+            	</h3>
+            	<div className="flex gap-2">
+              	<button
+                	onClick={copyXml}
+                	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+              	>
+                	{copiedXml ? <Check size={14} /> : <Copy size={14} />}
+                	{copiedXml ? "Copiado!" : "Copiar XML"}
+              	</button>
+              	<button
+                	onClick={downloadXml}
+                	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+              	>
+                	<Download size={14} /> Descargar .xml
+              	</button>
+            	</div>
+          	</div>
+          	<p className="text-xs text-gray-400 mb-3">
+            	En Cardwright: <b>Import → botón &quot;MPC XML…&quot;</b> → elige
+            	este archivo (o descarga el .xml). Trae el arte HD{" "}
+            	<b>exacto</b> que eligió el cliente.
+          	</p>
+          	<pre className="bg-[#0F1115] text-[#8fd3ff] p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-72 overflow-auto">
+{mpcXml}
+          	</pre>
+        	</div>
+      	)}
+
+      	{/* Scryfall / Gatherer: printing exacto por set+número → "Resolve & add" */}
+      	{scryfallItems.length > 0 && (
+        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-4">
+          	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
+            	<h3 className="font-bold flex items-center gap-2">
+              	🃏 Scryfall / Gatherer ({sumQty(scryfallItems)} cartas)
+            	</h3>
+            	<button
+              	onClick={copyDeck}
+              	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+            	>
+              	{copiedDeck ? <Check size={14} /> : <Copy size={14} />}
+              	{copiedDeck ? "Copiado!" : "Copiar lista"}
+            	</button>
+          	</div>
+          	<p className="text-xs text-gray-400 mb-3">
+            	En Cardwright: <b>Import → pega en &quot;Resolve &amp; add&quot;</b>
+            	. Resuelve el printing exacto por set + número y lo sube a 1200 DPI.
+            	(En Cardwright eliges Scryfall o Gatherer como fuente de la imagen.)
+          	</p>
+          	<pre className="bg-[#0F1115] text-[#FF4D1A] p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-auto">
+{scryfallDeck}
+          	</pre>
+        	</div>
+      	)}
+
+      	{/* Custom: imagen propia del cliente, se cargan a mano */}
+      	{customItems.length > 0 && (
+        	<div className="bg-[#1E242B] p-5 rounded-xl border border-yellow-500/30 mb-4">
+          	<h3 className="font-bold flex items-center gap-2 mb-2">
+            	🖼️ Custom ({sumQty(customItems)} cartas)
+          	</h3>
+          	<p className="text-xs text-yellow-200/80 mb-3">
+            	Imágenes propias del cliente — no salen de Scryfall ni MPCFill.
+            	Cárgalas a mano en Cardwright (arrástralas o usa &quot;Add
+            	cards…&quot;); las miniaturas están abajo en <b>Cartas</b>.
+          	</p>
+          	<ul className="text-xs text-gray-300 space-y-1">
+            	{customItems.map((it, i) => (
+              	<li key={i}>
+                	• {it.quantity}× {it.name} [{it.finish}]
+              	</li>
+            	))}
+          	</ul>
+        	</div>
+      	)}
     	</div>
 
     	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
