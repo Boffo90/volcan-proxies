@@ -12,6 +12,8 @@ import {
   Trash2,
   MapPin,
   Download,
+  Mail,
+  CheckCircle2,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -54,6 +56,8 @@ type Pedido = {
   delivery_type?: string;
   shipping_cost?: number;
   idioma?: string;
+  /** Cuándo se le avisó al cliente que su pago quedó confirmado. */
+  confirmacion_enviada_at?: string;
 };
 
 const ESTADOS = [
@@ -127,6 +131,7 @@ export default function AdminPedidoDetail() {
   const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
   const [copiedDeck, setCopiedDeck] = useState(false);
   const [copiedXml, setCopiedXml] = useState(false);
+  const [confirmando, setConfirmando] = useState(false);
 
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
@@ -162,6 +167,42 @@ export default function AdminPedidoDetail() {
 	if (res.ok) await fetchPedido();
 
 	setSaving(false);
+  };
+
+  const confirmarPago = async () => {
+	if (
+  	!confirm(
+    	"¿Confirmar el pago y enviarle el aviso al cliente por email?"
+  	)
+	) {
+  	return;
+	}
+
+	setConfirmando(true);
+
+	try {
+  	const res = await fetch("/api/admin/pedido/" + id, {
+    	method: "PATCH",
+    	headers: { "Content-Type": "application/json" },
+    	body: JSON.stringify({ confirmar: true }),
+  	});
+
+  	const data = await res.json();
+
+  	if (!res.ok) {
+    	alert("No se pudo confirmar: " + (data.error || "error desconocido"));
+  	} else if (data.confirmacion === "error") {
+    	alert(
+      	"El pedido quedó confirmado, pero el email no salió. Revisa los logs."
+    	);
+  	} else if (data.confirmacion === "ya_enviado") {
+    	alert("Este cliente ya había sido avisado, no se reenvió el email.");
+  	}
+
+  	await fetchPedido();
+	} finally {
+  	setConfirmando(false);
+	}
   };
 
   const saveNotas = async () => {
@@ -350,6 +391,48 @@ export default function AdminPedidoDetail() {
         	</button>
       	</div>
     	</div>
+
+    	{pedido.confirmacion_enviada_at ? (
+      	<div className="bg-green-500/10 border border-green-500/30 p-5 rounded-xl mb-6">
+        	<h2 className="font-bold mb-1 flex items-center gap-2 text-green-300">
+          	<CheckCircle2 size={18} /> Cliente avisado
+        	</h2>
+        	<p className="text-sm text-green-200/80">
+          	Se le confirmó el pago por email el{" "}
+          	{new Date(pedido.confirmacion_enviada_at).toLocaleString("es-CL")}.
+        	</p>
+      	</div>
+    	) : (
+      	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mb-6">
+        	<h2 className="font-bold mb-1 flex items-center gap-2">
+          	<Mail size={18} className="text-[#FF4D1A]" /> Confirmar pago
+        	</h2>
+        	<p className="text-xs text-gray-400 mb-4">
+          	Marca el pedido como <b>pagado</b> y le envía un email al cliente
+          	avisándole que su pedido quedó confirmado. Se envía una sola vez.
+          	{pedido.metodo_pago === "flow" && (
+            	<>
+              	{" "}
+              	<span className="text-gray-500">
+                	(Los pagos por Flow se confirman y avisan solos.)
+              	</span>
+            	</>
+          	)}
+        	</p>
+        	<button
+          	onClick={confirmarPago}
+          	disabled={confirmando}
+          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+        	>
+          	{confirmando ? (
+            	<Loader2 className="animate-spin" size={14} />
+          	) : (
+            	<Mail size={14} />
+          	)}
+          	Confirmar pago y avisar al cliente
+        	</button>
+      	</div>
+    	)}
 
     	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
       	<h2 className="font-bold mb-3">Avanzar pedido</h2>

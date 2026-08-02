@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  enviarEmailConfirmacion,
+  reclamarConfirmacion,
+} from "@/lib/emailPedido";
 import { Resend } from "resend";
 
 const COURIER_NAMES: Record<string, string> = {
@@ -48,7 +52,7 @@ export async function PATCH(
   const { data: current } = await sb
 	.from("pedidos")
 	.select(
-  	"estado, historial, numero, cliente_nombre, cliente_email, direccion, comuna, region, total"
+  	"estado, historial, numero, cliente_nombre, cliente_email, direccion, comuna, region, total, delivery_type"
 	)
 	.eq("id", id)
 	.single();
@@ -56,16 +60,21 @@ export async function PATCH(
   const updates: Record<string, unknown> = {};
   let triggerTrackingEmail = false;
 
-  if (body.estado && current && body.estado !== current.estado) {
+  // "Confirmar pago y avisar al cliente": deja el pedido en pagado y manda el
+  // email de confirmación. Es lo mismo que avanzar el estado, pero explícito.
+  const quiereConfirmar = body.confirmar === true;
+  const nuevoEstado = quiereConfirmar ? "pagado" : body.estado;
+
+  if (nuevoEstado && current && nuevoEstado !== current.estado) {
 	const newEntry = {
   	from: current.estado,
-  	to: body.estado,
+  	to: nuevoEstado,
   	at: new Date().toISOString(),
 	};
 
 	const historial = Array.isArray(current.historial) ? current.historial : [];
 
-	updates.estado = body.estado;
+	updates.estado = nuevoEstado;
 	updates.historial = [...historial, newEntry];
   }
 
@@ -86,15 +95,45 @@ export async function PATCH(
 	updates.fecha_envio = body.fecha_envio;
   }
 
-  const { data, error } = await sb
-	.from("pedidos")
-	.update(updates)
-	.eq("id", id)
-	.select()
-	.single();
+  // Confirmar un pedido que ya estaba en "pagado" no cambia ninguna columna;
+  // en ese caso saltamos el update (un PATCH vacío falla) y solo leemos.
+  const query =
+	Object.keys(updates).length > 0
+  	? sb.from("pedidos").update(updates).eq("id", id).select().single()
+  	: sb.from("pedidos").select().eq("id", id).single();
+
+  const { data, error } = await query;
 
   if (error) {
 	return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // "enviado" = salió el correo ahora; "ya_enviado" = el cliente ya había sido
+  // avisado antes, así que no se repite.
+  let confirmacion: "enviado" | "ya_enviado" | "error" | null = null;
+
+  if (quiereConfirmar && current) {
+	try {
+  	const nosTocaEnviar = await reclamarConfirmacion(sb, id);
+  	if (nosTocaEnviar) {
+    	await enviarEmailConfirmacion({
+      	numero: current.numero,
+      	cliente_nombre: current.cliente_nombre,
+      	cliente_email: current.cliente_email,
+      	total: current.total,
+      	delivery_type: current.delivery_type,
+      	direccion: current.direccion,
+      	comuna: current.comuna,
+      	region: current.region,
+    	});
+    	confirmacion = "enviado";
+  	} else {
+    	confirmacion = "ya_enviado";
+  	}
+	} catch (e) {
+  	console.error("[CONFIRMACION EMAIL] error:", e);
+  	confirmacion = "error";
+	}
   }
 
   if (triggerTrackingEmail && current) {
@@ -195,7 +234,7 @@ export async function PATCH(
 	}
   }
 
-  return NextResponse.json({ pedido: data });
+  return NextResponse.json({ pedido: data, confirmacion });
 }
 
 export async function DELETE(
