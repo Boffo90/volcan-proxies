@@ -82,6 +82,19 @@ export async function PATCH(
 	updates.admin_notas = body.admin_notas;
   }
 
+  // Cambiar el método de pago: pasa cuando el cliente no logra pagar con Flow
+  // y termina transfiriendo (o al revés). Se valida contra la lista real para
+  // que no entre cualquier texto y deje el pedido en un estado raro.
+  if (body.metodo_pago !== undefined) {
+	if (!["flow", "transferencia"].includes(body.metodo_pago)) {
+  	return NextResponse.json(
+    	{ error: "Método de pago inválido" },
+    	{ status: 400 }
+  	);
+	}
+	updates.metodo_pago = body.metodo_pago;
+  }
+
   if (body.tracking_numero !== undefined) {
 	updates.tracking_numero = body.tracking_numero;
 	triggerTrackingEmail = !!body.tracking_numero;

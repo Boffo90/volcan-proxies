@@ -236,6 +236,43 @@ export default function AdminPedidoDetail() {
 	setSaving(false);
   };
 
+  const cambiarMetodoPago = async (metodo: string) => {
+	const etiqueta = metodo === "flow" ? "Flow.cl" : "Transferencia";
+	if (
+  	!confirm(
+    	"¿Cambiar el método de pago a " +
+      	etiqueta +
+      	"?\n\nÚsalo cuando el cliente pagó por una vía distinta a la que " +
+      	"eligió al comprar."
+  	)
+	) {
+  	return;
+	}
+
+	setSaving(true);
+	try {
+  	const res = await fetch("/api/admin/pedido/" + id, {
+    	method: "PATCH",
+    	headers: { "Content-Type": "application/json" },
+    	body: JSON.stringify({ metodo_pago: metodo }),
+  	});
+
+  	if (!res.ok) {
+    	const data = await res.json();
+    	alert("No se pudo cambiar: " + (data.error || "error desconocido"));
+    	return;
+  	}
+
+  	// Al dejar de ser un pedido de Flow, la verificación anterior ya no
+  	// aplica; se limpia para que no quede la alarma roja de un pago que ya
+  	// no corresponde vigilar.
+  	setFlowEstado(null);
+  	await fetchPedido();
+	} finally {
+  	setSaving(false);
+	}
+  };
+
   const confirmarPago = async () => {
 	// En pedidos de Flow, avisar "pago confirmado" cuando Flow dice que no
 	// está pagado es justo el error que hace producir un pedido impago.
@@ -553,8 +590,9 @@ export default function AdminPedidoDetail() {
                   	</p>
                   	<p className="text-xs text-red-200/80 mt-1">
                     	No lo produzcas ni lo despaches hasta comprobar el pago.
-                    	Si el cliente pagó por transferencia, cambia el método de
-                    	pago del pedido.
+                    	Si el cliente pagó por transferencia (pasa cuando Flow le
+                    	falla), cámbialo a <b>Transferencia</b> en el recuadro{" "}
+                    	<b>Pago</b> más abajo y esta alarma desaparece.
                   	</p>
                 	</div>
               	)}
@@ -733,7 +771,29 @@ export default function AdminPedidoDetail() {
       	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
         	<h2 className="font-bold mb-3">Pago</h2>
         	<p className="text-sm text-gray-400">Método</p>
-        	<p className="mb-3 capitalize">{pedido.metodo_pago}</p>
+        	<div className="flex gap-2 mb-3">
+          	{[
+            	{ key: "flow", label: "Flow.cl" },
+            	{ key: "transferencia", label: "Transferencia" },
+          	].map((m) => {
+            	const activo = pedido.metodo_pago === m.key;
+            	return (
+              	<button
+                	key={m.key}
+                	onClick={() => !activo && cambiarMetodoPago(m.key)}
+                	disabled={activo || saving}
+                	className={
+                  	"px-3 py-1.5 rounded-lg text-sm transition " +
+                  	(activo
+                    	? "bg-[#FF4D1A] text-white"
+                    	: "bg-[#0F1115] border border-white/10 hover:border-[#FF4D1A]")
+                	}
+              	>
+                	{m.label}
+              	</button>
+            	);
+          	})}
+        	</div>
         	<p className="text-sm text-gray-400">Idioma de las cartas</p>
         	<p className="mb-3">{pedido.idioma || "Inglés"}</p>
         	<p className="text-sm text-gray-400">Promo aplicada</p>
