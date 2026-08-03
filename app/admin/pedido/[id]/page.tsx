@@ -14,6 +14,8 @@ import {
   Download,
   Mail,
   CheckCircle2,
+  CreditCard,
+  RefreshCw,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -70,6 +72,28 @@ const ESTADOS = [
 ];
 
 type CourierKey = "starken" | "chilexpress" | "bluexpress" | "";
+
+/** Respuesta de la verificación contra Flow (estado real del pago). */
+type FlowEstado = {
+  aplica: boolean;
+  status?: number;
+  etiqueta?: string;
+  pagado?: boolean;
+  monto?: number;
+  pagador?: string | null;
+  flowOrder?: number | null;
+  error?: string;
+};
+
+// Estados que implican que el pedido ya se está trabajando o despachando: si
+// el pago no está confirmado en Flow, aquí es donde se pierde plata.
+const ESTADOS_QUE_ASUMEN_PAGO = [
+  "pagado",
+  "imprimiendo",
+  "laminando",
+  "enviado",
+  "entregado",
+];
 
 function xmlEscape(s: string): string {
   return s
@@ -132,6 +156,8 @@ export default function AdminPedidoDetail() {
   const [copiedDeck, setCopiedDeck] = useState(false);
   const [copiedXml, setCopiedXml] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
+  const [flowEstado, setFlowEstado] = useState<FlowEstado | null>(null);
+  const [verificandoFlow, setVerificandoFlow] = useState(false);
 
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
@@ -151,11 +177,52 @@ export default function AdminPedidoDetail() {
 	setLoading(false);
   }, [id, router]);
 
+  const verificarFlow = useCallback(async () => {
+	setVerificandoFlow(true);
+	try {
+  	const res = await fetch("/api/admin/pedido/" + id + "/flow");
+  	if (res.ok) setFlowEstado(await res.json());
+	} catch {
+  	// sin conexión: el panel muestra el aviso de "no verificado"
+	} finally {
+  	setVerificandoFlow(false);
+	}
+  }, [id]);
+
   useEffect(() => {
 	if (id) fetchPedido();
   }, [id, fetchPedido]);
 
+  // Verificar el pago apenas se abre un pedido de Flow: el estado guardado
+  // puede mentir (webhook que no llegó, o alguien que lo avanzó a mano).
+  useEffect(() => {
+	if (pedido?.metodo_pago === "flow") verificarFlow();
+  }, [pedido?.metodo_pago, verificarFlow]);
+
   const updateEstado = async (nuevoEstado: string) => {
+	// Avanzar un pedido de Flow a un estado que asume el pago, cuando Flow
+	// dice que no está pagado, es exactamente cómo se termina produciendo un
+	// pedido impago. Se puede seguir, pero no en silencio.
+	if (
+  	pedido?.metodo_pago === "flow" &&
+  	ESTADOS_QUE_ASUMEN_PAGO.includes(nuevoEstado) &&
+  	flowEstado?.aplica &&
+  	!flowEstado.error &&
+  	!flowEstado.pagado
+	) {
+  	if (
+    	!confirm(
+      	"🚨 Flow dice que este pedido NO está pagado (" +
+        	flowEstado.etiqueta +
+        	").\n\n¿Igual quieres moverlo a \"" +
+        	nuevoEstado +
+        	'"?\n\nSolo hazlo si comprobaste el pago por otra vía.'
+    	)
+  	) {
+    	return;
+  	}
+	}
+
 	setSaving(true);
 
 	const res = await fetch("/api/admin/pedido/" + id, {
@@ -170,6 +237,30 @@ export default function AdminPedidoDetail() {
   };
 
   const confirmarPago = async () => {
+	// En pedidos de Flow, avisar "pago confirmado" cuando Flow dice que no
+	// está pagado es justo el error que hace producir un pedido impago.
+	if (pedido?.metodo_pago === "flow" && flowEstado?.aplica) {
+  	if (flowEstado.error) {
+    	if (
+      	!confirm(
+        	"No se pudo verificar el pago con Flow (" +
+          	flowEstado.error +
+          	").\n\n¿Confirmar igual? Solo hazlo si comprobaste el pago por otra vía."
+      	)
+    	) {
+      	return;
+    	}
+  	} else if (!flowEstado.pagado) {
+    	alert(
+      	"Flow dice que este pago NO está confirmado: " +
+        	flowEstado.etiqueta +
+        	".\n\nNo se envió ningún aviso. Si el cliente pagó por otra vía, " +
+        	"cambia el método de pago del pedido antes de confirmar."
+    	);
+    	return;
+  	}
+	}
+
 	if (
   	!confirm(
     	"¿Confirmar el pago y enviarle el aviso al cliente por email?"
@@ -391,6 +482,88 @@ export default function AdminPedidoDetail() {
         	</button>
       	</div>
     	</div>
+
+    	{pedido.metodo_pago === "flow" && (
+      	<div
+        	className={
+          	"p-5 rounded-xl mb-6 border " +
+          	(flowEstado?.error || !flowEstado
+            	? "bg-[#1E242B] border-white/10"
+            	: flowEstado.pagado
+            	? "bg-green-500/10 border-green-500/30"
+            	: "bg-red-500/15 border-red-500/50")
+        	}
+      	>
+        	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
+          	<h2 className="font-bold flex items-center gap-2">
+            	<CreditCard size={18} className="text-[#FF4D1A]" />
+            	Pago en Flow (verificado en vivo)
+          	</h2>
+          	<button
+            	onClick={verificarFlow}
+            	disabled={verificandoFlow}
+            	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10 disabled:opacity-50"
+          	>
+            	{verificandoFlow ? (
+              	<Loader2 className="animate-spin" size={14} />
+            	) : (
+              	<RefreshCw size={14} />
+            	)}
+            	Volver a verificar
+          	</button>
+        	</div>
+
+        	{verificandoFlow && !flowEstado ? (
+          	<p className="text-sm text-gray-400">Consultando a Flow…</p>
+        	) : flowEstado?.error ? (
+          	<p className="text-sm text-yellow-300">
+            	⚠️ No se pudo verificar con Flow: {flowEstado.error}. No asumas
+            	que está pagado sin comprobarlo.
+          	</p>
+        	) : flowEstado?.aplica === false ? (
+          	<p className="text-sm text-gray-400">
+            	Este pedido no tiene un pago de Flow asociado.
+          	</p>
+        	) : flowEstado ? (
+          	<>
+            	<p
+              	className={
+                	"text-2xl font-bold " +
+                	(flowEstado.pagado ? "text-green-300" : "text-red-300")
+              	}
+            	>
+              	{flowEstado.pagado ? "✓ PAGADO" : "✗ NO PAGADO"} —{" "}
+              	{flowEstado.etiqueta}
+            	</p>
+            	{flowEstado.pagado && (
+              	<p className="text-sm text-green-200/80 mt-1">
+                	Flow confirma el pago
+                	{flowEstado.monto
+                  	? " por " + formatCLP(flowEstado.monto)
+                  	: ""}
+                	{flowEstado.pagador ? " · " + flowEstado.pagador : ""}.
+              	</p>
+            	)}
+            	{!flowEstado.pagado &&
+              	ESTADOS_QUE_ASUMEN_PAGO.includes(pedido.estado) && (
+                	<div className="mt-3 bg-red-500/20 border border-red-500/40 rounded-lg p-3">
+                  	<p className="font-bold text-red-200 text-sm">
+                    	🚨 OJO: el pedido está en &quot;{pedido.estado}&quot;
+                    	pero Flow NO tiene el pago confirmado.
+                  	</p>
+                  	<p className="text-xs text-red-200/80 mt-1">
+                    	No lo produzcas ni lo despaches hasta comprobar el pago.
+                    	Si el cliente pagó por transferencia, cambia el método de
+                    	pago del pedido.
+                  	</p>
+                	</div>
+              	)}
+          	</>
+        	) : (
+          	<p className="text-sm text-gray-400">Sin verificar.</p>
+        	)}
+      	</div>
+    	)}
 
     	{pedido.confirmacion_enviada_at ? (
       	<div className="bg-green-500/10 border border-green-500/30 p-5 rounded-xl mb-6">
