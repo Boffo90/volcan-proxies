@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   FINISHES,
   FINISH_INFO,
@@ -103,6 +104,15 @@ export default function FinishButtons({
       	<p className="text-green-400">✓ {info.pro}</p>
       	<p className="text-yellow-400">⚠ {info.contra}</p>
     	</div>
+  	) : null}
+
+  	{size === "md" ? (
+    	<Link
+      	href="/acabados"
+      	className="inline-block mt-2 text-xs text-[#FF4D1A] hover:underline"
+    	>
+      	¿Cuál elijo? Ver los acabados en detalle →
+    	</Link>
   	) : null}
 	</div>
   );

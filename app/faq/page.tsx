@@ -6,7 +6,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/animation/Reveal";
 import { usePrecios } from "@/hooks/usePrecios";
-import { formatCLP } from "@/lib/pricing";
+import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(0);
@@ -53,7 +53,13 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿De qué calidad son las cartas?",
-  	a: "Imprimimos en papel fotográfico de alto gramaje, luego laminamos en calor con bolsas tamaño carta. Hay dos acabados: Glossy (brillante, look clásico) y Matte (mate, sin reflejo, sensación premium). Las cartas tienen el tamaño estándar MTG/Pokémon (63x88mm aprox) y se barajan perfectamente con cartas reales.",
+  	a: `Imprimimos en papel fotográfico de alto gramaje. Hay ${
+    	FINISHES.length
+  	} acabados, cada uno con su propio proceso: ${FINISHES.map(
+    	(f) => `${FINISH_INFO[f].label} (${FINISH_INFO[f].desc.toLowerCase().replace(/\.$/, "")})`
+  	).join(
+    	"; "
+  	)}. Las cartas tienen el tamaño estándar MTG/Pokémon (63x88mm aprox) y se barajan perfectamente con cartas reales. En la página de Acabados explicamos cada proceso en detalle, con sus pros y sus contras.`,
 	},
 	{
   	q: "¿Puedo elegir el arte de la carta?",
