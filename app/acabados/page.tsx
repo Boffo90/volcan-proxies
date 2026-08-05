@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Layers,
@@ -86,6 +88,41 @@ const DETALLE: Record<Finish, Detalle> = {
   },
 };
 
+// Fotos de la misma carta en cada acabado. Se cargan desde /public/acabados/
+// y la sección aparece sola cuando los archivos existen: así se pueden subir
+// sin tocar código, y mientras falten no queda un hueco roto en la página.
+const FOTO_MUESTRA = (f: Finish) => `/acabados/${f}.jpg`;
+const FOTO_ANGULO = "/acabados/angulo.jpg";
+
+/** Devuelve las rutas que sí cargaron, probándolas en el navegador. */
+function useImagenesDisponibles(rutas: string[]): Set<string> {
+  const [ok, setOk] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+	let vivo = true;
+	Promise.all(
+  	rutas.map(
+    	(src) =>
+      	new Promise<string | null>((resolve) => {
+        	const img = new window.Image();
+        	img.onload = () => resolve(src);
+        	img.onerror = () => resolve(null);
+        	img.src = src;
+      	})
+  	)
+	).then((res) => {
+  	if (vivo) setOk(new Set(res.filter((x): x is string => x !== null)));
+	});
+	return () => {
+  	vivo = false;
+	};
+	// rutas es una constante derivada de FINISHES, no cambia en runtime.
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return ok;
+}
+
 const COLUMNAS: Array<{
   icon: typeof Layers;
   label: string;
@@ -101,6 +138,13 @@ export default function AcabadosPage() {
   const { precios } = usePrecios();
 
   const disponibles = FINISHES.filter((f) => precios.disponible[f]);
+
+  const fotos = useImagenesDisponibles([
+	...FINISHES.map(FOTO_MUESTRA),
+	FOTO_ANGULO,
+  ]);
+  const conMuestra = FINISHES.filter((f) => fotos.has(FOTO_MUESTRA(f)));
+  const hayAngulo = fotos.has(FOTO_ANGULO);
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -199,6 +243,74 @@ export default function AcabadosPage() {
       	</p>
     	</Reveal>
   	</section>
+
+  	{/* MISMA CARTA EN LOS CUATRO ACABADOS */}
+  	{conMuestra.length > 0 && (
+    	<section className="px-6 pb-12 max-w-5xl mx-auto">
+      	<Reveal className="glass-card rounded-2xl p-5 md:p-8">
+        	<h2 className="font-display font-extrabold text-2xl md:text-3xl mb-2 text-center">
+          	La <span className="text-lava">misma carta</span> en cada acabado
+        	</h2>
+        	<p className="text-sm text-gray-400 text-center mb-6 max-w-2xl mx-auto">
+          	Misma impresión, misma luz, mismo encuadre. Lo único que cambia es
+          	el proceso de acabado.
+        	</p>
+
+        	<div
+          	className={
+            	"grid gap-4 " +
+            	(conMuestra.length >= 4
+              	? "grid-cols-2 lg:grid-cols-4"
+              	: "grid-cols-2")
+          	}
+        	>
+          	{conMuestra.map((f) => (
+            	<figure key={f} className="m-0">
+              	<div className="relative aspect-[5/7] rounded-xl overflow-hidden ring-1 ring-white/10 bg-[#0b0d11]">
+                	<Image
+                  	src={FOTO_MUESTRA(f)}
+                  	alt={`Carta con acabado ${FINISH_INFO[f].label}`}
+                  	fill
+                  	sizes="(max-width: 1024px) 50vw, 25vw"
+                  	className="object-cover"
+                	/>
+              	</div>
+              	<figcaption className="mt-2 text-center">
+                	<span className="block font-display font-bold text-sm">
+                  	{FINISH_INFO[f].label}
+                	</span>
+                	<span className="block text-xs text-gray-400">
+                  	{FINISH_INFO[f].contra}
+                	</span>
+              	</figcaption>
+            	</figure>
+          	))}
+        	</div>
+
+        	{hayAngulo && (
+          	<figure className="m-0 mt-8">
+            	<div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10 bg-[#0b0d11]">
+              	<Image
+                	src={FOTO_ANGULO}
+                	alt="Los cuatro acabados vistos en ángulo, mostrando reflejo y curvatura"
+                	fill
+                	sizes="(max-width: 1024px) 100vw, 900px"
+                	className="object-cover"
+              	/>
+            	</div>
+            	<figcaption className="mt-2 text-xs text-gray-400 text-center">
+              	En ángulo se nota lo que de frente no se ve: el reflejo del
+              	Glossy y la curvatura leve del Premium.
+            	</figcaption>
+          	</figure>
+        	)}
+
+        	<p className="text-xs text-gray-500 mt-6 text-center">
+          	Fotos reales de nuestra producción, sin retoque de color.
+        	</p>
+      	</Reveal>
+    	</section>
+  	)}
 
   	{/* DETALLE POR ACABADO */}
   	<section className="px-6 pb-12 max-w-5xl mx-auto space-y-6">
