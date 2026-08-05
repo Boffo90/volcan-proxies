@@ -3,12 +3,40 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowLeft, Save } from "lucide-react";
-import { PRECIOS_DEFAULT, type Precios } from "@/lib/pricing";
+import {
+  FINISHES,
+  FINISH_INFO,
+  formatCLP,
+  normalizePrecios,
+  type Finish,
+  type Precios,
+} from "@/lib/pricing";
 
-type PrecioNumerico = Exclude<
-  keyof Precios,
-  "glossy_disponible" | "matte_disponible"
->;
+/** Grupos de precios que se editan por acabado. */
+const GRUPOS: Array<{
+  key: "unitario" | "mazo60" | "commander100";
+  titulo: string;
+  ayuda: string;
+  cantidad?: number;
+}> = [
+  {
+	key: "unitario",
+	titulo: "Carta unitaria",
+	ayuda: "Precio de una carta suelta, por acabado.",
+  },
+  {
+	key: "mazo60",
+	titulo: "Promo Mazo 60",
+	ayuda: "Precio total del pedido de 60 cartas del mismo acabado.",
+	cantidad: 60,
+  },
+  {
+	key: "commander100",
+	titulo: "Promo Commander 100",
+	ayuda: "Precio total del pedido de 100 cartas del mismo acabado.",
+	cantidad: 100,
+  },
+];
 
 export default function AdminPreciosPage() {
   const router = useRouter();
@@ -25,9 +53,9 @@ export default function AdminPreciosPage() {
   	return;
 	}
 	const data = await res.json();
-	// Merge con defaults para que configs antiguas sin los flags nuevos
-	// (glossy_disponible / matte_disponible) los tomen como true.
-	setPrecios({ ...PRECIOS_DEFAULT, ...data.precios });
+	// normalizePrecios acepta el formato viejo (glossy/matte planos) y rellena
+	// los acabados que falten, así una config sin migrar no queda en cero.
+	setPrecios(normalizePrecios(data.precios));
 	setLoading(false);
   }, [router]);
 
@@ -47,6 +75,23 @@ export default function AdminPreciosPage() {
 	setSavedAt(new Date().toLocaleTimeString("es-CL"));
   };
 
+  const setPrecio = (
+	grupo: "unitario" | "mazo60" | "commander100",
+	f: Finish,
+	valor: number
+  ) => {
+	if (!precios) return;
+	setPrecios({ ...precios, [grupo]: { ...precios[grupo], [f]: valor } });
+  };
+
+  const toggleDisponible = (f: Finish) => {
+	if (!precios) return;
+	setPrecios({
+  	...precios,
+  	disponible: { ...precios.disponible, [f]: !precios.disponible[f] },
+	});
+  };
+
   if (loading || !precios) {
 	return (
   	<main className="min-h-screen bg-[#0b0d11] text-white flex justify-center py-32">
@@ -55,27 +100,9 @@ export default function AdminPreciosPage() {
 	);
   }
 
-  const fields: Array<{ key: PrecioNumerico; label: string; help?: string }> = [
-	{ key: "glossy", label: "Carta unitaria Glossy" },
-	{ key: "matte", label: "Carta unitaria Matte" },
-	{ key: "mazo60_glossy", label: "Promo Mazo 60 Glossy", help: "Precio total por 60 cartas" },
-	{ key: "mazo60_matte", label: "Promo Mazo 60 Matte" },
-	{ key: "commander100_glossy", label: "Promo Commander 100 Glossy" },
-	{ key: "commander100_matte", label: "Promo Commander 100 Matte" },
-	{ key: "custom_surcharge", label: "Recargo por carta custom" },
-  ];
-
-  const toggles: Array<{
-	key: "glossy_disponible" | "matte_disponible";
-	label: string;
-  }> = [
-	{ key: "glossy_disponible", label: "Glossy disponible" },
-	{ key: "matte_disponible", label: "Matte disponible" },
-  ];
-
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
-  	<div className="max-w-3xl mx-auto px-6 py-8">
+  	<div className="max-w-4xl mx-auto px-6 py-8">
     	<button
       	onClick={() => router.push("/admin")}
       	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
@@ -94,60 +121,113 @@ export default function AdminPreciosPage() {
       	<h2 className="font-bold mb-1">Disponibilidad de acabados</h2>
       	<p className="text-xs text-gray-400 mb-4">
         	Al desactivar un acabado, en la tienda aparece bloqueado con
-        	&quot;No disponible por ahora&quot; y el servidor rechaza pedidos
-        	que lo incluyan.
+        	&quot;No disponible&quot; y el servidor rechaza pedidos que lo
+        	incluyan.
       	</p>
-      	<div className="flex gap-3">
-        	{toggles.map((t) => {
-          	const on = precios[t.key];
+      	<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        	{FINISHES.map((f) => {
+          	const on = precios.disponible[f];
           	return (
             	<button
-              	key={t.key}
-              	onClick={() => setPrecios({ ...precios, [t.key]: !on })}
+              	key={f}
+              	onClick={() => toggleDisponible(f)}
               	className={
-                	"flex-1 py-3 rounded-lg border font-semibold transition " +
+                	"py-3 px-2 rounded-lg border font-semibold transition text-sm " +
                 	(on
                   	? "border-green-500/50 bg-green-500/10 text-green-300"
                   	: "border-red-500/40 bg-red-500/10 text-red-300")
               	}
             	>
-              	{t.label}: {on ? "SÍ" : "NO"}
+              	{FINISH_INFO[f].label}
+              	<span className="block text-xs font-normal">
+                	{on ? "disponible" : "oculto"}
+              	</span>
             	</button>
           	);
         	})}
       	</div>
     	</div>
 
-    	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 space-y-4">
-      	{fields.map((f) => (
-        	<div key={f.key}>
-          	<label className="block text-sm font-semibold mb-1">{f.label}</label>
-          	<input
-            	type="number"
-            	value={precios[f.key]}
-            	onChange={(e) =>
-              	setPrecios({ ...precios, [f.key]: Number(e.target.value) || 0 })
-            	}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
-          	/>
-          	{f.help ? (
-            	<p className="text-xs text-gray-500 mt-1">{f.help}</p>
-          	) : null}
+    	{GRUPOS.map((g) => (
+      	<div
+        	key={g.key}
+        	className="bg-[#1E242B] p-6 rounded-xl border border-white/10 mb-6"
+      	>
+        	<h2 className="font-bold mb-1">{g.titulo}</h2>
+        	<p className="text-xs text-gray-400 mb-4">{g.ayuda}</p>
+        	<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          	{FINISHES.map((f) => {
+            	const valor = precios[g.key][f];
+            	return (
+              	<div key={f}>
+                	<label
+                  	htmlFor={`${g.key}-${f}`}
+                  	className="block text-xs font-semibold mb-1"
+                	>
+                  	{FINISH_INFO[f].label}
+                	</label>
+                	<input
+                  	id={`${g.key}-${f}`}
+                  	type="number"
+                  	value={valor}
+                  	onChange={(e) =>
+                    	setPrecio(g.key, f, Number(e.target.value) || 0)
+                  	}
+                  	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
+                	/>
+                	{g.cantidad ? (
+                  	<p className="text-[11px] text-gray-500 mt-1">
+                    	≈ {formatCLP(Math.round(valor / g.cantidad))}/carta
+                  	</p>
+                	) : null}
+              	</div>
+            	);
+          	})}
         	</div>
-      	))}
+      	</div>
+    	))}
 
-      	<div className="border-t border-white/10 pt-4 flex justify-between items-center">
+    	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10">
+      	<label
+        	htmlFor="custom_surcharge"
+        	className="block text-sm font-semibold mb-1"
+      	>
+        	Recargo por carta custom
+      	</label>
+      	<input
+        	id="custom_surcharge"
+        	type="number"
+        	value={precios.custom_surcharge}
+        	onChange={(e) =>
+          	setPrecios({
+            	...precios,
+            	custom_surcharge: Number(e.target.value) || 0,
+          	})
+        	}
+        	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
+      	/>
+      	<p className="text-xs text-gray-500 mt-1">
+        	Se suma al precio unitario del acabado elegido.
+      	</p>
+
+      	<div className="border-t border-white/10 pt-4 mt-4 flex justify-between items-center">
         	{savedAt ? (
           	<p className="text-xs text-green-400">Guardado a las {savedAt}</p>
         	) : (
-          	<p className="text-xs text-gray-500">Click &quot;Guardar&quot; para aplicar</p>
+          	<p className="text-xs text-gray-500">
+            	Click &quot;Guardar&quot; para aplicar
+          	</p>
         	)}
         	<button
           	onClick={handleSave}
           	disabled={saving}
           	className="bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50"
         	>
-          	{saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+          	{saving ? (
+            	<Loader2 className="animate-spin" size={16} />
+          	) : (
+            	<Save size={16} />
+          	)}
           	Guardar cambios
         	</button>
       	</div>

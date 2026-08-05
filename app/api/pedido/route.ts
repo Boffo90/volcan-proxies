@@ -4,10 +4,13 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { createFlowPayment } from "@/lib/flow";
 import {
+  FINISHES,
+  FINISH_INFO,
   MIN_CARDS,
   SHIPPING_COST,
   calculateTotalWith,
   finishDisponible,
+  type Finish,
 } from "@/lib/pricing";
 import { getPreciosServer } from "@/lib/pricing-server";
 
@@ -93,13 +96,23 @@ export async function POST(req: Request) {
 	// los precios vigentes en Supabase para evitar manipulación del monto a pagar.
 	const precios = await getPreciosServer();
 
+	// Un acabado desconocido no puede seguir: no tiene precio, y el total
+	// terminaría en NaN. Se corta antes de calcular nada.
+	const desconocido = items.find((i) => !FINISHES.includes(i.finish as Finish));
+	if (desconocido) {
+  	return NextResponse.json(
+    	{ error: `Acabado no válido: ${desconocido.finish}` },
+    	{ status: 400 }
+  	);
+	}
+
 	// Acabados desactivados desde el admin: rechazar el pedido completo.
-	const finishesPedidos = new Set(items.map((i) => i.finish));
-	for (const f of ["glossy", "matte"] as const) {
+	const finishesPedidos = new Set(items.map((i) => i.finish as Finish));
+	for (const f of FINISHES) {
   	if (finishesPedidos.has(f) && !finishDisponible(precios, f)) {
     	return NextResponse.json(
       	{
-        	error: `El acabado ${f === "glossy" ? "Glossy" : "Matte"} no está disponible por ahora. Cambia esas cartas al otro acabado en tu carrito.`,
+        	error: `El acabado ${FINISH_INFO[f].label} no está disponible por ahora. Cambia esas cartas a otro acabado en tu carrito.`,
       	},
       	{ status: 400 }
     	);
@@ -109,7 +122,7 @@ export async function POST(req: Request) {
 	const { total: subtotal, applied } = calculateTotalWith(
   	precios,
   	items.map((i) => ({
-    	finish: i.finish as "glossy" | "matte",
+    	finish: i.finish as Finish,
     	quantity: i.quantity,
     	isCustom: i.isCustom,
   	}))
@@ -267,8 +280,8 @@ export async function POST(req: Request) {
         	<b>${it.name}</b><br/>
         	<span style="color:#888;font-size:12px;">${customLabel}${collector}</span>
       	</td>
-      	<td style="padding:8px;border-bottom:1px solid #eee;text-transform:capitalize;color:#FF4D1A;">
-        	${it.finish}
+      	<td style="padding:8px;border-bottom:1px solid #eee;color:#FF4D1A;">
+        	${FINISH_INFO[it.finish as Finish]?.label ?? it.finish}
       	</td>
     	</tr>`;
   	})

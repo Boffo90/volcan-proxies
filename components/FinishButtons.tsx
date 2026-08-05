@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  FINISHES,
+  FINISH_INFO,
   finishDisponible,
   formatCLP,
+  precioUnitario,
   type Finish,
   type Precios,
 } from "@/lib/pricing";
@@ -17,12 +20,15 @@ type Props = {
   surcharge?: number;
   /** Restringe qué acabados se muestran (ej: finish_options de un custom). */
   allowed?: Finish[];
+  /** Muestra el pro/contra del acabado elegido debajo. Solo en "md". */
+  showInfo?: boolean;
 };
 
 /**
- * Selector Glossy/Matte que respeta la disponibilidad configurada en el
- * admin: los acabados desactivados se ven bloqueados con "No disponible".
- */
+* Selector de acabado que respeta la disponibilidad configurada en el admin:
+* los desactivados se ven bloqueados con "No disponible". Con cuatro opciones
+* van en dos columnas, porque en una fila no alcanzan a leerse en móvil.
+*/
 export default function FinishButtons({
   precios,
   value,
@@ -30,58 +36,74 @@ export default function FinishButtons({
   size = "md",
   surcharge = 0,
   allowed,
+  showInfo = false,
 }: Props) {
-  const opciones: Array<{ f: Finish; label: string; precio: number }> = (
-	[
-  	{ f: "glossy" as Finish, label: "Glossy", precio: precios.glossy + surcharge },
-  	{ f: "matte" as Finish, label: "Matte", precio: precios.matte + surcharge },
-	]
-  ).filter((o) => !allowed || allowed.includes(o.f));
+  const opciones = FINISHES.filter((f) => !allowed || allowed.includes(f));
+  const info = FINISH_INFO[value];
+  const valueDisponible = finishDisponible(precios, value);
 
   return (
-	<div className={size === "md" ? "flex gap-2" : "flex gap-1"}>
-  	{opciones.map(({ f, label, precio }) => {
-    	const disponible = finishDisponible(precios, f);
-    	const sel = value === f && disponible;
+	<div>
+  	<div className="grid grid-cols-2 gap-2">
+    	{opciones.map((f) => {
+      	const disponible = finishDisponible(precios, f);
+      	const sel = value === f && disponible;
+      	const precio = precioUnitario(precios, f) + surcharge;
+      	const label = FINISH_INFO[f].corto;
 
-    	const cls =
-      	size === "md"
-        	? "flex-1 py-2 rounded-lg border transition text-center " +
-          	(!disponible
-            	? "border-white/10 opacity-40 cursor-not-allowed"
-            	: sel
-            	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-            	: "border-white/10")
-        	: "flex-1 py-1 text-[10px] rounded transition text-center " +
-          	(!disponible
-            	? "bg-white/5 text-gray-500 opacity-50 cursor-not-allowed"
-            	: sel
-            	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
-            	: "bg-white/5 text-gray-400");
+      	const cls =
+        	size === "md"
+          	? "py-2 px-2 rounded-lg border transition text-center " +
+            	(!disponible
+              	? "border-white/10 opacity-40 cursor-not-allowed"
+              	: sel
+              	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
+              	: "border-white/10 hover:border-white/25")
+          	: "py-1 px-1 text-[10px] rounded transition text-center " +
+            	(!disponible
+              	? "bg-white/5 text-gray-500 opacity-50 cursor-not-allowed"
+              	: sel
+              	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
+              	: "bg-white/5 text-gray-400 hover:text-white");
 
-    	return (
-      	<button
-        	key={f}
-        	type="button"
-        	disabled={!disponible}
-        	onClick={() => disponible && onChange(f)}
-        	className={cls}
-      	>
-        	{size === "md" && disponible ? `${label} · ${formatCLP(precio)}` : label}
-        	{!disponible ? (
-          	<span
-            	className={
-              	size === "md"
-                	? "block text-[10px] text-gray-400 font-normal"
-                	: "block text-[8px]"
-            	}
-          	>
-            	No disponible por ahora
-          	</span>
-        	) : null}
-      	</button>
-    	);
-  	})}
+      	return (
+        	<button
+          	key={f}
+          	type="button"
+          	disabled={!disponible}
+          	onClick={() => disponible && onChange(f)}
+          	title={FINISH_INFO[f].desc}
+          	className={cls}
+        	>
+          	<span className={size === "md" ? "font-semibold" : ""}>{label}</span>
+          	{size === "md" && disponible ? (
+            	<span className="block text-xs text-gray-300">
+              	{formatCLP(precio)}
+            	</span>
+          	) : null}
+          	{!disponible ? (
+            	<span
+              	className={
+                	size === "md"
+                  	? "block text-[10px] text-gray-400 font-normal"
+                  	: "block text-[8px]"
+              	}
+            	>
+              	No disponible
+            	</span>
+          	) : null}
+        	</button>
+      	);
+    	})}
+  	</div>
+
+  	{showInfo && size === "md" && valueDisponible ? (
+    	<div className="mt-3 text-xs text-gray-400 space-y-1">
+      	<p>{info.desc}</p>
+      	<p className="text-green-400">✓ {info.pro}</p>
+      	<p className="text-yellow-400">⚠ {info.contra}</p>
+    	</div>
+  	) : null}
 	</div>
   );
 }

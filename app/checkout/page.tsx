@@ -15,6 +15,7 @@ import Reveal from "@/components/animation/Reveal";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import {
   calculateTotalWith,
+  FINISH_INFO,
   finishDisponible,
   formatCLP,
   MIN_CARDS,
@@ -497,8 +498,8 @@ export default function CheckoutPage() {
               	<span className="truncate pr-2">
                 	{it.quantity}× {it.name}
               	</span>
-              	<span className="text-gray-400 capitalize text-xs">
-                	{it.finish}
+              	<span className="text-gray-400 text-xs">
+                	{FINISH_INFO[it.finish]?.label ?? it.finish}
               	</span>
             	</div>
           	))}

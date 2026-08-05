@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { PRECIOS_DEFAULT, normalizePrecios } from "@/lib/pricing";
 
 export const revalidate = 60; // cache de 60 segundos
 
@@ -11,19 +12,12 @@ export async function GET() {
 	.eq("key", "precios")
 	.single();
 
+  // Fallback a precios por defecto si falla Supabase.
   if (error || !data) {
-	// Fallback a precios por defecto si falla Supabase
-	return NextResponse.json({
-  	glossy: 150,
-  	matte: 200,
-  	mazo60_glossy: 7900,
-  	mazo60_matte: 10900,
-  	commander100_glossy: 12900,
-  	commander100_matte: 17900,
-  	custom_surcharge: 50,
-	});
+	return NextResponse.json(PRECIOS_DEFAULT);
   }
 
-  return NextResponse.json(data.value);
+  // Se normaliza acá para que el cliente reciba siempre la misma forma, venga
+  // la config en el formato nuevo o en el viejo de dos acabados.
+  return NextResponse.json(normalizePrecios(data.value));
 }
-

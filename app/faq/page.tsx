@@ -23,14 +23,16 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Cuánto cuestan?",
-  	a: `Cartas unitarias: Glossy ${formatCLP(
-    	precios.glossy
-  	)} y Matte ${formatCLP(
-    	precios.matte
+  	a: `Cartas unitarias: Básica 300g ${formatCLP(
+    	precios.unitario.base300
+  	)}, Glossy ${formatCLP(precios.unitario.glossy)}, Matte ${formatCLP(
+    	precios.unitario.matte
+  	)} y Matte Premium ${formatCLP(
+    	precios.unitario.premium
   	)}. Tenemos promos automáticas al armar mazo completo: Mazo 60 desde ${formatCLP(
-    	precios.mazo60_glossy
+    	Math.min(...Object.values(precios.mazo60))
   	)} y Commander 100 desde ${formatCLP(
-    	precios.commander100_glossy
+    	Math.min(...Object.values(precios.commander100))
   	)}. Los precios se aplican automáticamente al armar tu pedido en el carrito.`,
 	},
 	{

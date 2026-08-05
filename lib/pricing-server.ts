@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "@/lib/supabase";
-import { PRECIOS_DEFAULT, type Precios } from "@/lib/pricing";
+import { PRECIOS_DEFAULT, normalizePrecios, type Precios } from "@/lib/pricing";
 
 export async function getPreciosServer(): Promise<Precios> {
   const sb = supabaseAdmin();
@@ -10,5 +10,8 @@ export async function getPreciosServer(): Promise<Precios> {
 	.single();
 
   if (error || !data) return PRECIOS_DEFAULT;
-  return { ...PRECIOS_DEFAULT, ...data.value };
+  // normalizePrecios entiende tanto el formato nuevo (registros por acabado)
+  // como el viejo y plano; un spread simple dejaría los precios en undefined
+  // mientras la config no se haya vuelto a guardar desde el admin.
+  return normalizePrecios(data.value);
 }

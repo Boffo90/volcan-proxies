@@ -9,7 +9,12 @@ import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
 import { uploadImage } from "@/lib/imageUpload";
 import FinishButtons from "@/components/FinishButtons";
-import { defaultFinish, formatCLP, type Finish } from "@/lib/pricing";
+import {
+  defaultFinish,
+  formatCLP,
+  precioUnitario,
+  type Finish,
+} from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
 type CustomUpload = {
@@ -93,7 +98,7 @@ export default function CustomPage() {
   };
 
   const subtotal = uploads.reduce((s, u) => {
-	const unit = u.finish === "glossy" ? precios.glossy : precios.matte;
+	const unit = precioUnitario(precios, u.finish);
 	return s + (unit + precios.custom_surcharge) * u.quantity;
   }, 0);
 

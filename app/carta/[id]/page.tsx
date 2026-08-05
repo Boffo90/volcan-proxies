@@ -18,6 +18,7 @@ import {
   defaultFinish,
   finishDisponible,
   formatCLP,
+  precioUnitario,
   type Finish,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -137,7 +138,7 @@ export default function CartaDetalle() {
   }
 
   const display = selectedPrint || card;
-  const unitPrice = finish === "glossy" ? precios.glossy : precios.matte;
+  const unitPrice = precioUnitario(precios, finish);
   const mainImg = mpcSelected
 	? mpcSelected.thumb
 	: getCardImage(display, "large");

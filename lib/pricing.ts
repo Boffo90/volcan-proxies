@@ -1,42 +1,155 @@
-export type Finish = "glossy" | "matte";
+export const FINISHES = ["base300", "glossy", "matte", "premium"] as const;
+export type Finish = (typeof FINISHES)[number];
+
+export type FinishInfo = {
+  /** Nombre completo, para el detalle y el admin. */
+  label: string;
+  /** Nombre corto, para botones y chips. */
+  corto: string;
+  /** Cómo se fabrica, en una línea. */
+  desc: string;
+  pro: string;
+  contra: string;
+};
+
+// Los pros y contras son los reales de cada proceso: decirlos hace creíble
+// que el Premium valga el triple que la Básica.
+export const FINISH_INFO: Record<Finish, FinishInfo> = {
+  base300: {
+	label: "Básica 300g",
+	corto: "Básica",
+	desc: "Papel de 300g doble faz, sin laminar.",
+	pro: "La más económica, con buenos colores y detalle.",
+	contra: "Más delgada que las laminadas.",
+  },
+  glossy: {
+	label: "Glossy",
+	corto: "Glossy",
+	desc: "Laminado en caliente brillante.",
+	pro: "Colores brillantes y saturados.",
+	contra: "Se marcan las huellas.",
+  },
+  matte: {
+	label: "Matte",
+	corto: "Matte",
+	desc: "Laminado en caliente mate.",
+	pro: "Snap y rigidez muy parecidos a una carta real.",
+	contra: "Los negros se opacan un poco.",
+  },
+  premium: {
+	label: "Matte Premium",
+	corto: "Premium",
+	desc: "Doble laminado: pouch mate por detrás y laminado en frío por delante.",
+	pro: "El mejor detalle y color de los cuatro.",
+	contra: "Se curvan levemente, como las foil originales.",
+  },
+};
 
 export type Precios = {
-  glossy: number;
-  matte: number;
-  mazo60_glossy: number;
-  mazo60_matte: number;
-  commander100_glossy: number;
-  commander100_matte: number;
+  /** Precio por carta suelta. */
+  unitario: Record<Finish, number>;
+  /** Promo de 60 cartas (mazo construido). */
+  mazo60: Record<Finish, number>;
+  /** Promo de 100 cartas (commander). */
+  commander100: Record<Finish, number>;
+  /** Acabados habilitados para la venta, controlado desde el admin. */
+  disponible: Record<Finish, boolean>;
   custom_surcharge: number;
-  // Disponibilidad de acabados, controlada desde el admin. Viven en el mismo
-  // JSON de la tabla config, así que no requieren migración.
-  glossy_disponible: boolean;
-  matte_disponible: boolean;
 };
 
+// Precios vigentes. Glossy y Matte son los que ya estaban en producción; la
+// Básica y el Premium se fijaron sobre su costo real (materiales + flete a
+// Pucón + mano de obra), apuntando al mismo ~65% de margen que el resto.
 export const PRECIOS_DEFAULT: Precios = {
-  glossy: 150,
-  matte: 200,
-  mazo60_glossy: 7900,
-  mazo60_matte: 10900,
-  commander100_glossy: 12900,
-  commander100_matte: 17900,
-  custom_surcharge: 50,
-  glossy_disponible: true,
-  matte_disponible: true,
+  unitario: { base300: 130, glossy: 200, matte: 250, premium: 400 },
+  mazo60: { base300: 7900, glossy: 9900, matte: 12900, premium: 23900 },
+  commander100: { base300: 12900, glossy: 15500, matte: 19900, premium: 39900 },
+  disponible: { base300: true, glossy: true, matte: true, premium: true },
+  custom_surcharge: 100,
 };
 
-/** Acabado por defecto según disponibilidad (glossy si está, si no matte). */
+/**
+* Acepta tanto el JSON nuevo (registros por acabado) como el viejo, que era
+* plano y solo tenía glossy y matte:
+*   { glossy, matte, mazo60_glossy, ..., glossy_disponible, matte_disponible }
+* Sin esto, un config todavía sin migrar dejaría los precios en cero.
+*/
+export function normalizePrecios(raw: unknown): Precios {
+  const d = PRECIOS_DEFAULT;
+  if (!raw || typeof raw !== "object") return d;
+  const r = raw as Record<string, unknown>;
+
+  const num = (v: unknown, fallback: number) =>
+	typeof v === "number" && isFinite(v) ? v : fallback;
+  const bool = (v: unknown, fallback: boolean) =>
+	typeof v === "boolean" ? v : fallback;
+
+  const grupo = (
+	nuevo: unknown,
+	viejo: Partial<Record<Finish, unknown>>,
+	base: Record<Finish, number>
+  ): Record<Finish, number> => {
+	const n = (nuevo && typeof nuevo === "object" ? nuevo : {}) as Record<
+  	string,
+  	unknown
+	>;
+	const out = {} as Record<Finish, number>;
+	for (const f of FINISHES) {
+  	out[f] = num(n[f], num(viejo[f], base[f]));
+	}
+	return out;
+  };
+
+  return {
+	unitario: grupo(r.unitario, { glossy: r.glossy, matte: r.matte }, d.unitario),
+	mazo60: grupo(
+  	r.mazo60,
+  	{ glossy: r.mazo60_glossy, matte: r.mazo60_matte },
+  	d.mazo60
+	),
+	commander100: grupo(
+  	r.commander100,
+  	{ glossy: r.commander100_glossy, matte: r.commander100_matte },
+  	d.commander100
+	),
+	disponible: (() => {
+  	const n = (r.disponible && typeof r.disponible === "object"
+    	? r.disponible
+    	: {}) as Record<string, unknown>;
+  	const viejo: Partial<Record<Finish, unknown>> = {
+    	glossy: r.glossy_disponible,
+    	matte: r.matte_disponible,
+  	};
+  	const out = {} as Record<Finish, boolean>;
+  	for (const f of FINISHES) {
+    	out[f] = bool(n[f], bool(viejo[f], d.disponible[f]));
+  	}
+  	return out;
+	})(),
+	custom_surcharge: num(r.custom_surcharge, d.custom_surcharge),
+  };
+}
+
+export function precioUnitario(precios: Precios, finish: Finish): number {
+  return precios.unitario[finish] ?? PRECIOS_DEFAULT.unitario[finish];
+}
+
+/** Acabado por defecto: el primero disponible, siguiendo el orden de FINISHES. */
 export function defaultFinish(precios: Precios): Finish {
-  return precios.glossy_disponible || !precios.matte_disponible
-	? "glossy"
-	: "matte";
+  return FINISHES.find((f) => precios.disponible[f]) ?? "matte";
 }
 
 export function finishDisponible(precios: Precios, finish: Finish): boolean {
-  return finish === "glossy"
-	? precios.glossy_disponible
-	: precios.matte_disponible;
+  return !!precios.disponible[finish];
+}
+
+export function finishesDisponibles(precios: Precios): Finish[] {
+  return FINISHES.filter((f) => precios.disponible[f]);
+}
+
+/** Convierte un valor guardado (pedidos viejos incluidos) en un Finish válido. */
+export function parseFinish(v: unknown): Finish {
+  return FINISHES.includes(v as Finish) ? (v as Finish) : "matte";
 }
 
 export const PRICES = PRECIOS_DEFAULT;
@@ -60,7 +173,7 @@ export async function getPrecios(): Promise<Precios> {
 	const res = await fetch("/api/precios", { cache: "no-store" });
 	if (!res.ok) throw new Error("fetch fail");
 	const data = await res.json();
-	const merged: Precios = { ...PRECIOS_DEFAULT, ...data };
+	const merged = normalizePrecios(data);
 	cachedPrecios = merged;
 	cachedAt = now;
 	return merged;
@@ -100,27 +213,23 @@ export function calculateTotalWith(
   const finishes = new Set(items.map((i) => i.finish));
   const hasCustom = items.some((i) => i.isCustom);
 
+  // Las promos son por mazo completo de un mismo acabado y sin customs.
   if (finishes.size === 1 && !hasCustom) {
 	const f = [...finishes][0];
 	if (totalQty === 60)
   	return {
-    	total: f === "glossy" ? precios.mazo60_glossy : precios.mazo60_matte,
-    	applied: `Promo Mazo 60 ${f}`,
+    	total: precios.mazo60[f],
+    	applied: `Promo Mazo 60 ${FINISH_INFO[f].label}`,
   	};
 	if (totalQty === 100)
   	return {
-    	total:
-      	f === "glossy"
-        	? precios.commander100_glossy
-        	: precios.commander100_matte,
-    	applied: `Promo Commander 100 ${f}`,
+    	total: precios.commander100[f],
+    	applied: `Promo Commander 100 ${FINISH_INFO[f].label}`,
   	};
   }
 
   const base = items.reduce(
-	(s, i) =>
-  	s +
-  	(i.finish === "glossy" ? precios.glossy : precios.matte) * i.quantity,
+	(s, i) => s + precioUnitario(precios, i.finish) * i.quantity,
 	0
   );
   const surcharge = customQty * precios.custom_surcharge;
@@ -140,4 +249,3 @@ export function calculateTotal(items: CartCalcItem[]): {
 } {
   return calculateTotalWith(cachedPrecios || PRECIOS_DEFAULT, items);
 }
-

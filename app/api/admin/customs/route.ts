@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
+import { FINISHES } from "@/lib/pricing";
 
 function slugify(name: string): string {
   return name
@@ -62,9 +63,8 @@ export async function POST(req: Request) {
   	description: description || null,
   	tags: tags || [],
   	image_url,
-  	finish_options: finish_options?.length
-    	? finish_options
-    	: ["glossy", "matte"],
+  	// Sin restricción explícita, un custom se ofrece en todos los acabados.
+  	finish_options: finish_options?.length ? finish_options : [...FINISHES],
   	surcharge: surcharge ?? null,
 	})
 	.select()

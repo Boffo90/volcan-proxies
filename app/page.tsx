@@ -25,7 +25,7 @@ import {
   type ScryfallCard,
 } from "@/lib/scryfall";
 import { usePrecios } from "@/hooks/usePrecios";
-import { formatCLP } from "@/lib/pricing";
+import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function Home() {
   const router = useRouter();
@@ -85,36 +85,19 @@ export default function Home() {
   const perCard = (total: number, cantidad: number) =>
 	"~" + formatCLP(Math.round(total / cantidad)) + "/carta";
 
-  const promos = [
-	{
-  	name: "Mazo 60",
-  	subtitle: "Glossy",
-  	price: formatCLP(precios.mazo60_glossy),
-  	desc: "Standard, Modern, Pioneer.",
-  	qty: "60 cartas",
-  	perCard: perCard(precios.mazo60_glossy, 60),
-  	disponible: precios.glossy_disponible,
-	},
-	{
-  	name: "Commander 100",
-  	subtitle: "Glossy",
-  	price: formatCLP(precios.commander100_glossy),
-  	desc: "Tu mazo EDH completo.",
-  	qty: "100 cartas",
-  	perCard: perCard(precios.commander100_glossy, 100),
-  	featured: precios.glossy_disponible,
-  	disponible: precios.glossy_disponible,
-	},
-	{
-  	name: "Commander 100",
-  	subtitle: "Matte",
-  	price: formatCLP(precios.commander100_matte),
-  	desc: "Acabado premium sin reflejo.",
-  	qty: "100 cartas",
-  	perCard: perCard(precios.commander100_matte, 100),
-  	disponible: precios.matte_disponible,
-	},
-  ];
+  // Un Commander 100 por acabado: es la forma más directa de mostrar la
+  // escalera completa de calidad y precio.
+  const promos = FINISHES.map((f) => ({
+	name: "Commander 100",
+	subtitle: FINISH_INFO[f].label,
+	price: formatCLP(precios.commander100[f]),
+	desc: FINISH_INFO[f].pro,
+	qty: "100 cartas",
+	perCard: perCard(precios.commander100[f], 100),
+	// El matte es el que mejor equilibra precio y sensación de carta real.
+	featured: f === "matte" && precios.disponible[f],
+	disponible: precios.disponible[f],
+  }));
 
   const placeholderGradient =
 	"linear-gradient(135deg, #1a1f26 0%, #0b0d11 100%)";
@@ -282,7 +265,7 @@ export default function Home() {
         	</p>
       	</Reveal>
 
-      	<div className="grid md:grid-cols-3 gap-6 mb-8">
+      	<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         	{promos.map((p, idx) => (
           	<Reveal
             	key={p.name + p.subtitle}

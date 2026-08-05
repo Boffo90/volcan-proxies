@@ -1,3 +1,5 @@
+import type { Finish } from "./pricing";
+
 export type CartItem = {
   id: string;
   name: string;
@@ -5,7 +7,7 @@ export type CartItem = {
   set_name: string;
   collector_number: string;
   image: string;
-  finish: "glossy" | "matte";
+  finish: Finish;
   quantity: number;
   isCustom?: boolean;
   /** Identificador de MPCFill cuando el cliente eligió un arte HD de ahí. */
@@ -50,7 +52,7 @@ export function updateQty(idx: number, qty: number) {
   setCart(cart);
 }
 
-export function updateFinish(idx: number, finish: "glossy" | "matte") {
+export function updateFinish(idx: number, finish: Finish) {
   const cart = getCart();
   if (cart[idx]) cart[idx].finish = finish;
   setCart(cart);

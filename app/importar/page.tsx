@@ -24,6 +24,7 @@ import {
   defaultFinish,
   finishDisponible,
   formatCLP,
+  precioUnitario,
   type Finish,
 } from "@/lib/pricing";
 import FinishButtons from "@/components/FinishButtons";
@@ -144,7 +145,7 @@ export default function ImportarPage() {
   const totalOk = okCards.reduce((s, c) => s + c.quantity, 0);
   const estimateTotal = okCards.reduce((s, c) => {
 	const finish = getFinish(c);
-	const unit = finish === "glossy" ? precios.glossy : precios.matte;
+	const unit = precioUnitario(precios, finish);
 	return s + unit * c.quantity;
   }, 0);
 

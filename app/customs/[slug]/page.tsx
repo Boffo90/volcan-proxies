@@ -10,6 +10,7 @@ import {
   defaultFinish,
   finishDisponible,
   formatCLP,
+  precioUnitario,
   type Finish,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -79,7 +80,7 @@ export default function CustomDetalle() {
   }
 
   const surcharge = custom.surcharge ?? precios.custom_surcharge;
-  const unitPrice = (finish === "glossy" ? precios.glossy : precios.matte) + surcharge;
+  const unitPrice = precioUnitario(precios, finish) + surcharge;
 
   const handleAddToCart = () => {
 	addToCart({

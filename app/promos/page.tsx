@@ -6,7 +6,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/animation/Reveal";
 import { usePrecios } from "@/hooks/usePrecios";
-import { formatCLP } from "@/lib/pricing";
+import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function PromosPage() {
   const router = useRouter();
@@ -15,61 +15,35 @@ export default function PromosPage() {
   const perCard = (total: number, cantidad: number) =>
 	"≈ " + formatCLP(Math.round(total / cantidad)) + " por carta";
 
-  const PROMOS = [
-	{
-  	name: "Mazo 60 Glossy",
-  	price: formatCLP(precios.mazo60_glossy),
-  	unitEquiv: perCard(precios.mazo60_glossy, 60),
-  	desc: "60 cartas con acabado brillante. Ideal para Modern, Standard, Pioneer.",
-  	features: [
-    	"60 cartas a elección",
-    	"Acabado glossy (brillante)",
-    	"Impresión fotográfica",
-    	"Laminado en calor",
-  	],
-  	disponible: precios.glossy_disponible,
-	},
-	{
-  	name: "Mazo 60 Matte",
-  	price: formatCLP(precios.mazo60_matte),
-  	unitEquiv: perCard(precios.mazo60_matte, 60),
-  	desc: "60 cartas con acabado mate. Sin reflejo bajo luz.",
-  	features: [
-    	"60 cartas a elección",
-    	"Acabado matte (mate)",
-    	"Sin reflejo bajo luz",
-    	"Sensación premium",
-  	],
-  	disponible: precios.matte_disponible,
-	},
-	{
-  	name: "Commander 100 Glossy",
-  	price: formatCLP(precios.commander100_glossy),
-  	unitEquiv: perCard(precios.commander100_glossy, 100),
-  	desc: "100 cartas Glossy para tu mazo EDH/Commander completo.",
-  	features: [
-    	"100 cartas a elección",
-    	"Acabado glossy (brillante)",
-    	"Incluye comandante",
-    	"Para EDH/Commander",
-  	],
-  	featured: precios.glossy_disponible,
-  	disponible: precios.glossy_disponible,
-	},
-	{
-  	name: "Commander 100 Matte",
-  	price: formatCLP(precios.commander100_matte),
-  	unitEquiv: perCard(precios.commander100_matte, 100),
-  	desc: "Acabado mate premium, ideal contra reflejos en torneos.",
-  	features: [
-    	"100 cartas a elección",
-    	"Acabado matte (mate)",
-    	"Sin reflejo bajo luz",
-    	"Sensación premium",
-  	],
-  	disponible: precios.matte_disponible,
-	},
-  ];
+  // Las 8 combinaciones (2 promos × 4 acabados) salen de los mismos datos, así
+  // que agregar o quitar un acabado no obliga a tocar esta página.
+  const PROMOS = (
+	[
+  	{ key: "mazo60" as const, qty: 60, titulo: "Mazo 60", contexto: "Ideal para Modern, Standard, Pioneer." },
+  	{ key: "commander100" as const, qty: 100, titulo: "Commander 100", contexto: "Tu mazo EDH/Commander completo, con comandante." },
+	]
+  ).flatMap((promo) =>
+	FINISHES.map((f) => {
+  	const info = FINISH_INFO[f];
+  	const precio = precios[promo.key][f];
+  	return {
+    	name: `${promo.titulo} ${info.label}`,
+    	price: formatCLP(precio),
+    	unitEquiv: perCard(precio, promo.qty),
+    	desc: `${promo.qty} cartas. ${promo.contexto}`,
+    	features: [
+      	`${promo.qty} cartas a elección`,
+      	info.desc,
+      	`✓ ${info.pro}`,
+      	`⚠ ${info.contra}`,
+    	],
+    	// El Commander 100 Matte es el que mejor equilibra precio y calidad.
+    	featured:
+      	promo.key === "commander100" && f === "matte" && precios.disponible[f],
+    	disponible: precios.disponible[f],
+  	};
+	})
+  );
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -143,7 +117,7 @@ export default function PromosPage() {
         	</li>
         	<li>
           	<b className="text-white">Sin combinar acabados:</b> la promo
-          	aplica solo si todas las cartas son Glossy o todas Matte. Si
+          	aplica solo si las 60 o 100 cartas llevan el mismo acabado. Si
           	mezclas, se cobra unitario.
         	</li>
         	<li>
@@ -157,21 +131,25 @@ export default function PromosPage() {
       	<h2 className="font-display font-bold text-lg mb-4">
         	Precio por carta unitaria
       	</h2>
-      	<div className="grid grid-cols-2 gap-4">
-        	<div className="text-center">
-          	<p className="text-xs text-gray-400 uppercase mb-1">Glossy</p>
-          	<p className="text-2xl font-display font-bold text-lava">
-            	{formatCLP(precios.glossy)}
-          	</p>
-          	<p className="text-xs text-gray-500 mt-1">por carta</p>
-        	</div>
-        	<div className="text-center">
-          	<p className="text-xs text-gray-400 uppercase mb-1">Matte</p>
-          	<p className="text-2xl font-display font-bold text-lava">
-            	{formatCLP(precios.matte)}
-          	</p>
-          	<p className="text-xs text-gray-500 mt-1">por carta</p>
-        	</div>
+      	<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        	{FINISHES.map((f) => (
+          	<div
+            	key={f}
+            	className={
+              	"text-center" + (precios.disponible[f] ? "" : " opacity-40")
+            	}
+          	>
+            	<p className="text-xs text-gray-400 uppercase mb-1">
+              	{FINISH_INFO[f].label}
+            	</p>
+            	<p className="text-2xl font-display font-bold text-lava">
+              	{formatCLP(precios.unitario[f])}
+            	</p>
+            	<p className="text-xs text-gray-500 mt-1">
+              	{precios.disponible[f] ? "por carta" : "no disponible"}
+            	</p>
+          	</div>
+        	))}
       	</div>
     	</Reveal>
 
