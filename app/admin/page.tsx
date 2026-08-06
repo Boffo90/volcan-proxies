@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, LogOut, Settings, RefreshCw, Flame, Palette } from "lucide-react";
+import {
+  Loader2,
+  LogOut,
+  Settings,
+  RefreshCw,
+  Flame,
+  Palette,
+  Package,
+} from "lucide-react";
 
 type Pedido = {
   id: string;
@@ -94,6 +102,12 @@ export default function AdminDashboard() {
         	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
       	>
         	<Palette size={14} /> Customs
+      	</button>
+      	<button
+        	onClick={() => router.push("/admin/stock")}
+        	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
+      	>
+        	<Package size={14} /> Stock
       	</button>
       	<button
         	onClick={logout}
