@@ -20,7 +20,7 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	corto: "Básica",
 	desc: "Papel de 300g doble faz, sin laminar.",
 	pro: "La más económica, con buenos colores y detalle.",
-	contra: "Más delgada que las laminadas.",
+	contra: "Más delgada que una carta real.",
   },
   glossy: {
 	label: "Glossy",

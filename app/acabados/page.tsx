@@ -39,10 +39,10 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Sin laminado: la carta sale directo de la impresora al corte.",
 	],
 	sensacion:
-  	"Superficie semibrillante y carta más delgada que las laminadas, porque no lleva la capa extra de laminado encima.",
+  	"Superficie semibrillante. Es la única de las cuatro que queda más delgada que una carta real, porque no lleva la capa de laminado encima.",
 	idealPara:
   	"Probar un mazo antes de comprometerte, listas que cambian seguido, o cuando el presupuesto manda.",
-	grosor: "Delgada",
+	grosor: "Más delgada",
 	brillo: "Semibrillo",
 	durabilidad: "Básica",
   },
@@ -55,7 +55,7 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Superficie lisa y brillante, con buen snap al barajar. Es el acabado con más 'pop' de color de los cuatro.",
 	idealPara:
   	"Mazos con arte llamativo y quien quiere el máximo brillo. Con fundas, las huellas dejan de ser un tema.",
-	grosor: "Media",
+	grosor: "Como carta real",
 	brillo: "Alto",
 	durabilidad: "Alta",
   },
@@ -68,7 +68,7 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Snap y rigidez muy parecidos a los de una carta real, sin reflejo bajo la luz. Es el que mejor se comporta barajando.",
 	idealPara:
   	"Juego frecuente, torneos proxy-friendly y quien prioriza que se sienta como una carta de verdad.",
-	grosor: "Media",
+	grosor: "Como carta real",
 	brillo: "Sin reflejo",
 	durabilidad: "Alta",
   },
@@ -82,7 +82,7 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Acabado mate parejo y la mejor definición de color de los cuatro. Es el que más trabajo lleva: doble proceso de laminado por carta.",
 	idealPara:
   	"El mazo que de verdad te importa, cEDH, regalos, o cuando quieres que cada carta se vea impecable.",
-	grosor: "Gruesa",
+	grosor: "Como carta real",
 	brillo: "Mate parejo",
 	durabilidad: "Máxima",
   },
@@ -230,7 +230,13 @@ export default function AcabadosPage() {
           	</tbody>
         	</table>
       	</div>
-      	<p className="text-xs text-gray-500 mt-4">
+      	<p className="text-sm text-gray-300 mt-4">
+        	<b className="text-white">Sobre el grosor:</b> los tres acabados
+        	laminados quedan prácticamente iguales a una carta real, así que se
+        	barajan sin notarse dentro del mazo. La Básica 300g es la única que
+        	queda más delgada.
+      	</p>
+      	<p className="text-xs text-gray-500 mt-3">
         	Precios por carta suelta. Armando mazo de 60 o 100 el precio baja
         	automáticamente —{" "}
         	<button
