@@ -111,18 +111,29 @@ export default function PromosPage() {
       	</h2>
       	<ul className="space-y-2 text-sm text-gray-300">
         	<li>
-          	<b className="text-white">Aplicación automática:</b> al llenar tu
-          	carrito con exactamente 60 o 100 cartas del mismo acabado, el
-          	precio cambia solo.
+          	<b className="text-white">Aplicación automática:</b> al juntar 60
+          	o 100 cartas del mismo acabado, el precio cambia solo. No tienes
+          	que elegir la promo ni pedirla.
         	</li>
         	<li>
-          	<b className="text-white">Sin combinar acabados:</b> la promo
-          	aplica solo si las 60 o 100 cartas llevan el mismo acabado. Si
-          	mezclas, se cobra unitario.
+          	<b className="text-white">Las promos se suman:</b> si pides 260
+          	cartas del mismo acabado, se aplican dos Commander 100 y un Mazo
+          	60 en el mismo pedido. No necesitas hacer compras separadas.
         	</li>
         	<li>
-          	<b className="text-white">Cartas custom no cuentan:</b> si
-          	agregas custom, la promo no aplica al pedido completo.
+          	<b className="text-white">Cada acabado tiene la suya:</b> si
+          	llevas 100 Matte y 100 Glossy, cada grupo recibe su promo. Mezclar
+          	acabados ya no te hace perderlas.
+        	</li>
+        	<li>
+          	<b className="text-white">Nunca pagas de más:</b> las cartas que
+          	sobran del tramo se cobran sueltas, así que sumar cartas jamás
+          	encarece el pedido.
+        	</li>
+        	<li>
+          	<b className="text-white">Cartas custom aparte:</b> no suman para
+          	la promo porque llevan otro trabajo, pero tampoco la anulan: el
+          	resto del pedido la aprovecha igual.
         	</li>
       	</ul>
     	</Reveal>

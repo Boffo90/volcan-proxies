@@ -85,7 +85,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Cómo aplican las promos de mazo?",
-  	a: "Si armas un carrito con exactamente 60 cartas (todas mismo acabado, sin custom) aplica el precio promo de Mazo 60. Si llegas a 100 cartas, aplica Commander 100. Las promos NO aplican si mezclas Glossy y Matte o si tienes cartas custom en el mismo pedido — en esos casos se cobra precio unitario.",
+  	a: "Se aplican solas al armar el carrito: al juntar 60 cartas de un mismo acabado entra el precio de Mazo 60, y al llegar a 100 entra el de Commander 100. Las promos se suman, así que un pedido de 260 cartas recibe dos Commander 100 y un Mazo 60 sin que tengas que hacer compras separadas. Cada acabado recibe la suya por su cuenta: si llevas 100 Matte y 100 Glossy, ambos grupos aprovechan su promo. Las cartas que sobran de un tramo se cobran sueltas, así que agregar cartas nunca encarece el pedido. Las custom no suman para la promo, pero tampoco la anulan.",
 	},
   ];
 

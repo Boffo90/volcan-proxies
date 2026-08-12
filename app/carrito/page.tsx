@@ -14,10 +14,12 @@ import {
 } from "@/lib/cart";
 import {
   calculateTotalWith,
+  FINISH_INFO,
   finishDisponible,
   formatCLP,
   MIN_CARDS,
   SHIPPING_COST,
+  sugerenciaPromo,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 import FinishButtons from "@/components/FinishButtons";
@@ -47,14 +49,15 @@ export default function CarritoPage() {
 	);
   }
 
-  const { total, applied } = calculateTotalWith(
-	precios,
-	items.map((i) => ({
-  	finish: i.finish,
-  	quantity: i.quantity,
-  	isCustom: i.isCustom,
-	}))
-  );
+  const itemsCalc = items.map((i) => ({
+	finish: i.finish,
+	quantity: i.quantity,
+	isCustom: i.isCustom,
+  }));
+  const { total, applied } = calculateTotalWith(precios, itemsCalc);
+  // Si está a pocas cartas de una promo, conviene avisarle: entre 152 y 159
+  // cartas se paga más que por 160.
+  const sugerencia = sugerenciaPromo(precios, itemsCalc);
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const faltan = Math.max(0, MIN_CARDS - totalQty);
   const cumpleMin = totalQty >= MIN_CARDS;
@@ -154,10 +157,28 @@ export default function CarritoPage() {
               	{totalQty}
             	</span>
           	</div>
-          	<div className="flex justify-between text-sm mb-4">
-            	<span className="text-gray-400">Tarifa aplicada</span>
-            	<span className="text-[#FF4D1A]">{applied}</span>
+          	<div className="flex justify-between text-sm mb-4 gap-3">
+            	<span className="text-gray-400 flex-shrink-0">
+              	Tarifa aplicada
+            	</span>
+            	<span className="text-[#FF4D1A] text-right">{applied}</span>
           	</div>
+
+          	{sugerencia && cumpleMin && (
+            	<div className="bg-[#FF4D1A]/10 border border-[#FF4D1A]/40 p-3 rounded-lg mb-4">
+              	<p className="text-xs font-semibold text-[#ffb088]">
+                	💡 Agrega {sugerencia.faltan} carta
+                	{sugerencia.faltan !== 1 ? "s" : ""}{" "}
+                	{FINISH_INFO[sugerencia.finish].label} y pagas{" "}
+                	{formatCLP(sugerencia.ahorro)} menos
+              	</p>
+              	<p className="text-[11px] text-[#ffb088]/70 mt-1">
+                	Alcanzas la promo y el pedido queda en{" "}
+                	{formatCLP(sugerencia.totalConPromo)}, aunque lleves más
+                	cartas.
+              	</p>
+            	</div>
+          	)}
 
           	{!cumpleMin && (
             	<div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded-lg mb-4 flex gap-2">
