@@ -13,6 +13,7 @@ import {
   type Finish,
 } from "@/lib/pricing";
 import { getPreciosServer } from "@/lib/pricing-server";
+import { buscarPedidosAgrupables } from "@/lib/envio";
 
 type PedidoItem = {
   id: string;
@@ -127,15 +128,29 @@ export async function POST(req: Request) {
     	isCustom: i.isCustom,
   	}))
 	);
-	const shippingCost = deliveryType === "envio" ? SHIPPING_COST : 0;
-	const total = subtotal + shippingCost;
-
 	const authClient = await supabaseServer();
 	const {
   	data: { user },
 	} = await authClient.auth.getUser();
 
 	const sb = supabaseAdmin();
+
+	// Si el cliente ya tiene un pedido sin despachar a la misma dirección, este
+	// va en el mismo paquete: cobrarle el envío de nuevo sería cobrarle dos
+	// veces por un solo despacho.
+	const agrupables =
+  	deliveryType === "envio"
+    	? await buscarPedidosAgrupables(sb, {
+        	email,
+        	direccion,
+        	comuna,
+        	region,
+      	})
+    	: [];
+
+	const shippingCost =
+  	deliveryType === "envio" && agrupables.length === 0 ? SHIPPING_COST : 0;
+	const total = subtotal + shippingCost;
 
 	const direccionFinal =
   	deliveryType === "retiro"
@@ -327,6 +342,23 @@ export async function POST(req: Request) {
       	? "<p>📍 <b>Retiro en Pucón</b> (coordinar por email)</p>"
       	: `<p>📍 ${direccionFinal}, ${comunaFinal}, ${regionFinal}</p>`;
 
+  	// Aviso destacado: no se le cobró envío porque va con otro pedido, así
+  	// que despacharlos por separado sale de tu bolsillo.
+  	const agrupadoHtml =
+    	agrupables.length > 0
+      	? `<div style="background:#fff4e5;border:2px solid #FF4D1A;padding:14px;border-radius:6px;margin:16px 0;">
+           	<p style="margin:0;font-weight:bold;color:#c92a1f;">
+             	📦 DESPACHAR JUNTO CON ${agrupables
+               	.map((p) => "#" + p.numero)
+               	.join(", ")}
+           	</p>
+           	<p style="margin:6px 0 0;font-size:13px;color:#555;">
+             	Misma dirección y todavía sin despachar, así que no se le
+             	cobró envío en este pedido. Va todo en el mismo paquete.
+           	</p>
+         	</div>`
+      	: "";
+
   	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: process.env.EMAIL_ADMIN!,
@@ -340,6 +372,7 @@ export async function POST(req: Request) {
 
         	<div style="${bodyStyle}">
           	<h2 style="margin-top:0;">Pedido #${pedido.numero}</h2>
+          	${agrupadoHtml}
           	<p><b>Método de pago:</b> ${metodoLabel}</p>
           	<p><b>Entrega:</b> ${entregaLabel}</p>
           	<p><b>Idioma de las cartas:</b> ${idiomaFinal} (las no disponibles van en inglés)</p>
@@ -439,6 +472,16 @@ export async function POST(req: Request) {
           	<h3 style="margin-top:0;">📦 Envío</h3>
           	<p style="margin:4px 0;">${direccionFinal}</p>
           	<p style="margin:4px 0;">${comunaFinal}, ${regionFinal}</p>
+          	${
+            	agrupables.length > 0
+              	? `<p style="margin:12px 0 0;padding:10px;background:#f0f9f0;border-radius:4px;color:#1d6b3f;font-size:13px;">
+                 	✅ <b>No te cobramos envío en este pedido.</b> Va en el
+                 	mismo paquete que tu pedido ${agrupables
+                   	.map((p) => "#" + p.numero)
+                   	.join(", ")}, que todavía no despachamos.
+               	</p>`
+              	: ""
+          	}
           	<p style="margin:12px 0 0;color:#666;font-size:13px;">
             	Dejamos tu pedido despachado en máximo 48 hrs desde la
             	confirmación del pago vía Starken, Chilexpress o Blue Express.

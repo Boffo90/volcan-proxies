@@ -5,6 +5,7 @@ import {
   enviarEmailConfirmacion,
   reclamarConfirmacion,
 } from "@/lib/emailPedido";
+import { buscarPedidosAgrupables } from "@/lib/envio";
 import { Resend } from "resend";
 
 const COURIER_NAMES: Record<string, string> = {
@@ -34,7 +35,20 @@ export async function GET(
 	return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ pedido: data });
+  // Otros pedidos del mismo cliente, a la misma dirección y sin despachar:
+  // van en el mismo paquete y el envío se cobró una sola vez.
+  const agrupables =
+	data.delivery_type === "envio"
+  	? await buscarPedidosAgrupables(sb, {
+      	email: data.cliente_email,
+      	direccion: data.direccion,
+      	comuna: data.comuna,
+      	region: data.region,
+      	excluirId: data.id,
+    	})
+  	: [];
+
+  return NextResponse.json({ pedido: data, agrupables });
 }
 
 export async function PATCH(

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   CreditCard,
   RefreshCw,
+  Package,
 } from "lucide-react";
 
 type PedidoItem = {
@@ -72,6 +73,15 @@ const ESTADOS = [
 ];
 
 type CourierKey = "starken" | "chilexpress" | "bluexpress" | "";
+
+/** Otro pedido del mismo cliente que va en el mismo paquete. */
+type PedidoAgrupable = {
+  id: string;
+  numero: number;
+  estado: string;
+  total: number;
+  created_at: string;
+};
 
 /** Respuesta de la verificación contra Flow (estado real del pago). */
 type FlowEstado = {
@@ -158,6 +168,7 @@ export default function AdminPedidoDetail() {
   const [confirmando, setConfirmando] = useState(false);
   const [flowEstado, setFlowEstado] = useState<FlowEstado | null>(null);
   const [verificandoFlow, setVerificandoFlow] = useState(false);
+  const [agrupables, setAgrupables] = useState<PedidoAgrupable[]>([]);
 
   const fetchPedido = useCallback(async () => {
 	setLoading(true);
@@ -171,6 +182,7 @@ export default function AdminPedidoDetail() {
 	const data = await res.json();
 
 	setPedido(data.pedido);
+	setAgrupables(data.agrupables || []);
 	setAdminNotas(data.pedido?.admin_notas || "");
 	setTrackingNum(data.pedido?.tracking_numero || "");
 	setTrackingCourier((data.pedido?.tracking_courier as CourierKey) || "");
@@ -351,24 +363,55 @@ export default function AdminPedidoDetail() {
   	return;
 	}
 
-	setSaving(true);
-
-	const res = await fetch("/api/admin/pedido/" + id, {
-  	method: "PATCH",
-  	headers: { "Content-Type": "application/json" },
-  	body: JSON.stringify({
-    	tracking_numero: trackingNum.trim(),
-    	tracking_courier: trackingCourier,
-    	fecha_envio: new Date().toISOString(),
-    	estado: "enviado",
-  	}),
-	});
-
-	if (res.ok) {
-  	await fetchPedido();
-  	alert("✅ Tracking guardado y email enviado al cliente");
+	// Si van en el mismo paquete comparten el mismo seguimiento; si no, los
+	// otros pedidos quedarían para siempre "sin despachar" en la web.
+	let tambienAgrupados = false;
+	if (agrupables.length > 0) {
+  	tambienAgrupados = confirm(
+    	"Este pedido se despacha junto con " +
+      	agrupables.map((p) => "#" + p.numero).join(", ") +
+      	".\n\n¿Aplicar el mismo tracking a esos pedidos también?\n\n" +
+      	"Acepta si van todos en este paquete."
+  	);
 	}
 
+	setSaving(true);
+
+	const cuerpo = {
+  	tracking_numero: trackingNum.trim(),
+  	tracking_courier: trackingCourier,
+  	fecha_envio: new Date().toISOString(),
+  	estado: "enviado",
+	};
+
+	const destinos = [id, ...(tambienAgrupados ? agrupables.map((p) => p.id) : [])];
+
+	const resultados = await Promise.all(
+  	destinos.map((pid) =>
+    	fetch("/api/admin/pedido/" + pid, {
+      	method: "PATCH",
+      	headers: { "Content-Type": "application/json" },
+      	body: JSON.stringify(cuerpo),
+    	})
+  	)
+	);
+
+	const fallaron = resultados.filter((r) => !r.ok).length;
+	if (fallaron > 0) {
+  	alert(
+    	`Se guardaron ${resultados.length - fallaron} de ${
+      	resultados.length
+    	} pedidos. Revisa los que quedaron sin tracking.`
+  	);
+	} else {
+  	alert(
+    	destinos.length > 1
+      	? `✅ Tracking guardado en ${destinos.length} pedidos y email enviado al cliente`
+      	: "✅ Tracking guardado y email enviado al cliente"
+  	);
+	}
+
+	await fetchPedido();
 	setSaving(false);
   };
 
@@ -519,6 +562,35 @@ export default function AdminPedidoDetail() {
         	</button>
       	</div>
     	</div>
+
+    	{agrupables.length > 0 && (
+      	<div className="bg-[#FF4D1A]/10 border-2 border-[#FF4D1A]/60 p-5 rounded-xl mb-6">
+        	<h2 className="font-bold mb-1 flex items-center gap-2">
+          	<Package size={18} className="text-[#FF4D1A]" />
+          	Despachar junto con{" "}
+          	{agrupables.map((p) => "#" + p.numero).join(", ")}
+        	</h2>
+        	<p className="text-sm text-gray-300 mb-3">
+          	Mismo cliente, misma dirección y ninguno despachado todavía. El
+          	envío se cobró una sola vez, así que mandarlos por separado sale de
+          	tu bolsillo.
+        	</p>
+        	<div className="flex flex-wrap gap-2">
+          	{agrupables.map((p) => (
+            	<button
+              	key={p.id}
+              	onClick={() => router.push("/admin/pedido/" + p.id)}
+              	className="bg-[#0F1115] hover:bg-white/5 border border-white/10 hover:border-[#FF4D1A] px-3 py-2 rounded-lg text-sm"
+            	>
+              	Ver #{p.numero}{" "}
+              	<span className="text-gray-400">
+                	· {p.estado} · {formatCLP(p.total)}
+              	</span>
+            	</button>
+          	))}
+        	</div>
+      	</div>
+    	)}
 
     	{pedido.metodo_pago === "flow" && (
       	<div

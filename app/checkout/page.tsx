@@ -80,10 +80,52 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const [envioAgrupado, setEnvioAgrupado] = useState<{
+	agrupable: boolean;
+	pedidos: number[];
+  }>({ agrupable: false, pedidos: [] });
+
   useEffect(() => {
 	setItems(getCart());
 	setMounted(true);
   }, []);
+
+  // Si el cliente ya tiene un pedido sin despachar a esta misma dirección, el
+  // envío se cobra una sola vez. Se consulta acá para que el total mostrado
+  // coincida con el que se va a cobrar; el servidor lo decide igual por su
+  // cuenta al crear el pedido.
+  useEffect(() => {
+	if (deliveryType !== "envio") {
+  	setEnvioAgrupado({ agrupable: false, pedidos: [] });
+  	return;
+	}
+	const { email, direccion, comuna, region } = form;
+	if (!email.trim() || !direccion.trim() || !comuna.trim()) {
+  	setEnvioAgrupado({ agrupable: false, pedidos: [] });
+  	return;
+	}
+
+	let vigente = true;
+	const t = setTimeout(async () => {
+  	try {
+    	const res = await fetch("/api/envio-agrupado", {
+      	method: "POST",
+      	headers: { "Content-Type": "application/json" },
+      	body: JSON.stringify({ email, direccion, comuna, region }),
+    	});
+    	if (!res.ok) return;
+    	const data = await res.json();
+    	if (vigente) setEnvioAgrupado(data);
+  	} catch {
+    	// sin conexión: se muestra el envío normal
+  	}
+	}, 600);
+
+	return () => {
+  	vigente = false;
+  	clearTimeout(t);
+	};
+  }, [deliveryType, form]);
 
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const cumpleMinimo = totalQty >= MIN_CARDS;
@@ -101,7 +143,8 @@ export default function CheckoutPage() {
 	}))
   );
 
-  const shippingCost = deliveryType === "envio" ? SHIPPING_COST : 0;
+  const shippingCost =
+	deliveryType === "envio" && !envioAgrupado.agrupable ? SHIPPING_COST : 0;
   const total = subtotal + shippingCost;
 
   const handleChange = (k: keyof FormData, v: string) => {
@@ -525,11 +568,37 @@ export default function CheckoutPage() {
               	{esRetiro ? "Retiro en Pucón" : "Envío"}
             	</span>
             	<span
-              	className={esRetiro ? "text-green-400" : ""}
+              	className={
+                	esRetiro || shippingCost === 0 ? "text-green-400" : ""
+              	}
             	>
-              	{esRetiro ? "Gratis" : formatCLP(SHIPPING_COST)}
+              	{esRetiro ? (
+                	"Gratis"
+              	) : shippingCost === 0 ? (
+                	<>
+                  	<s className="text-gray-500 mr-1">
+                    	{formatCLP(SHIPPING_COST)}
+                  	</s>
+                  	Gratis
+                	</>
+              	) : (
+                	formatCLP(SHIPPING_COST)
+              	)}
             	</span>
           	</div>
+
+          	{!esRetiro && envioAgrupado.agrupable && (
+            	<div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-3">
+              	<p className="text-xs text-green-300 font-semibold">
+                	📦 No te cobramos envío
+              	</p>
+              	<p className="text-[11px] text-green-200/80 mt-1">
+                	Va en el mismo paquete que tu pedido{" "}
+                	{envioAgrupado.pedidos.map((n) => "#" + n).join(", ")}, que
+                	todavía no despachamos.
+              	</p>
+            	</div>
+          	)}
 
           	<div className="flex justify-between items-center mb-4 border-t border-white/10 pt-3">
             	<span className="font-semibold">Total</span>
