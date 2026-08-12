@@ -62,8 +62,11 @@ export type Precios = {
 // Pucón + mano de obra), apuntando al mismo ~65% de margen que el resto.
 export const PRECIOS_DEFAULT: Precios = {
   unitario: { base300: 130, glossy: 200, matte: 250, premium: 400 },
-  mazo60: { base300: 7900, glossy: 9900, matte: 12900, premium: 23900 },
-  commander100: { base300: 12900, glossy: 15500, matte: 19900, premium: 39900 },
+  // Las promos descuentan ~15% a las 60 cartas y ~20% a las 100, el mismo
+  // escalón que ya tenían Glossy y Matte. Básica y Premium nacieron sin
+  // descuento real (llegaban a costar más que las cartas sueltas).
+  mazo60: { base300: 6600, glossy: 9900, matte: 12900, premium: 20400 },
+  commander100: { base300: 10400, glossy: 15500, matte: 19900, premium: 31900 },
   disponible: { base300: true, glossy: true, matte: true, premium: true },
   custom_surcharge: 100,
 };
