@@ -1,5 +1,25 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/** Regiones de Chile, de norte a sur. Las usan el checkout y el panel. */
+export const REGIONES = [
+  "Arica y Parinacota",
+  "Tarapacá",
+  "Antofagasta",
+  "Atacama",
+  "Coquimbo",
+  "Valparaíso",
+  "Metropolitana",
+  "O'Higgins",
+  "Maule",
+  "Ñuble",
+  "Biobío",
+  "Araucanía",
+  "Los Ríos",
+  "Los Lagos",
+  "Aysén",
+  "Magallanes",
+] as const;
+
 /**
 * Normaliza una dirección para poder compararla: sin tildes, sin mayúsculas y
 * sin espacios de más. Dos pedidos solo se despachan juntos si la dirección

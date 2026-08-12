@@ -22,25 +22,9 @@ import {
   SHIPPING_COST,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
+import { REGIONES } from "@/lib/envio";
 
-const REGIONES = [
-  "Arica y Parinacota",
-  "Tarapacá",
-  "Antofagasta",
-  "Atacama",
-  "Coquimbo",
-  "Valparaíso",
-  "Metropolitana",
-  "O'Higgins",
-  "Maule",
-  "Ñuble",
-  "Biobío",
-  "Araucanía",
-  "Los Ríos",
-  "Los Lagos",
-  "Aysén",
-  "Magallanes",
-];
+
 
 type FormData = {
   nombre: string;

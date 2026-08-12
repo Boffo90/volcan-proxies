@@ -5,7 +5,7 @@ import {
   enviarEmailConfirmacion,
   reclamarConfirmacion,
 } from "@/lib/emailPedido";
-import { buscarPedidosAgrupables } from "@/lib/envio";
+import { buscarPedidosAgrupables, REGIONES } from "@/lib/envio";
 import { Resend } from "resend";
 
 const COURIER_NAMES: Record<string, string> = {
@@ -66,7 +66,7 @@ export async function PATCH(
   const { data: current } = await sb
 	.from("pedidos")
 	.select(
-  	"estado, historial, numero, cliente_nombre, cliente_email, direccion, comuna, region, total, delivery_type"
+  	"estado, historial, numero, cliente_nombre, cliente_email, direccion, comuna, region, total, delivery_type, tracking_numero, admin_notas"
 	)
 	.eq("id", id)
 	.single();
@@ -94,6 +94,64 @@ export async function PATCH(
 
   if (body.admin_notas !== undefined) {
 	updates.admin_notas = body.admin_notas;
+  }
+
+  // Corregir los datos de despacho (dirección equivocada, cambio de casa).
+  // Se bloquea si el paquete ya salió: cambiar la dirección de algo que está
+  // en manos del courier no sirve de nada y borra a dónde se envió de verdad.
+  if (body.envio !== undefined) {
+	if (current?.tracking_numero) {
+  	return NextResponse.json(
+    	{
+      	error:
+        	"Este pedido ya tiene tracking, así que el paquete salió con la dirección actual. Coordina el cambio con el courier.",
+    	},
+    	{ status: 400 }
+  	);
+	}
+
+	const e = body.envio as Record<string, unknown>;
+	const texto = (v: unknown, max: number) =>
+  	typeof v === "string" ? v.trim().slice(0, max) : undefined;
+
+	const nuevaDireccion = texto(e.direccion, 200);
+	const nuevaComuna = texto(e.comuna, 80);
+	const nuevaRegion = texto(e.region, 80);
+	const nuevoNombre = texto(e.cliente_nombre, 120);
+	const nuevoTelefono = texto(e.cliente_telefono, 40);
+
+	if (!nuevaDireccion || !nuevaComuna || !nuevaRegion) {
+  	return NextResponse.json(
+    	{ error: "Dirección, comuna y región no pueden quedar vacías" },
+    	{ status: 400 }
+  	);
+	}
+	if (!REGIONES.includes(nuevaRegion as (typeof REGIONES)[number])) {
+  	return NextResponse.json({ error: "Región no válida" }, { status: 400 });
+	}
+
+	updates.direccion = nuevaDireccion;
+	updates.comuna = nuevaComuna;
+	updates.region = nuevaRegion;
+	if (nuevoNombre) updates.cliente_nombre = nuevoNombre;
+	if (nuevoTelefono !== undefined) updates.cliente_telefono = nuevoTelefono;
+
+	// Queda registro en las notas internas: si el paquete llega a la
+	// dirección equivocada, hay que poder ver qué se cambió y cuándo.
+	const antes = `${current?.direccion ?? ""}, ${current?.comuna ?? ""}, ${
+  	current?.region ?? ""
+	}`;
+	const despues = `${nuevaDireccion}, ${nuevaComuna}, ${nuevaRegion}`;
+	if (antes !== despues) {
+  	const linea = `[${new Date().toLocaleString(
+    	"es-CL"
+  	)}] Dirección cambiada: "${antes}" → "${despues}"`;
+  	const previas =
+    	typeof updates.admin_notas === "string"
+      	? updates.admin_notas
+      	: current?.admin_notas || "";
+  	updates.admin_notas = previas ? `${previas}\n${linea}` : linea;
+	}
   }
 
   // Cambiar el método de pago: pasa cuando el cliente no logra pagar con Flow
