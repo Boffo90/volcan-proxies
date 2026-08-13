@@ -128,7 +128,7 @@ export function construirHtmlConfirmacion(pedido: PedidoConfirmacion): string {
       	</div>
 
       	<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">
-        	¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b><br/>
+        	¿Dudas? Escríbenos a <b>volcanproxies@gmail.com</b><br/>
         	o vía Instagram <b>@volcanproxies</b>
       	</p>
     	</div>

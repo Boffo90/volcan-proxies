@@ -302,7 +302,7 @@ export async function PATCH(
     	seguimientoLinkHtml +
     	"</p>" +
     	'<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">' +
-    	"¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b>" +
+    	"¿Dudas? Escríbenos a <b>volcanproxies@gmail.com</b>" +
     	"</p>" +
     	"</div>" +
     	"</div>";

@@ -49,7 +49,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Puedo devolver mi pedido?",
-  	a: "Por ser producto bajo demanda (cada carta se imprime específicamente para tu pedido) no aceptamos devoluciones por cambio de opinión. PERO si tu pedido llega con defectos de impresión, te lo reimprimimos sin costo. Solo escríbenos a smyanezo@gmail.com con fotos del problema.",
+  	a: "Por ser producto bajo demanda (cada carta se imprime específicamente para tu pedido) no aceptamos devoluciones por cambio de opinión. PERO si tu pedido llega con defectos de impresión, te lo reimprimimos sin costo. Solo escríbenos a volcanproxies@gmail.com con fotos del problema.",
 	},
 	{
   	q: "¿De qué calidad son las cartas?",
@@ -81,7 +81,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Hacen pedidos grandes / al por mayor?",
-  	a: "Sí, contáctanos directamente a smyanezo@gmail.com o por Instagram @volcanproxies. Para pedidos sobre 200 cartas o de mazos para tu local game store podemos negociar precios especiales.",
+  	a: "Sí, contáctanos directamente a volcanproxies@gmail.com o por Instagram @volcanproxies. Para pedidos sobre 200 cartas o de mazos para tu local game store podemos negociar precios especiales.",
 	},
 	{
   	q: "¿Cómo aplican las promos de mazo?",
@@ -90,7 +90,7 @@ export default function FAQPage() {
   ];
 
   const openMail = () => {
-	window.location.href = "mailto:smyanezo@gmail.com";
+	window.location.href = "mailto:volcanproxies@gmail.com";
   };
 
   const openInstagram = () => {
@@ -153,7 +153,7 @@ export default function FAQPage() {
           	onClick={openMail}
           	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2 rounded-lg text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
         	>
-          	📧 smyanezo@gmail.com
+          	📧 volcanproxies@gmail.com
         	</button>
         	<button
           	onClick={openInstagram}

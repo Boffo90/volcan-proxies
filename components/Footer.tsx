@@ -94,7 +94,7 @@ export default function Footer() {
             	<MapPin size={14} /> Pucón, Chile
           	</li>
           	<li className="flex items-center gap-2 text-gray-400">
-            	<Mail size={14} /> smyanezo@gmail.com
+            	<Mail size={14} /> volcanproxies@gmail.com
           	</li>
           	<li className="flex items-center gap-2 text-gray-400">
             	<svg

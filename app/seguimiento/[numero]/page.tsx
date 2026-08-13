@@ -105,7 +105,7 @@ export default function SeguimientoPage() {
         	<Package className="mx-auto text-gray-500 mb-4" size={48} />
         	<h1 className="text-2xl font-bold mb-2">Pedido no encontrado</h1>
         	<p className="text-gray-400">
-          	Verifica el número o escríbenos a smyanezo@gmail.com
+          	Verifica el número o escríbenos a volcanproxies@gmail.com
         	</p>
       	</div>
     	) : pedido ? (

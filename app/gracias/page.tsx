@@ -39,10 +39,12 @@ function GraciasContent() {
           	<p><b>Número:</b> 777017598354</p>
           	<p><b>Nombre:</b> Sebastian Yáñez</p>
           	<p><b>RUT:</b> 17.598.354-6</p>
+          	{/* Correo con el que está registrada la cuenta MACH, no el de
+              	contacto: es el que valida el destinatario al transferir. */}
           	<p><b>Email:</b> smyanezo@gmail.com</p>
         	</div>
         	<p className="text-xs text-gray-400 mt-4">
-          	Envía el comprobante a smyanezo@gmail.com indicando tu pedido #{numero}.
+          	Envía el comprobante a volcanproxies@gmail.com indicando tu pedido #{numero}.
         	</p>
       	</div>
     	) : null}

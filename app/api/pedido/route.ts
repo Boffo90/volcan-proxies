@@ -440,9 +440,11 @@ export async function POST(req: Request) {
           	<p style="margin:4px 0;"><b>Número:</b> 777017598354</p>
           	<p style="margin:4px 0;"><b>Nombre:</b> Sebastian Yáñez</p>
           	<p style="margin:4px 0;"><b>RUT:</b> 17.598.354-6</p>
+          	<!-- Correo con el que está registrada la cuenta MACH, no el de
+               	contacto: es el que valida el destinatario al transferir. -->
           	<p style="margin:4px 0;"><b>Email:</b> smyanezo@gmail.com</p>
           	<p style="margin:16px 0 0;color:#666;font-size:13px;">
-            	Una vez transferido, envía el comprobante a <b>smyanezo@gmail.com</b>
+            	Una vez transferido, envía el comprobante a <b>volcanproxies@gmail.com</b>
             	indicando tu pedido <b>#${pedido.numero}</b>.
           	</p>
         	</div>
@@ -546,7 +548,7 @@ export async function POST(req: Request) {
           	${paymentInfo}
 
           	<p style="margin-top:24px;color:#666;font-size:13px;text-align:center;">
-            	¿Dudas? Escríbenos a <b>smyanezo@gmail.com</b><br/>
+            	¿Dudas? Escríbenos a <b>volcanproxies@gmail.com</b><br/>
             	o vía Instagram <b>@volcanproxies</b>
           	</p>
         	</div>
