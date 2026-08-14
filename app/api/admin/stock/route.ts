@@ -7,6 +7,7 @@ import {
   normalizeStock,
   type ItemConsumo,
 } from "@/lib/stock";
+import { esColumnaFaltante } from "@/lib/db";
 
 /**
 * Devuelve el stock guardado y, además, lo que van a consumir los pedidos que
@@ -26,10 +27,15 @@ export async function GET() {
 	.eq("key", "stock")
 	.single();
 
-  const { data: pedidos } = await sb
-	.from("pedidos")
-	.select("items, estado")
-	.in("estado", ESTADOS_PENDIENTES);
+  const consulta = () =>
+	sb.from("pedidos").select("items, estado").in("estado", ESTADOS_PENDIENTES);
+
+  // Un pedido archivado no se va a producir, así que no reserva material.
+  const conFiltro = await consulta().is("archivado_at", null);
+  let pedidos = conFiltro.data;
+  if (conFiltro.error && esColumnaFaltante(conFiltro.error)) {
+	pedidos = (await consulta()).data;
+  }
 
   const lista = (pedidos || []) as Array<{ items: ItemConsumo[] }>;
 

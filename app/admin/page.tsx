@@ -10,6 +10,7 @@ import {
   Flame,
   Palette,
   Package,
+  Archive,
 } from "lucide-react";
 
 type Pedido = {
@@ -36,10 +37,13 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
+  const [verArchivados, setVerArchivados] = useState(false);
 
   const fetchPedidos = useCallback(async () => {
 	setLoading(true);
-	const res = await fetch("/api/admin/pedidos");
+	const res = await fetch(
+  	"/api/admin/pedidos" + (verArchivados ? "?archivados=1" : "")
+	);
 	if (res.status === 401) {
   	router.push("/admin/login");
   	return;
@@ -47,7 +51,7 @@ export default function AdminDashboard() {
 	const data = await res.json();
 	setPedidos(data.pedidos || []);
 	setLoading(false);
-  }, [router]);
+  }, [router, verArchivados]);
 
   useEffect(() => {
 	fetchPedidos();
@@ -108,6 +112,23 @@ export default function AdminDashboard() {
         	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
       	>
         	<Package size={14} /> Stock
+      	</button>
+      	<button
+        	onClick={() => setVerArchivados((v) => !v)}
+        	title={
+          	verArchivados
+            	? "Volver a ver solo los pedidos activos"
+            	: "Incluir también los pedidos archivados"
+        	}
+        	className={
+          	"text-sm px-3 py-2 rounded-lg flex items-center gap-2 " +
+          	(verArchivados
+            	? "bg-[#FF4D1A]/20 text-[#FF4D1A] border border-[#FF4D1A]/40"
+            	: "bg-white/5 hover:bg-white/10")
+        	}
+      	>
+        	<Archive size={14} />
+        	{verArchivados ? "Viendo archivados" : "Archivados"}
       	</button>
       	<button
         	onClick={logout}

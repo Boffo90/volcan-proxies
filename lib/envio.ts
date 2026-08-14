@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { esColumnaFaltante } from "./db";
 
 /** Regiones de Chile, de norte a sur. Las usan el checkout y el panel. */
 export const REGIONES = [
@@ -74,15 +75,23 @@ export async function buscarPedidosAgrupables(
 ): Promise<PedidoAgrupable[]> {
   if (!email?.trim()) return [];
 
-  const { data, error } = await sb
-	.from("pedidos")
-	.select(
-  	"id, numero, estado, total, created_at, direccion, comuna, region, tracking_numero"
-	)
-	.ilike("cliente_email", email.trim())
-	.eq("delivery_type", "envio")
-	.not("estado", "in", "(enviado,entregado)")
-	.order("numero", { ascending: true });
+  const consulta = () =>
+	sb
+  	.from("pedidos")
+  	.select(
+    	"id, numero, estado, total, created_at, direccion, comuna, region, tracking_numero"
+  	)
+  	.ilike("cliente_email", email.trim())
+  	.eq("delivery_type", "envio")
+  	.not("estado", "in", "(enviado,entregado)")
+  	.order("numero", { ascending: true });
+
+  // Un pedido archivado ya no se va a despachar, así que no debe hacer que
+  // otro viaje gratis.
+  let { data, error } = await consulta().is("archivado_at", null);
+  if (error && esColumnaFaltante(error)) {
+	({ data, error } = await consulta());
+  }
 
   if (error || !data) return [];
 

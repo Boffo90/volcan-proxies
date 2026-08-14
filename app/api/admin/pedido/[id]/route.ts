@@ -98,6 +98,13 @@ export async function PATCH(
 	updates.admin_notas = body.admin_notas;
   }
 
+  // Archivar saca el pedido del panel sin borrarlo: deja de aparecer en la
+  // lista, de consumir material en cola y de agrupar envíos, pero se conserva
+  // entero por si hay que consultarlo o reactivarlo.
+  if (body.archivado !== undefined) {
+	updates.archivado_at = body.archivado ? new Date().toISOString() : null;
+  }
+
   // Corregir los datos de despacho (dirección equivocada, cambio de casa).
   // Se bloquea si el paquete ya salió: cambiar la dirección de algo que está
   // en manos del courier no sirve de nada y borra a dónde se envió de verdad.

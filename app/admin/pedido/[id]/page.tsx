@@ -18,6 +18,8 @@ import {
   RefreshCw,
   Package,
   Pencil,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { REGIONES } from "@/lib/envio";
 
@@ -63,6 +65,8 @@ type Pedido = {
   idioma?: string;
   /** Cuándo se le avisó al cliente que su pago quedó confirmado. */
   confirmacion_enviada_at?: string;
+  /** Cuándo se archivó. Los archivados salen del panel pero no se borran. */
+  archivado_at?: string | null;
 };
 
 const ESTADOS = [
@@ -457,6 +461,47 @@ export default function AdminPedidoDetail() {
 	setSaving(false);
   };
 
+  const toggleArchivado = async () => {
+	if (!pedido) return;
+	const archivando = !pedido.archivado_at;
+
+	if (
+  	archivando &&
+  	!confirm(
+    	"¿Archivar el pedido #" +
+      	pedido.numero +
+      	"?\n\nSale del panel y deja de contar para el material en cola y para " +
+      	"agrupar envíos. No se borra: puedes recuperarlo cuando quieras."
+  	)
+	) {
+  	return;
+	}
+
+	setSaving(true);
+	try {
+  	const res = await fetch("/api/admin/pedido/" + id, {
+    	method: "PATCH",
+    	headers: { "Content-Type": "application/json" },
+    	body: JSON.stringify({ archivado: archivando }),
+  	});
+  	if (!res.ok) {
+    	const data = await res.json();
+    	alert(
+      	"No se pudo archivar: " +
+        	(data.error || "revisa que la migración de archivado esté corrida")
+    	);
+    	return;
+  	}
+  	if (archivando) {
+    	router.push("/admin");
+    	return;
+  	}
+  	await fetchPedido();
+	} finally {
+  	setSaving(false);
+	}
+  };
+
   const deletePedido = async () => {
 	if (!pedido) return;
 
@@ -591,6 +636,21 @@ export default function AdminPedidoDetail() {
         	</div>
 
         	<button
+          	onClick={toggleArchivado}
+          	disabled={saving}
+          	className="bg-white/5 hover:bg-white/10 text-gray-300 border border-white/15 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+        	>
+          	{saving ? (
+            	<Loader2 className="animate-spin" size={16} />
+          	) : pedido.archivado_at ? (
+            	<ArchiveRestore size={16} />
+          	) : (
+            	<Archive size={16} />
+          	)}
+          	{pedido.archivado_at ? "Desarchivar" : "Archivar"}
+        	</button>
+
+        	<button
           	onClick={deletePedido}
           	disabled={deleting}
           	className="bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
@@ -604,6 +664,21 @@ export default function AdminPedidoDetail() {
         	</button>
       	</div>
     	</div>
+
+    	{pedido.archivado_at && (
+      	<div className="bg-white/5 border border-white/20 p-4 rounded-xl mb-6 flex items-center gap-3">
+        	<Archive size={18} className="text-gray-400 flex-shrink-0" />
+        	<div>
+          	<p className="font-bold text-sm">Pedido archivado</p>
+          	<p className="text-xs text-gray-400">
+            	Archivado el{" "}
+            	{new Date(pedido.archivado_at).toLocaleString("es-CL")}. No
+            	aparece en el panel ni reserva material. Desarchívalo si vuelve a
+            	estar activo.
+          	</p>
+        	</div>
+      	</div>
+    	)}
 
     	{agrupables.length > 0 && (
       	<div className="bg-[#FF4D1A]/10 border-2 border-[#FF4D1A]/60 p-5 rounded-xl mb-6">
