@@ -56,6 +56,28 @@ export async function reclamarConfirmacion(
   return (data?.length ?? 0) > 0;
 }
 
+/**
+* Suelta la marca de confirmación cuando el envío falló.
+*
+* reclamarConfirmacion marca antes de enviar para que dos llamadas simultáneas
+* no manden el correo dos veces. El costo es que un envío fallido dejaría el
+* pedido marcado como avisado para siempre, sin forma de reintentar: por eso
+* hay que soltarla explícitamente.
+*/
+export async function liberarConfirmacion(
+  sb: SupabaseClient,
+  pedidoId: string
+): Promise<void> {
+  const { error } = await sb
+	.from("pedidos")
+	.update({ confirmacion_enviada_at: null })
+	.eq("id", pedidoId);
+  if (error) console.error("[CONFIRMACION] no se pudo liberar la marca:", error);
+}
+
+/** Casilla de contacto: adonde responde el cliente si contesta un automático. */
+export const CONTACTO_EMAIL = "volcanproxies@gmail.com";
+
 /** HTML del email de confirmación (separado del envío para poder revisarlo). */
 export function construirHtmlConfirmacion(pedido: PedidoConfirmacion): string {
   const siteUrl = (
@@ -143,6 +165,9 @@ export async function enviarEmailConfirmacion(pedido: PedidoConfirmacion) {
   await resend.emails.send({
 	from: process.env.EMAIL_FROM!,
 	to: pedido.cliente_email,
+	// Si el cliente responde este correo, que llegue a la casilla de contacto
+	// y no a una dirección de envío que nadie lee.
+	replyTo: CONTACTO_EMAIL,
 	subject: `✅ Pedido #${pedido.numero} confirmado - Volcán Proxies`,
 	html: construirHtmlConfirmacion(pedido),
   });

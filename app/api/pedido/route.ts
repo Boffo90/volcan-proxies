@@ -14,6 +14,7 @@ import {
 } from "@/lib/pricing";
 import { getPreciosServer } from "@/lib/pricing-server";
 import { buscarPedidosAgrupables } from "@/lib/envio";
+import { CONTACTO_EMAIL } from "@/lib/emailPedido";
 
 type PedidoItem = {
   id: string;
@@ -494,6 +495,7 @@ export async function POST(req: Request) {
   	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: email,
+    	replyTo: CONTACTO_EMAIL,
     	subject: `🌋 Pedido #${pedido.numero} recibido - Volcán Proxies`,
     	html: `
       	<div style="${baseStyle}">
@@ -557,6 +559,20 @@ export async function POST(req: Request) {
   	});
 	} catch (e) {
   	console.error("[EMAIL CLIENTE ERROR]", e);
+  	// El correo al cliente falló. Antes esto moría en un log que nadie mira,
+  	// y así estuvimos meses sin enterarnos de que ningún cliente recibía
+  	// nada. Queda anotado en el pedido para que se vea en el panel.
+  	try {
+    	const detalle = e instanceof Error ? e.message : String(e);
+    	await sb
+      	.from("pedidos")
+      	.update({
+        	admin_notas: `⚠️ No se pudo enviar el correo de confirmación al cliente: ${detalle}`,
+      	})
+      	.eq("id", pedido.id);
+  	} catch {
+    	// si tampoco se puede anotar, ya quedó en el log del servidor
+  	}
 	}
 
 	if (metodo === "flow") {

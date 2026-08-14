@@ -3,6 +3,7 @@ import { getFlowPaymentStatus } from "@/lib/flow";
 import { supabaseAdmin } from "@/lib/supabase";
 import {
   enviarEmailConfirmacion,
+  liberarConfirmacion,
   reclamarConfirmacion,
 } from "@/lib/emailPedido";
 
@@ -46,7 +47,14 @@ export async function POST(req: Request) {
       	.single();
 
     	if (pedido && (await reclamarConfirmacion(sb, status.commerceOrder))) {
-      	await enviarEmailConfirmacion(pedido);
+      	try {
+        	await enviarEmailConfirmacion(pedido);
+      	} catch (envio) {
+        	// La marca se reclamó antes de enviar; si el envío falla hay que
+        	// soltarla o el pedido queda como avisado sin haberlo sido.
+        	await liberarConfirmacion(sb, status.commerceOrder);
+        	throw envio;
+      	}
     	}
   	} catch (e) {
     	// El pago ya está registrado: si falla el correo no rompemos el webhook,

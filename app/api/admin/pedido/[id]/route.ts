@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import {
+  CONTACTO_EMAIL,
   enviarEmailConfirmacion,
+  liberarConfirmacion,
   reclamarConfirmacion,
 } from "@/lib/emailPedido";
 import { buscarPedidosAgrupables, REGIONES } from "@/lib/envio";
@@ -217,6 +219,9 @@ export async function PATCH(
   	}
 	} catch (e) {
   	console.error("[CONFIRMACION EMAIL] error:", e);
+  	// Sin esto el pedido queda marcado como avisado pese a que el correo no
+  	// salió, y el botón no volvería a intentarlo nunca.
+  	await liberarConfirmacion(sb, id);
   	confirmacion = "error";
 	}
   }
@@ -310,6 +315,7 @@ export async function PATCH(
   	await resend.emails.send({
     	from: process.env.EMAIL_FROM!,
     	to: current.cliente_email,
+    	replyTo: CONTACTO_EMAIL,
     	subject:
       	"🚚 Tu pedido #" + current.numero + " fue enviado - Volcán Proxies",
     	html,
