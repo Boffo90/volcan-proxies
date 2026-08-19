@@ -23,6 +23,7 @@ import {
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 import { REGIONES } from "@/lib/envio";
+import EstadoCola from "@/components/EstadoCola";
 
 
 
@@ -515,6 +516,10 @@ export default function CheckoutPage() {
       	<Reveal delay={0.3}>
       	<aside className="glass-card p-6 rounded-xl h-fit sticky top-24">
         	<h2 className="font-display font-bold mb-4">Resumen</h2>
+
+        	<div className="mb-4">
+          	<EstadoCola />
+        	</div>
 
         	<div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
           	{items.map((it, idx) => (
