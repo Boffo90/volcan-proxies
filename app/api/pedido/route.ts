@@ -459,7 +459,15 @@ export async function POST(req: Request) {
         	<div style="${boxStyle}">
           	<h3 style="margin-top:0;">💳 Pago con Flow.cl</h3>
           	<p style="margin:4px 0;">
-            	Tu pedido fue creado y quedará confirmado una vez que Flow.cl informe el pago aprobado.
+            	Tu pedido queda confirmado en cuanto Flow.cl nos informe el pago aprobado.
+          	</p>
+          	<p style="margin:12px 0 0;padding:12px;background:#fff4e5;border-radius:6px;font-size:13px;">
+            	<b>¿El pago no se completó?</b> No pierdas el pedido: lo tenemos
+            	guardado entero y puedes pagarlo cuando quieras desde
+            	<br/>
+            	<b style="color:#c92a1f;">${seguimientoUrl}</b>
+            	<br/>
+            	No necesitas armarlo de nuevo.
           	</p>
         	</div>
       	`;

@@ -11,6 +11,7 @@ import {
   Layers,
   Home,
   Clock,
+  CreditCard,
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -25,6 +26,7 @@ type PedidoPublico = {
   tracking_courier?: string;
   fecha_envio?: string;
   historial?: Array<{ from: string; to: string; at: string }>;
+  metodo_pago?: string;
 };
 
 const TIMELINE = [
@@ -46,6 +48,7 @@ export default function SeguimientoPage() {
   const { numero } = useParams<{ numero: string }>();
   const [pedido, setPedido] = useState<PedidoPublico | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pagando, setPagando] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
@@ -91,6 +94,29 @@ export default function SeguimientoPage() {
 	if (url) window.open(url, "_blank");
   };
 
+  const sinPagar = pedido?.estado === "recibido";
+
+  const reintentarPago = async () => {
+	setPagando(true);
+	try {
+  	const res = await fetch("/api/pedido/pagar", {
+    	method: "POST",
+    	headers: { "Content-Type": "application/json" },
+    	body: JSON.stringify({ numero: pedido?.numero }),
+  	});
+  	const data = await res.json();
+  	if (data.payment_url) {
+    	window.location.href = data.payment_url;
+    	return;
+  	}
+  	alert(data.error || "No se pudo generar el link de pago.");
+	} catch {
+  	alert("No se pudo generar el link de pago. Intenta de nuevo.");
+	} finally {
+  	setPagando(false);
+	}
+  };
+
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
   	<NavBar />
@@ -124,6 +150,34 @@ export default function SeguimientoPage() {
             	})}
           	</p>
         	</Reveal>
+
+        	{sinPagar && (
+          	<div className="bg-yellow-500/10 border border-yellow-500/40 p-5 rounded-xl mb-8">
+            	<h3 className="font-bold mb-1 flex items-center gap-2 text-yellow-300">
+              	<CreditCard size={18} /> Este pedido está sin pagar
+            	</h3>
+            	<p className="text-sm text-yellow-100/80 mb-4">
+              	Lo tenemos guardado completo. Empieza a producirse en cuanto
+              	recibamos el pago.
+            	</p>
+            	<button
+              	onClick={reintentarPago}
+              	disabled={pagando}
+              	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50"
+            	>
+              	{pagando ? (
+                	<Loader2 className="animate-spin" size={18} />
+              	) : (
+                	<CreditCard size={18} />
+              	)}
+              	Pagar ahora
+            	</button>
+            	<p className="text-xs text-yellow-200/60 mt-3">
+              	¿Prefieres transferencia? Escríbenos a volcanproxies@gmail.com
+              	indicando tu pedido #{pedido.numero}.
+            	</p>
+          	</div>
+        	)}
 
         	{pedido.tracking_numero && (
           	<div className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-5 rounded-xl mb-8">

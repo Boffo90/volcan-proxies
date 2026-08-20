@@ -15,7 +15,7 @@ export async function GET(
   const { data, error } = await sb
 	.from("pedidos")
 	.select(
-  	"numero, estado, created_at, total, tracking_numero, tracking_courier, fecha_envio, historial"
+  	"numero, estado, created_at, total, tracking_numero, tracking_courier, fecha_envio, historial, metodo_pago"
 	)
 	.eq("numero", numNumero)
 	.single();
