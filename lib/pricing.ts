@@ -1,4 +1,10 @@
-export const FINISHES = ["base300", "glossy", "matte", "premium"] as const;
+export const FINISHES = [
+  "base300",
+  "reforzada300",
+  "glossy",
+  "matte",
+  "premium",
+] as const;
 export type Finish = (typeof FINISHES)[number];
 
 export type FinishInfo = {
@@ -18,9 +24,16 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
   base300: {
 	label: "Básica 300g",
 	corto: "Básica",
-	desc: "Papel de 300g doble faz, sin laminar.",
-	pro: "La más económica, con buenos colores y detalle.",
-	contra: "Más delgada que una carta real.",
+	desc: "Papel fotográfico de 300g semibrillante, sin laminar.",
+	pro: "Acabado muy parecido al de una carta real, y la más económica.",
+	contra: "Más delgada que una carta real y sin protección al uso.",
+  },
+  reforzada300: {
+	label: "300g Reforzada",
+	corto: "Reforzada",
+	desc: "Papel de 300g semibrillante con laminado mate por detrás.",
+	pro: "Firmeza y snap muy parecidos a los de una carta real.",
+	contra: "Se curva levemente, y el frente va sin laminar.",
   },
   glossy: {
 	label: "Glossy",
@@ -40,7 +53,7 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	label: "Matte Premium",
 	corto: "Premium",
 	desc: "Doble laminado: pouch mate por detrás y laminado en frío por delante.",
-	pro: "El mejor detalle y color de los cuatro.",
+	pro: "El mejor detalle y color de todos.",
 	contra: "Se curvan levemente, como las foil originales.",
   },
 };
@@ -61,13 +74,37 @@ export type Precios = {
 // Básica y el Premium se fijaron sobre su costo real (materiales + flete a
 // Pucón + mano de obra), apuntando al mismo ~65% de margen que el resto.
 export const PRECIOS_DEFAULT: Precios = {
-  unitario: { base300: 130, glossy: 200, matte: 250, premium: 400 },
+  unitario: {
+	base300: 130,
+	reforzada300: 200,
+	glossy: 200,
+	matte: 250,
+	premium: 400,
+  },
   // Las promos descuentan ~15% a las 60 cartas y ~20% a las 100, el mismo
   // escalón que ya tenían Glossy y Matte. Básica y Premium nacieron sin
   // descuento real (llegaban a costar más que las cartas sueltas).
-  mazo60: { base300: 6600, glossy: 9900, matte: 12900, premium: 20400 },
-  commander100: { base300: 10400, glossy: 15500, matte: 19900, premium: 31900 },
-  disponible: { base300: true, glossy: true, matte: true, premium: true },
+  mazo60: {
+	base300: 6600,
+	reforzada300: 10200,
+	glossy: 9900,
+	matte: 12900,
+	premium: 20400,
+  },
+  commander100: {
+	base300: 10400,
+	reforzada300: 16000,
+	glossy: 15500,
+	matte: 19900,
+	premium: 31900,
+  },
+  disponible: {
+	base300: true,
+	reforzada300: true,
+	glossy: true,
+	matte: true,
+	premium: true,
+  },
   custom_surcharge: 100,
 };
 

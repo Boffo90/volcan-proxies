@@ -26,12 +26,12 @@ export const MATERIAL_INFO: Record<MaterialKey, MaterialInfo> = {
   papel300: {
 	label: "Papel 300g doble faz",
 	unidad: "hojas",
-	ayuda: "Solo para la Básica 300g.",
+	ayuda: "Para la Básica 300g y la 300g Reforzada.",
   },
   pouchMatte: {
 	label: "Pouch termolaminar matte",
 	unidad: "láminas",
-	ayuda: "Matte usa una por hoja; Premium, una cada dos hojas.",
+	ayuda: "Matte usa una por hoja; Reforzada y Premium, una cada dos hojas.",
   },
   pouchGlossy: {
 	label: "Pouch termolaminar glossy",
@@ -91,6 +91,8 @@ export function normalizeStock(raw: unknown): Stock {
 */
 export const RECETA: Record<Finish, Partial<Record<MaterialKey, number>>> = {
   base300: { papel300: 1, tinta: 1 },
+  // Una lámina de pouch cada dos hojas: se laminan espalda con espalda.
+  reforzada300: { papel300: 1, pouchMatte: 0.5, tinta: 1 },
   glossy: { papel200: 1, pouchGlossy: 1, tinta: 1 },
   matte: { papel200: 1, pouchMatte: 1, tinta: 1 },
   premium: { papel200: 1, pouchMatte: 0.5, filmFrio: 1, tinta: 1 },

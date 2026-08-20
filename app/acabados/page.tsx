@@ -39,12 +39,26 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Sin laminado: la carta sale directo de la impresora al corte.",
 	],
 	sensacion:
-  	"Superficie semibrillante. Es la única de las cuatro que queda más delgada que una carta real, porque no lleva la capa de laminado encima.",
+  	"Superficie semibrillante, muy parecida a la de una carta real. Al no llevar laminado queda algo más delgada que una carta de verdad.",
 	idealPara:
   	"Probar un mazo antes de comprometerte, listas que cambian seguido, o cuando el presupuesto manda.",
 	grosor: "Más delgada",
 	brillo: "Semibrillo",
 	durabilidad: "Básica",
+  },
+  reforzada300: {
+	proceso: [
+  	"Impresión sobre papel fotográfico de 300g doble faz, semibrillo.",
+  	"Se imprimen dos hojas y se ponen espalda con espalda dentro de una sola lámina de laminado mate.",
+  	"El laminado va solo por el dorso: el frente queda con el semibrillo del papel.",
+	],
+	sensacion:
+  	"El laminado del dorso le da firmeza y snap muy parecidos a los de una carta real, y el frente conserva el semibrillo del papel, que ya se parece bastante al de una carta.",
+	idealPara:
+  	"Quien quiere que se sienta como carta de verdad al barajar sin pagar el doble laminado.",
+	grosor: "Como carta real",
+	brillo: "Semibrillo",
+	durabilidad: "Media",
   },
   glossy: {
 	proceso: [
@@ -52,7 +66,7 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Laminado en caliente con pouch brillante, una hoja por pouch.",
 	],
 	sensacion:
-  	"Superficie lisa y brillante, con buen snap al barajar. Es el acabado con más 'pop' de color de los cuatro.",
+  	"Superficie lisa y brillante, con buen snap al barajar. Es el acabado con más 'pop' de color de todos.",
 	idealPara:
   	"Mazos con arte llamativo y quien quiere el máximo brillo. Con fundas, las huellas dejan de ser un tema.",
 	grosor: "Como carta real",
@@ -79,7 +93,7 @@ const DETALLE: Record<Finish, Detalle> = {
   	"Por delante: laminado en frío mate, hoja por hoja.",
 	],
 	sensacion:
-  	"Acabado mate parejo y la mejor definición de color de los cuatro. Es el que más trabajo lleva: doble proceso de laminado por carta.",
+  	"Acabado mate parejo y la mejor definición de color de todos. Es el que más trabajo lleva: doble proceso de laminado por carta.",
 	idealPara:
   	"El mazo que de verdad te importa, cEDH, regalos, o cuando quieres que cada carta se vea impecable.",
 	grosor: "Como carta real",
@@ -160,10 +174,10 @@ export default function AcabadosPage() {
         	Nuestros <span className="text-lava">acabados</span>
       	</h1>
       	<p className="text-gray-300 max-w-2xl mx-auto">
-        	Hacemos cuatro tipos de carta con procesos distintos. Ninguno es
+        	Cada tipo de carta lleva un proceso distinto, y ninguno es
         	&quot;el mejor&quot; para todo: cambian el grosor, el brillo y cuánto
-        	trabajo lleva cada una. Acá te contamos exactamente cómo se hace cada
-        	una, con lo bueno y lo malo de cada proceso.
+        	trabajo lleva. Acá te contamos exactamente cómo se hace cada una, con
+        	lo bueno y lo malo de su proceso.
       	</p>
     	</Reveal>
   	</section>
@@ -198,8 +212,8 @@ export default function AcabadosPage() {
             	</tr>
           	</thead>
           	<tbody>
-            	{FINISHES.map((f) => {
-              	const disponible = precios.disponible[f];
+            	{disponibles.map((f) => {
+              	const disponible = true;
               	return (
                 	<tr
                   	key={f}
@@ -236,6 +250,16 @@ export default function AcabadosPage() {
         	barajan sin notarse dentro del mazo. La Básica 300g es la única que
         	queda más delgada.
       	</p>
+      	{FINISHES.length > disponibles.length && (
+        	<p className="text-xs text-gray-500 mt-4 border-t border-white/10 pt-3">
+          	Temporalmente fuera de catálogo:{" "}
+          	{FINISHES.filter((f) => !precios.disponible[f])
+            	.map((f) => FINISH_INFO[f].label)
+            	.join(", ")}
+          	. Volverán apenas podamos producirlos con la calidad de siempre.
+        	</p>
+      	)}
+
       	<p className="text-xs text-gray-500 mt-3">
         	Precios por carta suelta. Armando mazo de 60 o 100 el precio baja
         	automáticamente —{" "}
@@ -320,7 +344,7 @@ export default function AcabadosPage() {
 
   	{/* DETALLE POR ACABADO */}
   	<section className="px-6 pb-12 max-w-5xl mx-auto space-y-6">
-    	{FINISHES.map((f, idx) => {
+    	{disponibles.map((f, idx) => {
       	const info = FINISH_INFO[f];
       	const det = DETALLE[f];
       	const disponible = precios.disponible[f];
@@ -429,7 +453,9 @@ export default function AcabadosPage() {
             	si: "Es mi mazo principal y quiero lo mejor que hacemos",
             	elige: "premium" as Finish,
           	},
-        	].map(({ si, elige }) => (
+        	]
+          	.filter(({ elige }) => precios.disponible[elige])
+          	.map(({ si, elige }) => (
           	<div
             	key={elige}
             	className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-white/10 pb-3 last:border-0"
