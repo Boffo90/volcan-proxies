@@ -16,6 +16,12 @@ export type FinishInfo = {
   desc: string;
   pro: string;
   contra: string;
+  /**
+  * Retirado para siempre, no solo pausado. Sirve para no prometerle al
+  * cliente que vuelve, y se conserva para que los pedidos antiguos sigan
+  * mostrando el acabado con el que se hicieron.
+  */
+  descontinuado?: boolean;
 };
 
 // Los pros y contras son los reales de cada proceso: decirlos hace creíble
@@ -29,10 +35,10 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	contra: "Más delgada que una carta real y sin protección al uso.",
   },
   reforzada300: {
-	label: "300g Reforzada",
-	corto: "Reforzada",
+	label: "Premium 300g",
+	corto: "Premium",
 	desc: "Papel de 300g semibrillante con laminado mate por detrás.",
-	pro: "Firmeza y snap muy parecidos a los de una carta real.",
+	pro: "La mejor calidad de imagen, con la firmeza y el snap de una carta real.",
 	contra: "Se curva levemente, y el frente va sin laminar.",
   },
   glossy: {
@@ -49,12 +55,16 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	pro: "Snap y rigidez muy parecidos a una carta real.",
 	contra: "Los negros se opacan un poco.",
   },
+  // Descontinuado: el doble laminado daba prácticamente el mismo resultado que
+  // el Premium 300g con el doble de trabajo. Se conserva para que los pedidos
+  // antiguos sigan mostrando el acabado con el que se hicieron.
   premium: {
-	label: "Matte Premium",
-	corto: "Premium",
+	label: "Matte Premium (descontinuado)",
+	corto: "Descontinuado",
 	desc: "Doble laminado: pouch mate por detrás y laminado en frío por delante.",
-	pro: "El mejor detalle y color de todos.",
-	contra: "Se curvan levemente, como las foil originales.",
+	pro: "Reemplazado por el Premium 300g, que da el mismo resultado.",
+	contra: "Ya no se produce.",
+	descontinuado: true,
   },
 };
 

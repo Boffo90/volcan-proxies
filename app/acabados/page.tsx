@@ -55,10 +55,10 @@ const DETALLE: Record<Finish, Detalle> = {
 	sensacion:
   	"El laminado del dorso le da firmeza y snap muy parecidos a los de una carta real, y el frente conserva el semibrillo del papel, que ya se parece bastante al de una carta.",
 	idealPara:
-  	"Quien quiere que se sienta como carta de verdad al barajar sin pagar el doble laminado.",
+  	"El mazo que juegas seguido y quieres que se sienta como carta de verdad al barajar.",
 	grosor: "Como carta real",
 	brillo: "Semibrillo",
-	durabilidad: "Media",
+	durabilidad: "Alta",
   },
   glossy: {
 	proceso: [
@@ -250,15 +250,20 @@ export default function AcabadosPage() {
         	barajan sin notarse dentro del mazo. La Básica 300g es la única que
         	queda más delgada.
       	</p>
-      	{FINISHES.length > disponibles.length && (
-        	<p className="text-xs text-gray-500 mt-4 border-t border-white/10 pt-3">
-          	Temporalmente fuera de catálogo:{" "}
-          	{FINISHES.filter((f) => !precios.disponible[f])
-            	.map((f) => FINISH_INFO[f].label)
-            	.join(", ")}
-          	. Volverán apenas podamos producirlos con la calidad de siempre.
-        	</p>
-      	)}
+      	{(() => {
+        	// Solo los pausados vuelven; los descontinuados no se mencionan.
+        	const pausados = FINISHES.filter(
+          	(f) => !precios.disponible[f] && !FINISH_INFO[f].descontinuado
+        	);
+        	if (pausados.length === 0) return null;
+        	return (
+          	<p className="text-xs text-gray-500 mt-4 border-t border-white/10 pt-3">
+            	Temporalmente fuera de catálogo:{" "}
+            	{pausados.map((f) => FINISH_INFO[f].label).join(", ")}. Vuelven
+            	apenas podamos producirlos con la calidad de siempre.
+          	</p>
+        	);
+      	})()}
 
       	<p className="text-xs text-gray-500 mt-3">
         	Precios por carta suelta. Armando mazo de 60 o 100 el precio baja
@@ -440,6 +445,10 @@ export default function AcabadosPage() {
           	{
             	si: "Quiero gastar lo menos posible o estoy probando el mazo",
             	elige: "base300" as Finish,
+          	},
+          	{
+            	si: "Quiero que se sienta como una carta real al barajar",
+            	elige: "reforzada300" as Finish,
           	},
           	{
             	si: "Quiero que los colores se vean lo más vivos posible",
