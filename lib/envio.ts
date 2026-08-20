@@ -44,12 +44,22 @@ export function normalizarDireccion(
 	.join("|");
 }
 
+/**
+* Estados en los que el pedido ya está pagado, o sea que ese despacho va a
+* ocurrir de verdad. Solo contra uno de estos se puede regalar el envío de otro
+* pedido: si el anterior sigue sin pagar, podría no pagarse nunca y el segundo
+* terminaría viajando gratis sin que nada lo cubra.
+*/
+export const ESTADOS_PAGADOS = ["pagado", "imprimiendo", "laminando"];
+
 export type PedidoAgrupable = {
   id: string;
   numero: number;
   estado: string;
   total: number;
   created_at: string;
+  /** Si no está pagado, no habilita envío gratis: solo sirve como aviso. */
+  pagado: boolean;
 };
 
 type Criterio = {
@@ -110,5 +120,6 @@ export async function buscarPedidosAgrupables(
   	estado,
   	total,
   	created_at,
+  	pagado: ESTADOS_PAGADOS.includes(estado),
 	}));
 }

@@ -68,7 +68,8 @@ export default function CheckoutPage() {
   const [envioAgrupado, setEnvioAgrupado] = useState<{
 	agrupable: boolean;
 	pedidos: number[];
-  }>({ agrupable: false, pedidos: [] });
+	sinPagar: number[];
+  }>({ agrupable: false, pedidos: [], sinPagar: [] });
 
   useEffect(() => {
 	setItems(getCart());
@@ -81,12 +82,12 @@ export default function CheckoutPage() {
   // cuenta al crear el pedido.
   useEffect(() => {
 	if (deliveryType !== "envio") {
-  	setEnvioAgrupado({ agrupable: false, pedidos: [] });
+  	setEnvioAgrupado({ agrupable: false, pedidos: [], sinPagar: [] });
   	return;
 	}
 	const { email, direccion, comuna, region } = form;
 	if (!email.trim() || !direccion.trim() || !comuna.trim()) {
-  	setEnvioAgrupado({ agrupable: false, pedidos: [] });
+  	setEnvioAgrupado({ agrupable: false, pedidos: [], sinPagar: [] });
   	return;
 	}
 
@@ -588,6 +589,22 @@ export default function CheckoutPage() {
               	</p>
             	</div>
           	)}
+
+          	{!esRetiro &&
+            	!envioAgrupado.agrupable &&
+            	envioAgrupado.sinPagar.length > 0 && (
+              	<div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-3">
+                	<p className="text-xs text-yellow-300 font-semibold">
+                  	Tienes el pedido{" "}
+                  	{envioAgrupado.sinPagar.map((n) => "#" + n).join(", ")} sin
+                  	pagar a esta dirección
+                	</p>
+                	<p className="text-[11px] text-yellow-200/80 mt-1">
+                  	Si lo pagas, los despachamos juntos y te devolvemos este
+                  	envío. Escríbenos y lo coordinamos.
+                	</p>
+              	</div>
+            	)}
 
           	<div className="flex justify-between items-center mb-4 border-t border-white/10 pt-3">
             	<span className="font-semibold">Total</span>

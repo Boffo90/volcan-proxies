@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 	};
 
 	if (!email?.trim() || !direccion?.trim() || !comuna?.trim()) {
-  	return NextResponse.json({ agrupable: false, pedidos: [] });
+  	return NextResponse.json({ agrupable: false, pedidos: [], sinPagar: [] });
 	}
 
 	const sb = supabaseAdmin();
@@ -32,13 +32,20 @@ export async function POST(req: Request) {
   	region,
 	});
 
+	// El envío solo se libera contra un pedido ya pagado. Los pendientes se
+	// informan aparte para poder avisarle al cliente, pero no dan despacho
+	// gratis: si no, bastaría con dejar un pedido sin pagar para evitarlo.
+	const pagados = encontrados.filter((p) => p.pagado);
+	const sinPagar = encontrados.filter((p) => !p.pagado);
+
 	return NextResponse.json({
-  	agrupable: encontrados.length > 0,
-  	pedidos: encontrados.map((p) => p.numero),
+  	agrupable: pagados.length > 0,
+  	pedidos: pagados.map((p) => p.numero),
+  	sinPagar: sinPagar.map((p) => p.numero),
 	});
   } catch {
 	// Ante cualquier problema se responde que no aplica: el checkout muestra
 	// el envío normal y el servidor corrige el cobro si corresponde.
-	return NextResponse.json({ agrupable: false, pedidos: [] });
+	return NextResponse.json({ agrupable: false, pedidos: [], sinPagar: [] });
   }
 }

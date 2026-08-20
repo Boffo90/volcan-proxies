@@ -139,7 +139,7 @@ export async function POST(req: Request) {
 	// Si el cliente ya tiene un pedido sin despachar a la misma dirección, este
 	// va en el mismo paquete: cobrarle el envío de nuevo sería cobrarle dos
 	// veces por un solo despacho.
-	const agrupables =
+	const candidatos =
   	deliveryType === "envio"
     	? await buscarPedidosAgrupables(sb, {
         	email,
@@ -148,6 +148,11 @@ export async function POST(req: Request) {
         	region,
       	})
     	: [];
+
+	// Solo un pedido ya pagado libera el envío del siguiente. Si bastara con
+	// tener otro pedido pendiente, cualquiera podría crear uno, no pagarlo, y
+	// pedir un segundo con despacho gratis.
+	const agrupables = candidatos.filter((p) => p.pagado);
 
 	const shippingCost =
   	deliveryType === "envio" && agrupables.length === 0 ? SHIPPING_COST : 0;
