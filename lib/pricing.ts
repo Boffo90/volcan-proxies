@@ -86,7 +86,7 @@ export type Precios = {
 export const PRECIOS_DEFAULT: Precios = {
   unitario: {
 	base300: 130,
-	reforzada300: 200,
+	reforzada300: 250,
 	glossy: 200,
 	matte: 250,
 	premium: 400,
@@ -96,14 +96,14 @@ export const PRECIOS_DEFAULT: Precios = {
   // descuento real (llegaban a costar más que las cartas sueltas).
   mazo60: {
 	base300: 6600,
-	reforzada300: 10200,
+	reforzada300: 12900,
 	glossy: 9900,
 	matte: 12900,
 	premium: 20400,
   },
   commander100: {
 	base300: 10400,
-	reforzada300: 16000,
+	reforzada300: 19900,
 	glossy: 15500,
 	matte: 19900,
 	premium: 31900,
