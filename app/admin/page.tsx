@@ -11,6 +11,7 @@ import {
   Palette,
   Package,
   Archive,
+  BookOpen,
 } from "lucide-react";
 
 type Pedido = {
@@ -106,6 +107,12 @@ export default function AdminDashboard() {
         	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
       	>
         	<Palette size={14} /> Customs
+      	</button>
+      	<button
+        	onClick={() => router.push("/admin/formulas")}
+        	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
+      	>
+        	<BookOpen size={14} /> Fórmulas
       	</button>
       	<button
         	onClick={() => router.push("/admin/stock")}
