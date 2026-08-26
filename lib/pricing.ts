@@ -77,7 +77,18 @@ export type Precios = {
   commander100: Record<Finish, number>;
   /** Acabados habilitados para la venta, controlado desde el admin. */
   disponible: Record<Finish, boolean>;
+  /**
+  * Recargo por carta custom. Se cobra UNA vez por diseño distinto, no por
+  * copia: preparar el archivo es un solo trabajo aunque pidan veinte copias.
+  */
   custom_surcharge: number;
+  /** Cargo por preparar el archivo de un dorso personalizado, una vez por diseño. */
+  dorso_diseno: number;
+  /**
+  * Extra por cada carta que lleva dorso personalizado. Cubre la segunda pasada
+  * por la impresora, que es el cuello de botella real de producción.
+  */
+  dorso_carta: number;
 };
 
 // Precios vigentes. Glossy y Matte son los que ya estaban en producción; la
@@ -116,6 +127,11 @@ export const PRECIOS_DEFAULT: Precios = {
 	premium: true,
   },
   custom_surcharge: 100,
+  // El dorso custom casi no cuesta material (el 300g ya es doble faz y la
+  // tinta de una hoja extra son ~$30): lo que cuesta es preparar el archivo,
+  // una vez, y el tiempo de impresora, que sí escala con cada carta.
+  dorso_diseno: 1500,
+  dorso_carta: 40,
 };
 
 /**
@@ -177,6 +193,8 @@ export function normalizePrecios(raw: unknown): Precios {
   	return out;
 	})(),
 	custom_surcharge: num(r.custom_surcharge, d.custom_surcharge),
+	dorso_diseno: num(r.dorso_diseno, d.dorso_diseno),
+	dorso_carta: num(r.dorso_carta, d.dorso_carta),
   };
 }
 
@@ -245,11 +263,42 @@ export function formatCLP(amount: number): string {
   }).format(amount);
 }
 
-type CartCalcItem = {
+export type CartCalcItem = {
+  /**
+  * Identifica el diseño. El recargo custom se cobra una vez por diseño, así
+  * que dos líneas con el mismo id (la misma imagen en dos acabados) pagan un
+  * solo recargo.
+  */
+  id?: string;
   finish: Finish;
   quantity: number;
   isCustom?: boolean;
+  /** Imagen del dorso personalizado, si el cliente pidió uno para esta carta. */
+  dorsoUrl?: string;
 };
+
+/** Desglose de los cobros que no son la carta en sí. */
+export type Recargos = {
+  /** Diseños custom distintos, que es lo que se cobra. */
+  customDisenos: number;
+  customTotal: number;
+  /** Dorsos personalizados distintos. */
+  dorsoDisenos: number;
+  /** Cartas que llevan dorso personalizado. */
+  dorsoCartas: number;
+  dorsoTotal: number;
+};
+
+/**
+* Cuenta diseños distintos. Sin `id` no hay forma de saber si dos líneas son
+* el mismo diseño, así que se cuentan por separado: se prefiere cobrar de más
+* antes que regalar trabajo por un dato que falta.
+*/
+function contarDisenos(items: CartCalcItem[]): number {
+  const vistos = new Set<string>();
+  items.forEach((i, idx) => vistos.add(i.id ?? `sin-id-${idx}`));
+  return vistos.size;
+}
 
 /** Tope de la optimización: sobre esto se cobra unitario y no se arma la tabla. */
 const MAX_OPTIMIZABLE = 5000;
@@ -313,27 +362,21 @@ function repartirEnPromos(
 export function calculateTotalWith(
   precios: Precios,
   items: CartCalcItem[]
-): { total: number; applied: string } {
-  // Las customs se cobran aparte, a unitario + recargo: no suman para las
-  // promos (llevan trabajo distinto), pero tampoco impiden que el resto del
-  // pedido las aproveche.
-  const customQty = items
-	.filter((i) => i.isCustom)
-	.reduce((s, i) => s + i.quantity, 0);
-
+): { total: number; applied: string; recargos: Recargos } {
   let total = 0;
   const aplicadas: PromoAplicada[] = [];
 
-  for (const i of items.filter((x) => x.isCustom)) {
-	total +=
-  	(precioUnitario(precios, i.finish) + precios.custom_surcharge) * i.quantity;
-  }
-
   // Las promos son por acabado, así que un pedido que mezcla acabados igual
   // aprovecha la de cada grupo.
+  //
+  // Las customs suman para las promos como cualquier otra carta: el papel, la
+  // tinta, el laminado y la hoja son exactamente los mismos, y la promo existe
+  // porque el costo por carta baja con el volumen. Dejarlas fuera hacía que un
+  // mazo custom costara más del doble que el mismo mazo normal. Lo único
+  // propio de una custom es preparar el archivo, y eso se cobra aparte.
   for (const f of FINISHES) {
 	const cantidad = items
-  	.filter((i) => !i.isCustom && i.finish === f)
+  	.filter((i) => i.finish === f)
   	.reduce((s, i) => s + i.quantity, 0);
 	if (cantidad <= 0) continue;
 
@@ -354,14 +397,50 @@ export function calculateTotalWith(
 	aplicadas.push(...r.aplicadas);
   }
 
+  // Recargo por DISEÑO custom distinto, no por copia: preparar el archivo es
+  // un solo trabajo aunque el cliente pida veinte copias, y aunque las pida
+  // repartidas en dos acabados.
+  const customs = items.filter((i) => i.isCustom);
+  const customDisenos = contarDisenos(customs);
+  const customTotal = customDisenos * precios.custom_surcharge;
+  total += customTotal;
+
+  // Dorso personalizado: el archivo se prepara una vez por diseño de dorso, y
+  // el extra por carta cubre la segunda pasada por la impresora. Las MDFC no
+  // entran acá: su reverso ya viene con la carta y va sin costo.
+  const conDorso = items.filter((i) => i.dorsoUrl);
+  const dorsoCartas = conDorso.reduce((s, i) => s + i.quantity, 0);
+  const dorsoDisenos = new Set(conDorso.map((i) => i.dorsoUrl!)).size;
+  const dorsoTotal =
+	dorsoDisenos * precios.dorso_diseno + dorsoCartas * precios.dorso_carta;
+  total += dorsoTotal;
+
   const partes = aplicadas.map((a) =>
 	a.veces > 1 ? `${a.veces}× Promo ${a.etiqueta}` : `Promo ${a.etiqueta}`
   );
-  if (customQty > 0) partes.push(`${customQty} carta(s) custom`);
+  if (customDisenos > 0) {
+	partes.push(
+  	`${customDisenos} diseño${customDisenos !== 1 ? "s" : ""} custom`
+	);
+  }
+  if (dorsoCartas > 0) {
+	partes.push(
+  	`dorso personalizado en ${dorsoCartas} carta${
+    	dorsoCartas !== 1 ? "s" : ""
+  	}`
+	);
+  }
 
   return {
 	total,
 	applied: partes.length > 0 ? partes.join(" + ") : "Precio unitario",
+	recargos: {
+  	customDisenos,
+  	customTotal,
+  	dorsoDisenos,
+  	dorsoCartas,
+  	dorsoTotal,
+	},
   };
 }
 
@@ -394,7 +473,7 @@ export function sugerenciaPromo(
 	if (!precios.disponible[f]) continue;
 
 	const cantidad = items
-  	.filter((i) => !i.isCustom && i.finish === f)
+  	.filter((i) => i.finish === f)
   	.reduce((s, i) => s + i.quantity, 0);
 	if (cantidad <= 0) continue;
 
@@ -420,6 +499,7 @@ export function sugerenciaPromo(
 export function calculateTotal(items: CartCalcItem[]): {
   total: number;
   applied: string;
+  recargos: Recargos;
 } {
   return calculateTotalWith(cachedPrecios || PRECIOS_DEFAULT, items);
 }

@@ -35,6 +35,9 @@ type PedidoItem = {
   isCustom?: boolean;
   /** ID de la imagen en MPCFill (file-id de Drive) cuando el cliente eligió un arte HD. */
   mpcfillId?: string;
+  /** Dorso personalizado que pidió el cliente, si lo hay. */
+  dorsoUrl?: string;
+  dorsoNombre?: string;
 };
 
 type Pedido = {
@@ -543,6 +546,25 @@ export default function AdminPedidoDetail() {
   const mpcItems = allItems.filter((it) => it.mpcfillId && !it.isCustom);
   const scryfallItems = allItems.filter((it) => !it.mpcfillId && !it.isCustom);
   const customItems = allItems.filter((it) => it.isCustom);
+
+  // Los dorsos van agrupados por imagen: lo normal es uno solo para todo el
+  // pedido, y lo que interesa al producir es cuántas cartas lo llevan.
+  const dorsosDelPedido = Object.values(
+	allItems
+  	.filter((it) => it.dorsoUrl)
+  	.reduce<Record<string, { url: string; nombre: string; cartas: number }>>(
+    	(acc, it) => {
+      	const url = it.dorsoUrl!;
+      	acc[url] = {
+        	url,
+        	nombre: it.dorsoNombre || "Dorso personalizado",
+        	cartas: (acc[url]?.cartas ?? 0) + it.quantity,
+      	};
+      	return acc;
+    	},
+    	{}
+  	)
+  );
   const sumQty = (arr: PedidoItem[]) => arr.reduce((s, it) => s + it.quantity, 0);
 
   // Decklist (formato MTGO) de las cartas Scryfall/Gatherer.
@@ -1246,6 +1268,41 @@ export default function AdminPedidoDetail() {
         	Cartas ({pedido.items.length} items)
       	</h2>
 
+      	{dorsosDelPedido.length > 0 ? (
+        	<div className="bg-[#FF4D1A]/10 border border-[#FF4D1A]/30 rounded-lg p-3 mb-4">
+          	<p className="text-sm font-semibold text-[#ffb088] mb-2">
+            	Este pedido lleva dorso personalizado — hay que imprimir el
+            	reverso.
+          	</p>
+          	<div className="flex flex-wrap gap-3">
+            	{dorsosDelPedido.map((d) => (
+              	<a
+                	key={d.url}
+                	href={d.url}
+                	target="_blank"
+                	rel="noreferrer"
+                	className="flex items-center gap-2 bg-[#0F1115] border border-white/10 rounded-lg p-2 hover:border-[#FF4D1A]/50"
+              	>
+                	<span
+                  	role="img"
+                  	aria-label={d.nombre}
+                  	className="w-[40px] h-[56px] rounded bg-[#1E242B] bg-center bg-cover bg-no-repeat block"
+                  	style={{ backgroundImage: `url(${d.url})` }}
+                	/>
+                	<span className="text-xs">
+                  	<span className="block font-semibold truncate max-w-[160px]">
+                    	{d.nombre}
+                  	</span>
+                  	<span className="block text-gray-400">
+                    	{d.cartas} carta{d.cartas !== 1 ? "s" : ""} · abrir
+                  	</span>
+                	</span>
+              	</a>
+            	))}
+          	</div>
+        	</div>
+      	) : null}
+
       	<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         	{pedido.items.map((it, idx) => (
           	<div
@@ -1265,6 +1322,9 @@ export default function AdminPedidoDetail() {
             	<p className="text-[10px] text-[#FF4D1A]">
               	{it.quantity}× {it.finish}
             	</p>
+            	{it.dorsoUrl ? (
+              	<p className="text-[10px] text-[#ffb088]">+ dorso custom</p>
+            	) : null}
           	</div>
         	))}
       	</div>

@@ -98,7 +98,12 @@ export const RECETA: Record<Finish, Partial<Record<MaterialKey, number>>> = {
   premium: { papel200: 1, pouchMatte: 0.5, filmFrio: 1, tinta: 1 },
 };
 
-export type ItemConsumo = { finish: string; quantity: number };
+export type ItemConsumo = {
+  finish: string;
+  quantity: number;
+  /** Con dorso personalizado la hoja pasa dos veces por la impresora. */
+  dorsoUrl?: string;
+};
 
 const vacio = (): Record<MaterialKey, number> =>
   Object.fromEntries(MATERIALES.map((m) => [m, 0])) as Record<
@@ -133,6 +138,13 @@ export function consumoDeItems(
   	// El pouch compartido se cuenta en láminas enteras por pedido.
   	total[mat] += porHoja < 1 ? Math.ceil(hojas * porHoja) : hojas * porHoja;
 	}
+
+	// El dorso personalizado no gasta papel (el 300g ya es doble faz), pero sí
+	// una segunda pasada de tinta sobre las hojas que lo llevan.
+	const conDorso = items
+  	.filter((i) => i.finish === f && i.dorsoUrl)
+  	.reduce((s, i) => s + (i.quantity || 0), 0);
+	if (conDorso > 0) total.tinta += Math.ceil(conDorso / MIN_CARDS);
   }
 
   return total;

@@ -10,9 +10,9 @@ import { addToCart } from "@/lib/cart";
 import { uploadImage } from "@/lib/imageUpload";
 import FinishButtons from "@/components/FinishButtons";
 import {
+  calculateTotalWith,
   defaultFinish,
   formatCLP,
-  precioUnitario,
   type Finish,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
@@ -97,10 +97,18 @@ export default function CustomPage() {
 	router.push("/carrito");
   };
 
-  const subtotal = uploads.reduce((s, u) => {
-	const unit = precioUnitario(precios, u.finish);
-	return s + (unit + precios.custom_surcharge) * u.quantity;
-  }, 0);
+  // Se calcula con el motor real, no a mano: las customs entran a las promos
+  // como cualquier carta y el recargo va por diseño, así que sumar
+  // (unitario + recargo) × copias mostraría de más.
+  const { total: subtotal } = calculateTotalWith(
+	precios,
+	uploads.map((u) => ({
+  	id: "custom-" + u.filename,
+  	finish: u.finish,
+  	quantity: u.quantity,
+  	isCustom: true,
+	}))
+  );
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -113,7 +121,9 @@ export default function CustomPage() {
       	</h1>
       	<p className="text-gray-400 mb-8">
         	Sube tus propias imágenes (JPG o PNG). Recargo de{" "}
-        	{formatCLP(precios.custom_surcharge)} por carta.
+        	{formatCLP(precios.custom_surcharge)} por diseño — una sola vez por
+        	imagen, aunque pidas varias copias. Las customs cuentan para las
+        	promos de 60 y 100 como cualquier otra carta.
       	</p>
     	</Reveal>
 
@@ -243,7 +253,7 @@ export default function CustomPage() {
         	<div className="glass-card p-5 rounded-xl flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
           	<div>
             	<p className="text-xs text-gray-400">
-              	Subtotal estimado (sin promos)
+              	Subtotal estimado (con promos)
             	</p>
             	<p className="text-2xl font-display font-bold text-lava">
               	{formatCLP(subtotal)}
@@ -271,6 +281,10 @@ export default function CustomPage() {
         	<li>Proporción ideal: 5:7 (vertical)</li>
         	<li>Evita imágenes muy oscuras o con artefactos JPG</li>
         	<li>Si quieres bordes negros tipo MTG, agrégalos antes de subir</li>
+        	<li>
+          	¿Quieres dorso personalizado? Se sube desde el carrito y va para
+          	todo el pedido
+        	</li>
       	</ul>
     	</div>
   	</div>

@@ -27,6 +27,8 @@ type PedidoItem = {
   quantity: number;
   isCustom?: boolean;
   mpcfillId?: string;
+  dorsoUrl?: string;
+  dorsoNombre?: string;
 };
 
 export async function POST(req: Request) {
@@ -121,12 +123,18 @@ export async function POST(req: Request) {
   	}
 	}
 
+	// El recargo custom se cobra por diseño distinto, así que acá la identidad
+	// del diseño es la IMAGEN y no el `id` que manda el cliente: con el id
+	// bastaría con repetirlo en cien customs diferentes para pagar un solo
+	// recargo. El dorso ya se identifica por su propia URL.
 	const { total: subtotal, applied } = calculateTotalWith(
   	precios,
   	items.map((i) => ({
+    	id: i.isCustom ? i.image || i.id : i.id,
     	finish: i.finish as Finish,
     	quantity: i.quantity,
     	isCustom: i.isCustom,
+    	dorsoUrl: i.dorsoUrl,
   	}))
 	);
 	const authClient = await supabaseServer();
@@ -294,12 +302,15 @@ export async function POST(req: Request) {
   	.map((it) => {
     	const customLabel = it.isCustom ? "CUSTOM" : it.set_name;
     	const collector = it.isCustom ? "" : " · #" + it.collector_number;
+    	const dorso = it.dorsoUrl
+      	? `<br/><span style="color:#FF4D1A;font-size:12px;">Dorso personalizado</span>`
+      	: "";
 
     	return `<tr>
       	<td style="padding:8px;border-bottom:1px solid #eee;">${it.quantity}×</td>
       	<td style="padding:8px;border-bottom:1px solid #eee;">
         	<b>${it.name}</b><br/>
-        	<span style="color:#888;font-size:12px;">${customLabel}${collector}</span>
+        	<span style="color:#888;font-size:12px;">${customLabel}${collector}</span>${dorso}
       	</td>
       	<td style="padding:8px;border-bottom:1px solid #eee;color:#FF4D1A;">
         	${FINISH_INFO[it.finish as Finish]?.label ?? it.finish}
@@ -313,13 +324,15 @@ export async function POST(req: Request) {
 	// =========================
 	const mtgoList = items
   	.map((it) => {
+    	const dorso = it.dorsoUrl ? ` [DORSO: ${it.dorsoUrl}]` : "";
+
     	if (it.isCustom) {
-      	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]`;
+      	return `${it.quantity} [CUSTOM] ${it.name} [${it.finish}]${dorso}`;
     	}
 
     	const base = `${it.quantity} ${it.name} (${(it.set || "").toUpperCase()}) ${
       	it.collector_number
-    	} [${it.finish}]`;
+    	} [${it.finish}]${dorso}`;
 
     	// Arte HD elegido en MPCFill: incluir el link de descarga en alta
     	// resolución para imprimir desde esa versión.

@@ -19,7 +19,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Las cartas son indistinguibles de las reales?",
-  	a: "No. Volcán Proxies son proxies artesanales hechas a mano. Aunque tienen firmeza similar a una carta real, dorso impreso (no quedan en blanco) y se ven visualmente fieles desde la distancia normal de juego, NO buscan ser indistinguibles de las oficiales. Si las miras de cerca y las comparas con una carta original, verás diferencias en los detalles finos de impresión. Son perfectas para playtest, casual, cEDH y torneos proxy-friendly. No están diseñadas para engañar ni reemplazar a las cartas oficiales en torneos sancionados.",
+  	a: "No. Volcán Proxies son proxies artesanales hechas a mano. Aunque tienen firmeza similar a una carta real y se ven visualmente fieles desde la distancia normal de juego, NO buscan ser indistinguibles de las oficiales. Si las miras de cerca y las comparas con una carta original, verás diferencias en los detalles finos de impresión. Son perfectas para playtest, casual, cEDH y torneos proxy-friendly. No están diseñadas para engañar ni reemplazar a las cartas oficiales en torneos sancionados.",
 	},
 	{
   	q: "¿Cuánto cuestan?",
@@ -75,9 +75,17 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Puedo subir mi propio diseño?",
-  	a: `Sí. Tenemos la sección /custom donde puedes subir imágenes JPG o PNG (máximo 5MB) y nosotros las imprimimos como carta. Útil para tokens custom, alters, basic lands con arte personalizado, etc. Hay un recargo extra de ${formatCLP(
+  	a: `Sí. Tenemos la sección /custom donde puedes subir imágenes JPG o PNG (máximo 5MB) y nosotros las imprimimos como carta. Útil para tokens custom, alters, basic lands con arte personalizado, etc. Hay un recargo de ${formatCLP(
     	precios.custom_surcharge
-  	)} por carta custom para cubrir el ajuste manual.`,
+  	)} por diseño para cubrir el ajuste manual del archivo: se cobra una sola vez por imagen, así que pedir varias copias del mismo diseño no lo multiplica. Las cartas custom cuentan para las promos de 60 y 100 igual que cualquier otra.`,
+	},
+	{
+  	q: "¿Puedo pedir un dorso personalizado?",
+  	a: `Sí. Por defecto el reverso va blanco liso, pero puedes subir tu propia imagen desde el carrito y la imprimimos al dorso de todas las cartas del pedido. Cuesta ${formatCLP(
+    	precios.dorso_diseno
+  	)} por el diseño, una sola vez, más ${formatCLP(
+    	precios.dorso_carta
+  	)} por carta. Las cartas dobles MDFC llevan su reverso real impreso sin costo extra: eso ya viene con la carta. No imprimimos el reverso oficial de Magic.`,
 	},
 	{
   	q: "¿Hacen pedidos grandes / al por mayor?",
@@ -85,7 +93,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Cómo aplican las promos de mazo?",
-  	a: "Se aplican solas al armar el carrito: al juntar 60 cartas de un mismo acabado entra el precio de Mazo 60, y al llegar a 100 entra el de Commander 100. Las promos se suman, así que un pedido de 260 cartas recibe dos Commander 100 y un Mazo 60 sin que tengas que hacer compras separadas. Cada acabado recibe la suya por su cuenta: si llevas 100 Matte y 100 Glossy, ambos grupos aprovechan su promo. Las cartas que sobran de un tramo se cobran sueltas, así que agregar cartas nunca encarece el pedido. Las custom no suman para la promo, pero tampoco la anulan.",
+  	a: "Se aplican solas al armar el carrito: al juntar 60 cartas de un mismo acabado entra el precio de Mazo 60, y al llegar a 100 entra el de Commander 100. Las promos se suman, así que un pedido de 260 cartas recibe dos Commander 100 y un Mazo 60 sin que tengas que hacer compras separadas. Cada acabado recibe la suya por su cuenta: si llevas 100 Matte y 100 Glossy, ambos grupos aprovechan su promo. Las cartas que sobran de un tramo se cobran sueltas, así que agregar cartas nunca encarece el pedido. Las custom también suman para la promo: llevan el mismo papel y el mismo trabajo de impresión que el resto, y lo único que se cobra aparte es la preparación de cada diseño.",
 	},
   ];
 

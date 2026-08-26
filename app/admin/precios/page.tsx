@@ -192,7 +192,7 @@ export default function AdminPreciosPage() {
         	htmlFor="custom_surcharge"
         	className="block text-sm font-semibold mb-1"
       	>
-        	Recargo por carta custom
+        	Recargo por diseño custom
       	</label>
       	<input
         	id="custom_surcharge"
@@ -207,8 +207,74 @@ export default function AdminPreciosPage() {
         	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
       	/>
       	<p className="text-xs text-gray-500 mt-1">
-        	Se suma al precio unitario del acabado elegido.
+        	Se cobra una vez por cada imagen distinta, no por copia: preparar
+        	el archivo es un solo trabajo aunque pidan veinte copias. Las cartas
+        	custom cuentan para las promos como cualquier otra.
       	</p>
+
+      	<div className="border-t border-white/10 pt-4 mt-4">
+        	<h3 className="text-sm font-semibold mb-3">Dorso personalizado</h3>
+
+        	<div className="grid sm:grid-cols-2 gap-4">
+          	<div>
+            	<label
+              	htmlFor="dorso_diseno"
+              	className="block text-xs text-gray-400 mb-1"
+            	>
+              	Por diseño de dorso
+            	</label>
+            	<input
+              	id="dorso_diseno"
+              	type="number"
+              	value={precios.dorso_diseno}
+              	onChange={(e) =>
+                	setPrecios({
+                  	...precios,
+                  	dorso_diseno: Number(e.target.value) || 0,
+                	})
+              	}
+              	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
+            	/>
+            	<p className="text-[11px] text-gray-500 mt-1">
+              	Una vez por pedido: preparar y calzar el archivo.
+            	</p>
+          	</div>
+
+          	<div>
+            	<label
+              	htmlFor="dorso_carta"
+              	className="block text-xs text-gray-400 mb-1"
+            	>
+              	Por carta con dorso
+            	</label>
+            	<input
+              	id="dorso_carta"
+              	type="number"
+              	value={precios.dorso_carta}
+              	onChange={(e) =>
+                	setPrecios({
+                  	...precios,
+                  	dorso_carta: Number(e.target.value) || 0,
+                	})
+              	}
+              	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
+            	/>
+            	<p className="text-[11px] text-gray-500 mt-1">
+              	Cubre la segunda pasada por la impresora.
+            	</p>
+          	</div>
+        	</div>
+
+        	<p className="text-xs text-gray-500 mt-3">
+          	Un mazo de 100 con un dorso queda en{" "}
+          	{formatCLP(precios.dorso_diseno + precios.dorso_carta * 100)} extra
+          	({formatCLP(
+            	Math.round(precios.dorso_diseno / 100 + precios.dorso_carta)
+          	)}
+          	/carta). Las MDFC llevan su reverso real sin costo: esto es solo
+          	para dorsos que manda el cliente.
+        	</p>
+      	</div>
 
       	<div className="border-t border-white/10 pt-4 mt-4 flex justify-between items-center">
         	{savedAt ? (

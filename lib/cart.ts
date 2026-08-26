@@ -12,7 +12,25 @@ export type CartItem = {
   isCustom?: boolean;
   /** Identificador de MPCFill cuando el cliente eligió un arte HD de ahí. */
   mpcfillId?: string;
+  /**
+  * Imagen del dorso personalizado, si el cliente pidió uno. Vacío significa el
+  * reverso normal: blanco liso en las de una cara, y su reverso real en las
+  * MDFC, que no pagan extra porque ese reverso ya viene con la carta.
+  */
+  dorsoUrl?: string;
+  /** Nombre del archivo del dorso, para reconocerlo en el carrito y al producir. */
+  dorsoNombre?: string;
 };
+
+/**
+* Dos líneas son la misma solo si coinciden carta, acabado Y dorso: la misma
+* carta con dorso custom y sin él son dos cosas distintas de producir.
+*/
+function mismaLinea(a: CartItem, b: CartItem): boolean {
+  return (
+	a.id === b.id && a.finish === b.finish && (a.dorsoUrl ?? "") === (b.dorsoUrl ?? "")
+  );
+}
 
 const KEY = "cart";
 
@@ -32,9 +50,7 @@ export function setCart(items: CartItem[]) {
 
 export function addToCart(item: CartItem) {
   const cart = getCart();
-  const existing = cart.findIndex(
-	(i) => i.id === item.id && i.finish === item.finish
-  );
+  const existing = cart.findIndex((i) => mismaLinea(i, item));
   if (existing >= 0) cart[existing].quantity += item.quantity;
   else cart.push(item);
   setCart(cart);
@@ -65,13 +81,49 @@ export function clearCart() {
 export function mergeCart(a: CartItem[], b: CartItem[]): CartItem[] {
   const merged = [...a];
   for (const item of b) {
-	const existing = merged.findIndex(
-  	(i) => i.id === item.id && i.finish === item.finish
-	);
+	const existing = merged.findIndex((i) => mismaLinea(i, item));
 	if (existing >= 0) merged[existing].quantity += item.quantity;
 	else merged.push(item);
   }
   return merged;
+}
+
+/**
+* Aplica un dorso personalizado a todo el pedido. Es el caso real: quien pide
+* dorso custom lo quiere para el mazo entero, y hacerlo carta por carta serían
+* cien clics. El cargo por diseño se paga una sola vez igual.
+*/
+export function setDorsoTodos(dorsoUrl: string, dorsoNombre: string) {
+  setCart(getCart().map((i) => ({ ...i, dorsoUrl, dorsoNombre })));
+}
+
+export function quitarDorsoTodos() {
+  setCart(
+	getCart().map((i) => ({ ...i, dorsoUrl: undefined, dorsoNombre: undefined }))
+  );
+}
+
+/** El dorso que lleva el pedido, si todas las cartas comparten uno. */
+export function dorsoDelPedido(
+  items: CartItem[]
+): { url: string; nombre: string } | null {
+  const conDorso = items.filter((i) => i.dorsoUrl);
+  if (conDorso.length === 0) return null;
+  return {
+	url: conDorso[0].dorsoUrl!,
+	nombre: conDorso[0].dorsoNombre || "Dorso personalizado",
+  };
+}
+
+/** Lo que necesita el cálculo de precio de cada línea del carrito. */
+export function toCalcItems(items: CartItem[]) {
+  return items.map((i) => ({
+	id: i.id,
+	finish: i.finish,
+	quantity: i.quantity,
+	isCustom: i.isCustom,
+	dorsoUrl: i.dorsoUrl,
+  }));
 }
 
 export function toMtgoFormat(items: CartItem[]): string {

@@ -4,7 +4,7 @@ Documento de traspaso. Si estás retomando el proyecto en una sesión nueva,
 lee esto antes de tocar código: acá está lo que no se deduce leyendo los
 archivos.
 
-Última actualización: 24 de agosto de 2026.
+Última actualización: 25 de agosto de 2026.
 
 ---
 
@@ -124,8 +124,44 @@ Antes esto estaba roto: la promo exigía *exactamente* 60 o 100 cartas de un
 solo acabado y sin customs, así que 260 cartas juntas costaban **$12.300 más**
 que en tres compras separadas.
 
-Las cartas custom se cobran aparte (unitario + recargo) y **no suman ni anulan**
-las promos del resto.
+Las cartas custom **sí suman** para las promos, como cualquier otra carta: el
+papel, la tinta, el laminado y la hoja son los mismos, y la promo existe porque
+el costo por carta baja con el volumen. Antes quedaban fuera, y eso hacía que un
+mazo commander entero custom costara **más del doble** que el mismo mazo normal
+($23.000 contra $10.400 en Básica) — fue justo el reclamo de un cliente que
+quería muchas customs.
+
+Lo único propio de una custom es preparar el archivo, y eso se cobra aparte:
+**`custom_surcharge` es por diseño distinto, no por copia**. Pedir veinte copias
+del mismo diseño es un solo trabajo de preparación y se cobra una sola vez,
+aunque las pida repartidas en dos acabados.
+
+Ojo con esto al tocar `/api/pedido`: el servidor cuenta los diseños por la
+**imagen**, no por el `id` que manda el cliente. Con el id bastaría con
+repetirlo en cien customs distintas para pagar un solo recargo.
+
+### Dorso personalizado
+
+Por defecto el reverso va blanco liso. El cliente puede subir una imagen desde
+el carrito y se imprime al dorso de **todas** las cartas del pedido: se cobra
+`dorso_diseno` una vez (preparar y calzar el archivo) más `dorso_carta` por cada
+carta (la segunda pasada por la impresora).
+
+Las **MDFC no pagan extra**: su reverso real ya viene con la carta y siempre se
+imprimió así.
+
+Por qué esto se puede hacer hoy aunque el "dorso real de Magic" siga en pausa:
+son problemas distintos. El dorso oficial exige registro perfecto, porque todo
+el mundo sabe cómo se ve y un milímetro de desviación salta. Un dorso custom no
+tiene referencia contra la cual compararse, así que tolera mucha más
+desalineación.
+
+El costo tampoco está en el material: el 300g ya es doble faz, y la tinta de las
+hojas extra de un mazo de 100 son ~$400. Está en la **impresora**, que es el
+techo real de producción: un mazo entero con dorso son 12 hojas × 6 min de
+máquina extra, contra la hoja suelta que hoy agregan las MDFC.
+
+Los dos montos se editan en `/admin/precios` sin desplegar.
 
 ### Envío agrupado
 
@@ -279,9 +315,16 @@ hechos a la medida de sus parsers reales.
   archivos existen (los detecta el navegador, no hay que tocar código).
 - **Cargar el stock inicial** en `/admin/stock`; hasta entonces la columna
   "Queda" no significa nada.
-- **Cartas con dorso real**: en pausa hasta tener mejor impresora. Precio
-  calculado $900/carta, con el costo dominado por el rechazo al pegar los dos
-  papeles. Si se retoma, hay que rehacer los números.
+- **Cartas con dorso real** (el reverso oficial de Magic): en pausa hasta tener
+  mejor impresora. Precio calculado $900/carta, con el costo dominado por el
+  rechazo al pegar los dos papeles. Si se retoma, hay que rehacer los números.
+  No confundir con el **dorso personalizado**, que ya está en producción y es
+  otra cosa: no necesita registro perfecto porque el cliente no tiene con qué
+  compararlo.
+- **Calibrar el precio del dorso en pedidos chicos**: con $1.500 por diseño, un
+  pedido de 9 cartas paga $207 por carta de dorso, contra $55 en uno de 100. Es
+  correcto (el trabajo es el mismo), pero puede espantar a quien quiere probar.
+  Si pasa, se baja `dorso_diseno` desde el panel.
 - **Cablear `config.banco`** para no tener los datos de transferencia
   hardcodeados.
 - **Curvatura del Premium 300g**: el laminado por una cara curva la hoja. La

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
-import { getCart, clearCart, type CartItem } from "@/lib/cart";
+import { getCart, clearCart, toCalcItems, type CartItem } from "@/lib/cart";
 import {
   calculateTotalWith,
   FINISH_INFO,
@@ -122,11 +122,7 @@ export default function CheckoutPage() {
 
   const { total: subtotal, applied } = calculateTotalWith(
 	precios,
-	items.map((i) => ({
-  	finish: i.finish,
-  	quantity: i.quantity,
-  	isCustom: i.isCustom,
-	}))
+	toCalcItems(items)
   );
 
   const shippingCost =

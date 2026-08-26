@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Loader2, ShoppingBag, AlertCircle, Truck } from "lucide-react";
+import {
+  Trash2,
+  Loader2,
+  ShoppingBag,
+  AlertCircle,
+  Truck,
+  Upload,
+  X,
+} from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
 import {
@@ -10,8 +18,13 @@ import {
   removeFromCart,
   updateQty,
   updateFinish,
+  setDorsoTodos,
+  quitarDorsoTodos,
+  dorsoDelPedido,
+  toCalcItems,
   type CartItem,
 } from "@/lib/cart";
+import { uploadImage } from "@/lib/imageUpload";
 import {
   calculateTotalWith,
   FINISH_INFO,
@@ -29,6 +42,9 @@ export default function CarritoPage() {
   const { precios } = usePrecios();
   const [items, setItems] = useState<CartItem[]>([]);
   const [mounted, setMounted] = useState(false);
+  const dorsoInputRef = useRef<HTMLInputElement>(null);
+  const [subiendoDorso, setSubiendoDorso] = useState(false);
+  const [errorDorso, setErrorDorso] = useState("");
 
   useEffect(() => {
 	setItems(getCart());
@@ -49,12 +65,22 @@ export default function CarritoPage() {
 	);
   }
 
-  const itemsCalc = items.map((i) => ({
-	finish: i.finish,
-	quantity: i.quantity,
-	isCustom: i.isCustom,
-  }));
-  const { total, applied } = calculateTotalWith(precios, itemsCalc);
+  const itemsCalc = toCalcItems(items);
+  const { total, applied, recargos } = calculateTotalWith(precios, itemsCalc);
+  const dorso = dorsoDelPedido(items);
+
+  const subirDorso = async (file: File) => {
+	setErrorDorso("");
+	setSubiendoDorso(true);
+	try {
+  	const data = await uploadImage(file);
+  	setDorsoTodos(data.url, data.originalName || file.name);
+	} catch (err: unknown) {
+  	setErrorDorso(err instanceof Error ? err.message : "No se pudo subir");
+	}
+	setSubiendoDorso(false);
+	if (dorsoInputRef.current) dorsoInputRef.current.value = "";
+  };
   // Si está a pocas cartas de una promo, conviene avisarle: entre 152 y 159
   // cartas se paga más que por 160.
   const sugerencia = sugerenciaPromo(precios, itemsCalc);
@@ -108,6 +134,11 @@ export default function CarritoPage() {
                   	<p className="text-xs text-gray-400 uppercase">
                     	{it.set_name}
                   	</p>
+                  	{it.dorsoUrl ? (
+                    	<p className="text-[10px] text-[#ffb088] mt-1">
+                      	Con dorso personalizado
+                    	</p>
+                  	) : null}
                   	<div className="mt-2 max-w-[180px]">
                     	<FinishButtons
                       	precios={precios}
@@ -146,6 +177,85 @@ export default function CarritoPage() {
               	</div>
             	);
           	})}
+        	  <div className="glass-card p-4 rounded-xl">
+            	<div className="flex items-start gap-3">
+              	<div className="flex-1">
+                	<h3 className="font-semibold text-sm">
+                  	Dorso personalizado{" "}
+                  	<span className="text-gray-500 font-normal">(opcional)</span>
+                	</h3>
+                	<p className="text-xs text-gray-400 mt-1 leading-relaxed">
+                  	Por defecto el reverso va blanco liso. Puedes subir una
+                  	imagen y la imprimimos al dorso de todas las cartas del
+                  	pedido: {formatCLP(precios.dorso_diseno)} por el diseño (una
+                  	sola vez) + {formatCLP(precios.dorso_carta)} por carta.
+                	</p>
+                	<p className="text-[11px] text-gray-500 mt-1">
+                  	Las cartas dobles MDFC llevan su reverso real impreso sin
+                  	costo extra — esto es solo para dorsos tuyos.
+                	</p>
+              	</div>
+              	{dorso ? (
+                	<div
+                  	role="img"
+                  	aria-label={dorso.nombre}
+                  	className="w-[48px] h-[67px] rounded bg-[#0b0d11] flex-shrink-0 bg-center bg-cover bg-no-repeat ring-1 ring-[#FF4D1A]/40"
+                  	style={{ backgroundImage: `url(${dorso.url})` }}
+                	/>
+              	) : null}
+            	</div>
+
+            	<input
+              	ref={dorsoInputRef}
+              	type="file"
+              	accept="image/jpeg,image/png,image/webp"
+              	className="hidden"
+              	onChange={(e) => {
+                	const f = e.target.files?.[0];
+                	if (f) subirDorso(f);
+              	}}
+            	/>
+
+            	{dorso ? (
+              	<div className="flex items-center gap-3 mt-3">
+                	<p className="text-xs text-gray-300 truncate flex-1">
+                  	{dorso.nombre}
+                	</p>
+                	<button
+                  	onClick={() => dorsoInputRef.current?.click()}
+                  	className="text-xs text-gray-400 hover:text-white"
+                	>
+                  	Cambiar
+                	</button>
+                	<button
+                  	onClick={() => quitarDorsoTodos()}
+                  	className="text-xs text-red-400 hover:text-red-300 inline-flex items-center gap-1"
+                	>
+                  	<X size={12} /> Quitar
+                	</button>
+              	</div>
+            	) : (
+              	<button
+                	onClick={() => dorsoInputRef.current?.click()}
+                	disabled={subiendoDorso}
+                	className="mt-3 w-full border border-dashed border-white/20 hover:border-[#FF4D1A]/60 rounded-lg py-2.5 text-xs text-gray-300 inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+              	>
+                	{subiendoDorso ? (
+                  	<>
+                    	<Loader2 className="animate-spin" size={14} /> Subiendo…
+                  	</>
+                	) : (
+                  	<>
+                    	<Upload size={14} /> Subir un dorso para todo el pedido
+                  	</>
+                	)}
+              	</button>
+            	)}
+
+            	{errorDorso ? (
+              	<p className="text-xs text-red-400 mt-2">{errorDorso}</p>
+            	) : null}
+          	</div>
         	</div>
 
         	<aside className="glass-card p-6 rounded-xl h-fit sticky top-24">
@@ -197,6 +307,29 @@ export default function CarritoPage() {
               	</div>
             	</div>
           	)}
+
+          	{recargos.customTotal > 0 || recargos.dorsoTotal > 0 ? (
+            	<div className="border-t border-white/10 pt-3 mb-3 space-y-1.5">
+              	{recargos.customTotal > 0 ? (
+                	<div className="flex justify-between text-xs gap-3">
+                  	<span className="text-gray-400">
+                    	Preparación de {recargos.customDisenos} diseño
+                    	{recargos.customDisenos !== 1 ? "s" : ""} custom
+                  	</span>
+                  	<span>{formatCLP(recargos.customTotal)}</span>
+                	</div>
+              	) : null}
+              	{recargos.dorsoTotal > 0 ? (
+                	<div className="flex justify-between text-xs gap-3">
+                  	<span className="text-gray-400">
+                    	Dorso personalizado ({recargos.dorsoCartas} carta
+                    	{recargos.dorsoCartas !== 1 ? "s" : ""})
+                  	</span>
+                  	<span>{formatCLP(recargos.dorsoTotal)}</span>
+                	</div>
+              	) : null}
+            	</div>
+          	) : null}
 
           	<div className="border-t border-white/10 pt-4 mb-4">
             	<div className="flex justify-between items-center">

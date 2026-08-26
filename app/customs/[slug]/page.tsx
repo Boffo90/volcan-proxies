@@ -8,6 +8,7 @@ import Reveal from "@/components/animation/Reveal";
 import { addToCart } from "@/lib/cart";
 import {
   defaultFinish,
+  FINISH_INFO,
   finishDisponible,
   formatCLP,
   precioUnitario,
@@ -79,8 +80,11 @@ export default function CustomDetalle() {
 	);
   }
 
+  // El recargo va una sola vez por diseño: pedir cuatro copias no multiplica el
+  // trabajo de preparar el archivo.
   const surcharge = custom.surcharge ?? precios.custom_surcharge;
-  const unitPrice = precioUnitario(precios, finish) + surcharge;
+  const unitPrice = precioUnitario(precios, finish);
+  const subtotal = unitPrice * qty + surcharge;
 
   const handleAddToCart = () => {
 	addToCart({
@@ -138,7 +142,6 @@ export default function CustomDetalle() {
               	precios={precios}
               	value={finish}
               	onChange={setFinish}
-              	surcharge={surcharge}
               	allowed={custom.finish_options as Finish[]}
             	/>
           	</div>
@@ -153,10 +156,23 @@ export default function CustomDetalle() {
             	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 mb-4"
           	/>
 
+          	<div className="text-xs text-gray-400 space-y-1 mb-3">
+            	<div className="flex justify-between gap-3">
+              	<span>
+                	{qty} × {FINISH_INFO[finish].corto}
+              	</span>
+              	<span>{formatCLP(unitPrice * qty)}</span>
+            	</div>
+            	<div className="flex justify-between gap-3">
+              	<span>Preparación del diseño (una vez)</span>
+              	<span>{formatCLP(surcharge)}</span>
+            	</div>
+          	</div>
+
           	<div className="flex justify-between items-center mb-4">
             	<span className="text-gray-400">Subtotal</span>
             	<span className="text-2xl font-display font-bold text-lava">
-              	{formatCLP(unitPrice * qty)}
+              	{formatCLP(subtotal)}
             	</span>
           	</div>
 

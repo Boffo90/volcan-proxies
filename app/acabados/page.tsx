@@ -497,8 +497,10 @@ export default function AcabadosPage() {
         	</li>
         	<li>
           	• El <b className="text-white">reverso es blanco liso</b> en las
-          	cartas de una cara. Las únicas con reverso real impreso son las{" "}
-          	<b className="text-white">MDFC</b>.
+          	cartas de una cara, salvo que subas un{" "}
+          	<b className="text-white">dorso personalizado</b> desde el carrito.
+          	Las <b className="text-white">MDFC</b> llevan su reverso real
+          	impreso sin costo extra.
         	</li>
         	<li>
           	• Pedido mínimo de <b className="text-white">9 cartas</b> (una hoja

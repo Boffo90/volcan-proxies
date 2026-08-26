@@ -405,13 +405,15 @@ export default function Home() {
       	</div>
 
       	<p className="text-center text-gray-300 text-sm mt-6">
-        	<b className="text-white">Sobre el reverso:</b> por ahora todas
-        	nuestras cartas de una sola cara llevan{" "}
+        	<b className="text-white">Sobre el reverso:</b> por defecto nuestras
+        	cartas de una sola cara llevan{" "}
         	<b className="text-white">reverso blanco liso</b> (no el reverso
-        	oficial de Magic). Las únicas cartas de doble cara que imprimimos
-        	con su reverso real son las <b className="text-white">MDFC</b>{" "}
-        	(Modal Double-Faced Cards) — no hacemos transform, flip ni otros
-        	tipos de carta doble.
+        	oficial de Magic), y si quieres puedes subir tu propio{" "}
+        	<b className="text-white">dorso personalizado</b> desde el carrito
+        	por un extra. Las únicas cartas de doble cara que imprimimos con su
+        	reverso real son las <b className="text-white">MDFC</b>{" "}
+        	(Modal Double-Faced Cards), que no pagan extra — no hacemos
+        	transform, flip ni otros tipos de carta doble.
       	</p>
 
       	<p className="text-center text-gray-400 text-sm mt-4 italic">

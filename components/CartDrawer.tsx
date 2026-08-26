@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Trash2, ShoppingBag } from "lucide-react";
-import { getCart, removeFromCart, type CartItem } from "@/lib/cart";
+import { getCart, removeFromCart, type CartItem,
+  toCalcItems,
+} from "@/lib/cart";
 import { calculateTotalWith, formatCLP } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
 
@@ -26,10 +28,9 @@ export default function CartDrawer({
 	return () => window.removeEventListener("cart-updated", onUpdate);
   }, []);
 
-  const { total, applied } = calculateTotalWith(
-	precios,
-	items.map((i) => ({ finish: i.finish, quantity: i.quantity }))
-  );
+  // Con toCalcItems el drawer cuenta las customs y el dorso igual que el
+  // carrito: antes se saltaba los recargos y mostraba un total más bajo.
+  const { total, applied } = calculateTotalWith(precios, toCalcItems(items));
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
