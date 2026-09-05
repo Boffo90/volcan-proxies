@@ -99,6 +99,24 @@ se ven en el código:
    blanca de hosts: sin eso sería un proxy abierto que cualquiera puede usar
    para descargar lo que quiera desde nuestra IP.
 
+### Agregar desde la grilla
+
+El catálogo deja sumar cartas al carrito sin entrar a cada ficha: cada
+resultado trae su contador y su botón. Tres decisiones que no se deducen del
+código:
+
+- **El acabado se elige una vez para toda la búsqueda**, arriba de la grilla.
+  Ponerlo en cada tarjeta habría recreado el formulario del que este atajo
+  trata de librar. En el carrito se puede cambiar por línea.
+- **La cantidad vive en cada tarjeta y vuelve a 1 al agregar.** Es lo que se
+  espera al pasar a la siguiente carta.
+- **La ficha sigue siendo necesaria** y la imagen lleva ahí. El atajo sirve
+  cuando la carta que se ve ya es la buena; las otras versiones del mismo
+  arte, MPCFill y el dorso personalizado solo están en la ficha.
+
+La misma carta con dos acabados son dos líneas del carrito, no una: `mismaLinea`
+en `lib/cart.ts` compara carta, acabado y dorso.
+
 ### De dónde salen las cartas
 
 | Juego | Fuente | Llave | Imagen para imprimir |

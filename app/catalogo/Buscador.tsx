@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Search, Loader2, Shuffle } from "lucide-react";
+import { Search, Loader2, Shuffle, Plus, Minus, Check } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
 import {
@@ -17,6 +17,128 @@ import {
   type JuegoId,
 } from "@/lib/catalogo";
 import { aleatorias, buscar } from "@/lib/catalogo/cliente";
+import { addToCart } from "@/lib/cart";
+import { usePrecios } from "@/hooks/usePrecios";
+import {
+  FINISHES,
+  FINISH_INFO,
+  defaultFinish,
+  finishDisponible,
+  formatCLP,
+  type Finish,
+} from "@/lib/pricing";
+
+/**
+ * Una carta de la grilla, con su propio contador.
+ *
+ * La cantidad vive acá y no en el buscador porque es de esta carta: subir a
+ * tres una no tiene por qué mover las demás. Al agregar vuelve a 1, que es lo
+ * que se espera al pasar a la siguiente.
+ *
+ * La imagen sigue llevando a la ficha. Ahí están las cosas que no caben en una
+ * grilla —las otras versiones del mismo arte, MPCFill, el dorso— y el atajo no
+ * las reemplaza: solo evita entrar cuando la carta que se ve ya es la buena.
+ */
+function TarjetaCarta({
+  card,
+  finish,
+  onVer,
+}: {
+  card: CartaCatalogo;
+  finish: Finish;
+  onVer: () => void;
+}) {
+  const [qty, setQty] = useState(1);
+  const [agregada, setAgregada] = useState(false);
+
+  const agregar = () => {
+    addToCart({
+      id: card.uid,
+      juego: card.juego,
+      idioma: card.idioma,
+      name: card.name,
+      set: card.set,
+      set_name: card.set_name,
+      collector_number: card.collector_number,
+      image: card.imagenes.small,
+      finish,
+      quantity: qty,
+    });
+    setQty(1);
+    setAgregada(true);
+    window.setTimeout(() => setAgregada(false), 1400);
+  };
+
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="group relative glass-card rounded-lg overflow-hidden hover:border-[#FF4D1A]/50 transition-colors flex flex-col"
+    >
+      <button onClick={onVer} className="text-left" title="Ver la carta">
+        <div
+          className={
+            "relative overflow-hidden " +
+            (card.apaisada ? "aspect-[7/5]" : "aspect-[5/7]")
+          }
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={card.imagenes.normal}
+            alt={card.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="px-3 pt-3">
+          <p className="font-semibold text-sm truncate">{card.name}</p>
+          <p className="text-xs text-gray-400 uppercase truncate">
+            {card.set_name}
+          </p>
+        </div>
+      </button>
+
+      <div className="px-3 pb-3 pt-2 mt-auto space-y-2">
+        <div className="flex items-center justify-center gap-1">
+          <button
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            disabled={qty <= 1}
+            aria-label="Una menos"
+            className="w-9 h-9 rounded border border-white/15 flex items-center justify-center text-gray-300 hover:border-white/40 disabled:opacity-30"
+          >
+            <Minus size={15} />
+          </button>
+          <span className="w-8 text-center text-sm font-semibold tabular-nums">
+            {qty}
+          </span>
+          <button
+            onClick={() => setQty((q) => Math.min(99, q + 1))}
+            aria-label="Una más"
+            className="w-9 h-9 rounded border border-white/15 flex items-center justify-center text-gray-300 hover:border-white/40"
+          >
+            <Plus size={15} />
+          </button>
+        </div>
+        <button
+          onClick={agregar}
+          className={
+            "w-full py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 " +
+            (agregada
+              ? "bg-green-500/20 text-green-400 border border-green-500/40"
+              : "bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 text-white")
+          }
+        >
+          {agregada ? (
+            <>
+              <Check size={13} /> Agregada
+            </>
+          ) : (
+            "Agregar"
+          )}
+        </button>
+      </div>
+    </motion.div>
+  );
+}
 
 /**
  * El buscador del catálogo.
@@ -45,6 +167,20 @@ export default function Buscador({
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [mode, setMode] = useState<"search" | "random">("random");
+
+  // El acabado con el que se agrega desde la grilla. Uno solo para toda la
+  // búsqueda: elegirlo carta por carta convertiría el atajo en el formulario
+  // del que estamos tratando de librarnos, y en el carrito se puede cambiar.
+  const { precios } = usePrecios();
+  // Se deriva en vez de guardarse ya resuelto: los precios llegan por fetch,
+  // así que el primer render no sabe todavía cuáles hay. Con estado habría
+  // que corregirlo desde un efecto, que es un render de más y una cascada.
+  const [elegido, setFinish] = useState<Finish | null>(null);
+  const finish =
+    elegido && finishDisponible(precios, elegido)
+      ? elegido
+      : defaultFinish(precios);
+  const acabadosVivos = FINISHES.filter((f) => precios.disponible[f]);
 
   const handleSearch = useCallback(
     async (texto: string, deJuego: JuegoId, enIdioma: IdiomaId) => {
@@ -221,38 +357,37 @@ export default function Buscador({
                 {cards.length})
               </p>
             )}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {cards.map((card) => (
-                <motion.button
-                  key={card.uid}
-                  onClick={() =>
-                    router.push("/carta/" + encodeURIComponent(card.uid))
-                  }
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="group relative glass-card rounded-lg overflow-hidden hover:border-[#FF4D1A]/50 transition-colors text-left"
-                >
-                  <div
+            {acabadosVivos.length > 1 && (
+              <div className="flex gap-2 flex-wrap mb-4 items-center">
+                <span className="text-xs text-gray-500 mr-1">
+                  Agregar como:
+                </span>
+                {acabadosVivos.map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setFinish(f)}
                     className={
-                      "relative overflow-hidden " +
-                      (card.apaisada ? "aspect-[7/5]" : "aspect-[5/7]")
+                      "px-3 py-1 rounded-lg text-xs font-semibold transition-colors border " +
+                      (f === finish
+                        ? "bg-white/10 border-white/40 text-white"
+                        : "border-white/10 text-gray-400 hover:border-white/30")
                     }
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={card.imagenes.normal}
-                      alt={card.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <p className="font-semibold text-sm truncate">{card.name}</p>
-                    <p className="text-xs text-gray-400 uppercase truncate">
-                      {card.set_name}
-                    </p>
-                  </div>
-                </motion.button>
+                    {FINISH_INFO[f].corto} · {formatCLP(precios.unitario[f])}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {cards.map((card) => (
+                <TarjetaCarta
+                  key={card.uid}
+                  card={card}
+                  finish={finish}
+                  onVer={() =>
+                    router.push("/carta/" + encodeURIComponent(card.uid))
+                  }
+                />
               ))}
             </div>
           </>
