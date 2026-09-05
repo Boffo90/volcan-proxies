@@ -13,6 +13,22 @@ export default function RegistroPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviado, setReenviado] = useState(false);
+
+  const handleReenviar = async () => {
+	setReenviando(true);
+	const sb = supabaseBrowser();
+	await sb.auth.resend({
+  	type: "signup",
+  	email,
+  	options: {
+    	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,
+  	},
+	});
+	setReenviando(false);
+	setReenviado(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
 	e.preventDefault();
@@ -23,10 +39,22 @@ export default function RegistroPage() {
 	setLoading(true);
 	setError("");
 	const sb = supabaseBrowser();
-	const { data, error } = await sb.auth.signUp({ email, password });
+	// Sin `emailRedirectTo` el enlace del correo cae en la Site URL del
+	// proyecto, que no canjea el código. Tiene que apuntar al callback.
+	const { data, error } = await sb.auth.signUp({
+  	email,
+  	password,
+  	options: {
+    	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,
+  	},
+	});
 	setLoading(false);
 	if (error) {
-  	setError(error.message);
+  	setError(
+    	/already registered|already exists/i.test(error.message)
+      	? "Ya hay una cuenta con ese email. Inicia sesión o recupera tu contraseña."
+      	: error.message
+  	);
   	return;
 	}
 	if (data.session) {
@@ -47,10 +75,28 @@ export default function RegistroPage() {
     	</div>
 
     	{done ? (
-      	<div className="glass-card p-6 rounded-xl text-center">
+      	<div className="glass-card p-6 rounded-xl text-center space-y-3">
         	<p className="text-gray-300">
-          	Revisa tu email para confirmar tu cuenta antes de iniciar sesión.
+          	Te mandamos un correo a <b className="text-white">{email}</b>.
+          	Ábrelo para confirmar tu cuenta antes de iniciar sesión.
         	</p>
+        	<p className="text-xs text-gray-500">
+          	Revisa también la carpeta de spam. Abre el enlace en{" "}
+          	<b>este mismo navegador</b>: si lo abres en otro, la confirmación
+          	falla y hay que pedir el correo de nuevo.
+        	</p>
+        	{reenviado ? (
+          	<p className="text-sm text-green-400">Correo reenviado.</p>
+        	) : (
+          	<button
+            	type="button"
+            	disabled={reenviando}
+            	onClick={handleReenviar}
+            	className="text-sm text-[#FF4D1A] hover:underline disabled:opacity-50"
+          	>
+            	{reenviando ? "Reenviando…" : "No me llegó, reenviar"}
+          	</button>
+        	)}
       	</div>
     	) : (
       	<form

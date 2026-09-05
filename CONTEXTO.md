@@ -434,6 +434,45 @@ había tantos pedidos abandonados.
 por webhook y puede demorar más que el redirect, muestra "Verificando tu pago"
 y reintenta 5 veces en ~10 segundos antes de concluir que falló.
 
+### Cuentas de cliente: dos sistemas de correo distintos
+
+**La cuenta no hace falta para comprar.** El checkout no pide sesión; la
+cuenta sirve para ver el historial de pedidos y para que el carrito siga al
+cliente entre dispositivos. Si el registro se cae, no se cae la venta.
+
+**Hay dos sistemas de correo y es fácil confundirlos:**
+
+- Los correos de **pedido** (confirmación, pago, tracking) los manda el
+  código con **Resend**, desde `lib/emailPedido.ts`.
+- Los correos de **Auth** (confirmar cuenta, recuperar contraseña) los manda
+  **Supabase por su propio SMTP**, que se configura en el panel del proyecto.
+  El código no los ve pasar.
+
+Que Resend funcione no dice **nada** sobre si los de Auth salen. El SMTP de
+fábrica de Supabase es para desarrollo: pocos envíos por hora y destinatarios
+restringidos. Hay que apuntarlo a Resend en
+**Authentication → Emails → SMTP Settings**.
+
+**El circuito completo depende de `app/auth/callback/route.ts`.** Todos los
+correos de Auth llevan a un enlace que termina ahí con un `code`, y ese
+código hay que canjearlo por sesión con `exchangeCodeForSession`. Esa ruta
+**no existía**: el registro mandaba correos cuyo enlace no confirmaba nada,
+así que la cuenta quedaba creada pero sin confirmar y el login la rechazaba
+con un "Email not confirmed" en inglés. Dos condiciones más para que
+funcione, y las dos viven en el panel de Supabase, no en el código:
+
+- **Site URL** tiene que ser la de producción.
+- **Redirect URLs** tiene que incluir `https://www.volcanproxies.cl/auth/**`.
+  Si el destino no está en la lista, Supabase manda a la Site URL y el enlace
+  muere sin explicación.
+
+**Lo del mismo navegador no es un detalle de copy.** El flujo es PKCE: el
+verificador queda en una cookie del navegador donde se hizo el registro. Si
+el cliente abre el correo en el teléfono habiéndose registrado en el
+computador, el canje falla aunque el enlace esté perfecto. Por eso el aviso
+aparece en `/registro`, en `/recuperar` y en el error de `/login`, y por eso
+hay botón de reenviar en vez de dejarlo en un callejón.
+
 ---
 
 ## 7. Trampas conocidas

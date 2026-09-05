@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Loader2, LogIn, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
@@ -12,6 +13,43 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sinConfirmar, setSinConfirmar] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
+  const [reenviado, setReenviado] = useState(false);
+
+  // El callback de los correos devuelve acá con ?error=... cuando el enlace
+  // venció o no se pudo canjear. Se lee de window y no con useSearchParams
+  // para no dejar la página esperando hidratación.
+  useEffect(() => {
+	const motivo = new URLSearchParams(window.location.search).get("error");
+	if (!motivo) return;
+	setError(
+  	motivo === "canje_fallido"
+    	? "No pudimos confirmar la cuenta. Suele pasar al abrir el correo en otro navegador: pide el enlace de nuevo desde acá y ábrelo en este mismo."
+    	: motivo === "sin_codigo"
+    	? "El enlace del correo llegó incompleto. Pide uno nuevo."
+    	: "El enlace venció o ya se usó. Pide uno nuevo."
+	);
+	setSinConfirmar(true);
+  }, []);
+
+  const handleReenviar = async () => {
+	if (!email) {
+  	setError("Escribe tu email arriba y vuelve a apretar.");
+  	return;
+	}
+	setReenviando(true);
+	const sb = supabaseBrowser();
+	await sb.auth.resend({
+  	type: "signup",
+  	email,
+  	options: {
+    	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,
+  	},
+	});
+	setReenviando(false);
+	setReenviado(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
 	e.preventDefault();
@@ -21,8 +59,14 @@ export default function LoginPage() {
 	const { error } = await sb.auth.signInWithPassword({ email, password });
 	setLoading(false);
 	if (error) {
+  	// "Email not confirmed" llegaba crudo y en inglés, que es justo el caso
+  	// en que el usuario necesita saber qué hacer.
+  	const noConfirmado = /not confirmed/i.test(error.message);
+  	setSinConfirmar(noConfirmado);
   	setError(
-    	error.message === "Invalid login credentials"
+    	noConfirmado
+      	? "Tu cuenta todavía no está confirmada. Busca el correo que te mandamos, o pide uno nuevo acá abajo."
+      	: error.message === "Invalid login credentials"
       	? "Email o contraseña incorrectos"
       	: error.message
   	);
@@ -70,6 +114,23 @@ export default function LoginPage() {
 
       	{error ? <p className="text-sm text-red-400">{error}</p> : null}
 
+      	{sinConfirmar ? (
+        	reenviado ? (
+          	<p className="text-sm text-green-400">
+            	Correo enviado. Ábrelo en este mismo navegador.
+          	</p>
+        	) : (
+          	<button
+            	type="button"
+            	disabled={reenviando}
+            	onClick={handleReenviar}
+            	className="text-sm text-[#FF4D1A] hover:underline disabled:opacity-50"
+          	>
+            	{reenviando ? "Enviando…" : "Reenviar correo de confirmación"}
+          	</button>
+        	)
+      	) : null}
+
       	<button
         	type="submit"
         	disabled={loading}
@@ -82,6 +143,15 @@ export default function LoginPage() {
         	)}
         	Ingresar
       	</button>
+
+      	<p className="text-sm text-center">
+        	<Link
+          	href="/recuperar"
+          	className="text-gray-400 hover:text-[#FF4D1A] hover:underline"
+        	>
+          	Olvidé mi contraseña
+        	</Link>
+      	</p>
 
       	<p className="text-sm text-gray-400 text-center">
         	¿No tienes cuenta?{" "}
