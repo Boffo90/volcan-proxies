@@ -87,13 +87,24 @@ async function resolverImagenes(uids: string[], destino: Map<string, string>) {
 
   for (const [juego, delJuego] of porJuego) {
     const cat = catalogo(juego);
+    // El uid TAL COMO lo guarda el pedido, buscado por su id nativo.
+    //
+    // No se puede reconstruir: los pedidos anteriores a los uid con prefijo
+    // guardan el id de Scryfall pelado, así que armar "mtg:<id>" desde la
+    // carta resuelta no calza con lo que hay en la base y todas quedan sin
+    // resolver. Pasó de verdad con un pedido real.
+    const uidPorNativo = new Map(
+      delJuego.map((uid) => [parseUid(uid).nativoId, uid])
+    );
     try {
       if (cat.porIds) {
-        const cartas = await cat.porIds(delJuego.map((u) => parseUid(u).nativoId));
-        // Se vuelve a armar el uid desde la carta: el orden de la respuesta no
-        // tiene por qué coincidir con el de la consulta, y las que no existan
-        // simplemente no vuelven.
-        for (const c of cartas) destino.set(c.uid, c.imagenes.print);
+        const cartas = await cat.porIds([...uidPorNativo.keys()]);
+        // El orden de la respuesta no tiene por qué coincidir con el de la
+        // consulta, y las que no existan simplemente no vuelven.
+        for (const c of cartas) {
+          const uid = uidPorNativo.get(c.nativoId);
+          if (uid) destino.set(uid, c.imagenes.print);
+        }
         continue;
       }
       // Sin consulta masiva: de a poco, para no gatillar el corte.
