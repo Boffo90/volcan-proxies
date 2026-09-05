@@ -222,25 +222,56 @@ agregar una clave ahí; TypeScript después te obliga a completar todos los
 contra se muestra al cliente a propósito: es lo que hace creíble la diferencia
 de precio. No la suavices.
 
-### Estado de los acabados (24-ago-2026)
+### Estado de los acabados (5-sep-2026)
 
 | Clave | Nombre visible | Precio | Estado |
 |---|---|---|---|
 | `base300` | Básica 300g | $130 | **activo** |
-| `reforzada300` | Premium 300g | $250 | **activo** |
+| `reforzada300` | Reforzada | $250 | **activo** |
+| `premiumFrio` | Premium | $400 | **apagado hasta que Seba lo active** |
 | `glossy` | Glossy | $200 | pausado |
 | `matte` | Matte | $250 | pausado |
 | `premium` | Matte Premium | $400 | **descontinuado** |
 
+**Las claves no coinciden con los nombres, y no se pueden renombrar.** Los
+pedidos guardan la clave, así que cambiarla haría que un pedido antiguo
+mostrara otro acabado. Dos trampas concretas:
+
+- `reforzada300` **ya no es de 300g**: hoy es 260g más un adhesivo por detrás.
+  El "300" es historia. Se llamó "Premium 300g" hasta septiembre de 2026, con
+  el nombre Y el gramaje equivocados a la vista del cliente.
+- El Premium nuevo es `premiumFrio`, **no** `premium`. Esa clave la ocupa el
+  Matte Premium descontinuado y reutilizarla habría cambiado la descripción de
+  los pedidos históricos que lo usaron.
+
+**Las tres recetas de hoy:**
+
+| | Composición | Calidad de impresión |
+|---|---|---|
+| Básica | 300g semibrillante | Estándar |
+| Reforzada | 260g + adhesivo mate por detrás | Alta |
+| Premium | 200g + adhesivo + laminado en frío | Máxima |
+
+**Ninguna lleva laminado en caliente.** Era el pouch lo que curvaba la hoja, y
+ese problema ya no existe — el laminado en frío del Premium es otro proceso y
+no curva. El adhesivo del refuerzo es el mismo papel en la Reforzada y en el
+Premium.
+
+**No se especifica si el refuerzo es mate o glossy**, ni al cliente ni en las
+fórmulas: va por dentro y Seba usa lo que tenga a mano.
+
 **Por qué están pausados Glossy y Matte:** la laminadora dejó de sellar bien y
 el film se desprende. Vuelven con un clic desde `/admin/precios` cuando se
-repare. `premium` es distinto: se retiró para siempre (el doble laminado daba
-el mismo resultado que `reforzada300` con el doble de trabajo). Tiene
+repare. `premium` es distinto: se retiró para siempre. Tiene
 `descontinuado: true` y **no hay que reactivarlo**; existe solo para que los 2
 pedidos históricos que lo usaron sigan mostrando su acabado real.
 
 La página `/acabados` distingue ambos casos: los pausados se anuncian como
 "vuelven pronto", el descontinuado ni se menciona.
+
+**La FAQ arma la lista de precios sola**, con los acabados disponibles en ese
+momento. Estuvo escrita a mano nombrando Glossy, Matte y Matte Premium —dos
+pausados y uno descontinuado— sin mencionar la Reforzada, que sí se vendía.
 
 ---
 
@@ -439,23 +470,74 @@ pedidos.
 
 ## 8. Modelo de costos
 
-Todo se calcula por **hoja A4 = 9 cartas**, y las hojas se **redondean hacia
-arriba**: 60 cartas ocupan 7 hojas, no 6,67. La estimación es conservadora a
-propósito.
+Todo se calcula por **hoja A4 = 8 cartas**, y las hojas se **redondean hacia
+arriba**: 100 cartas ocupan 13 hojas, no 12,5.
+
+**Ocho, no nueve.** Se imprime en **4×2** porque con 3×3 no quedan márgenes
+para las marcas de registro del corte. En el código son dos constantes
+separadas — `CARTAS_POR_HOJA` y `MIN_CARDS` — aunque hoy valgan lo mismo:
+estaban unidas y el panel de stock calculaba las hojas dividiendo por el
+mínimo de compra, así que mover uno habría movido el otro en silencio.
 
 Insumos con flete a Pucón (+18% estimado, ajustable):
 
-| Insumo | Costo | Nota |
+| Insumo | Costo | Por hoja con flete |
 |---|---|---|
-| Papel 300g semibrillante | $3.900 / 50 hojas | el que se usa hoy |
-| Pouch termolaminar | $12.970 / 100 láminas | Liberman |
-| Laminado en frío | $8.445 / 50 hojas | sin uso hoy |
-| Tinta Epson T544 | $8.490 / ~300 hojas | rendimiento estimado a sangre |
+| Papel 300g semibrillante | $3.900 / 50 | $92,0 |
+| Papel 260g semibrillante | $5.790 / 50 | $136,6 |
+| Papel 200g semibrillo | $4.700 / 50 | $110,9 |
+| Adhesivo mate 130g | $5.990 / 50 | $141,4 |
+| Laminado en frío | $8.990 / 50 | $212,2 |
+| Tinta Epson T544 | $8.490 / ~300 | $33,4 |
+| Pouch termolaminar | $12.970 / 100 | sin uso: ninguna lleva laminado en caliente |
 
-La métrica que se usa para decidir precios **no es el margen por carta sino la
-ganancia por hora de trabajo**, porque el cuello de botella es el tiempo de
-Seba. Fue lo que reveló que el antiguo Premium, pese a tener el mayor margen
-por carta, era el producto **menos** rentable por hora.
+Y lo que cuesta cada acabado:
+
+| Acabado | Receta | Material/hoja | Material/carta |
+|---|---|---|---|
+| Básica | 300g + tinta | $125,4 | **$15,7** |
+| Reforzada | 260g + adhesivo + tinta | $311,4 | **$38,9** |
+| Premium | 200g + adhesivo + frío + tinta | $497,8 | **$62,2** |
+
+### La métrica es la ganancia por hora, no el margen por carta
+
+Porque el cuello de botella es el tiempo de Seba. Fue lo que reveló que el
+antiguo Matte Premium, pese a tener el mayor margen por carta, era el producto
+**menos** rentable por hora.
+
+**Los tiempos reales de Seba, para un pedido de 100 cartas** (13 hojas, de
+punta a punta, no solo impresión):
+
+| Acabado | Tiempo | Margen | **Por hora** |
+|---|---|---|---|
+| Básica $130 | 0,5 h | $8.769 | $17.539 |
+| Reforzada $250 | 1,0 h | $15.852 | $15.852 |
+| Premium $400 | 1,5 h | $25.428 | $16.952 |
+
+**Entre el mejor y el peor hay 11%.** La escalera está bien calibrada: los tres
+pagan el tiempo casi igual, así que el cliente elige por lo que quiere y no hay
+un acabado que convenga empujar. Revisado en septiembre de 2026; **no hay nada
+que ajustar**, ni en los precios ni en las promos.
+
+### Tres cosas que este modelo aprendió a la mala
+
+**Los tiempos los pone Seba, no se estiman.** En la revisión de septiembre se
+llegó a tres conclusiones seguidas —"las promos rinden 26% menos", "el Premium
+rinde 48% más", "hay que subir la Reforzada a $300"— y **las tres estaban mal**
+porque se apoyaban en tiempos inventados. Los costos de material se calculan;
+los tiempos se preguntan.
+
+**Cada pedido tiene un costo fijo de tiempo** que no depende del tamaño:
+atender, revisar el pago, empaquetar, etiqueta, despacho. Contarlo cambia el
+signo de las conclusiones sobre las promos — con solo 5 minutos de trámite, un
+commander de 100 rinde el doble que un pedido de 8 cartas sueltas. **Las promos
+no son un regalo: son lo que amortiza ese trámite.** El pedido chico es el que
+sale caro.
+
+**El rechazo del film importa menos que el tiempo.** Aplicar el laminado en
+frío es minucioso y si sale mal se pierde la hoja entera. Aun así, perder el
+20% de las hojas solo baja el Premium de $16.952 a $15.873 por hora. Un cuarto
+de hora más de trabajo pega más fuerte que arruinar una de cada cinco hojas.
 
 Hay una calculadora interactiva publicada como artifact:
 https://claude.ai/code/artifact/91c5b420-5d80-4d0b-bf90-191b7e357612
@@ -538,9 +620,6 @@ hechos a la medida de sus parsers reales.
 
 - **Resincronizar Riftbound cuando salga un set**: `node scripts/sync-riftbound.mjs`
   desde la máquina de Seba. Es lo único del catálogo que no se actualiza solo.
-- **Probar los botones nuevos del panel.** El de la lista de cartas y el de
-  "otros juegos" nunca se apretaron: se verificaron por API y por tipos, la
-  pantalla no. Lo mismo con **"Card list…"** en Cardwright.
 - **Los pedidos con varios juegos son varias tandas de impresión** si mezclan
   tamaños de carta. El panel avisa, pero el flujo de producción para eso no
   está pensado todavía.
@@ -548,10 +627,6 @@ hechos a la medida de sus parsers reales.
   ese endpoint (`include_multilingual` devuelve vacío, está medido). La
   búsqueda sí entiende el nombre traducido, así que solo la sugerencia del
   navbar queda en inglés.
-- **Importar lista no compara el nombre con lo que resolvió.** Si la línea trae
-  set y número, esos mandan: `1 Sol Ring (CMR) 410` trae "Abrade", porque CMR
-  410 es Abrade y el número estaba mal. Antes se notaba menos; con la
-  traducción salta a la vista. Vale la pena avisar cuando el nombre no calza.
 - **Más juegos**: la llave de API TCG ya está puesta, así que sumar otro es
   copiar `lib/catalogo/myl.ts` y cambiar el slug. Por calidad de imagen valen
   **One Piece** y **Gundam**; **Vanguard** sale blando y **Digimon no sirve**.
@@ -561,6 +636,9 @@ hechos a la medida de sus parsers reales.
   archivos existen (los detecta el navegador, no hay que tocar código).
 - **Cargar el stock inicial** en `/admin/stock`; hasta entonces la columna
   "Queda" no significa nada.
+- **Cuánto dura el trámite de un pedido** (atender, empaquetar, despachar): es
+  el único número del modelo de costos que sigue siendo una estimación, y es el
+  que diría si el mínimo de 8 cartas se sostiene.
 - **Cartas con dorso real** (el reverso oficial de Magic): en pausa hasta tener
   mejor impresora. Precio calculado $900/carta, con el costo dominado por el
   rechazo al pegar los dos papeles. Si se retoma, hay que rehacer los números.
@@ -573,6 +651,8 @@ hechos a la medida de sus parsers reales.
   Si pasa, se baja `dorso_diseno` desde el panel.
 - **Cablear `config.banco`** para no tener los datos de transferencia
   hardcodeados.
-- **Curvatura del Premium 300g**: el laminado por una cara curva la hoja. La
-  técnica recomendada es enfriar bajo presión apenas sale del laminador, sobre
-  una superficie fría y pesada. Falta confirmar si resultó.
+- **Activar el Premium** en `/admin/precios` cuando Seba lo decida. El precio
+  de $400 está justificado con los costos reales; nace apagado para que no se
+  venda antes de esa decisión.
+- **Cargar los materiales nuevos** en `/admin/stock`: papel 260g, papel 200g y
+  adhesivo mate 130g.

@@ -23,13 +23,12 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Cuánto cuestan?",
-  	a: `Cartas unitarias: Básica 300g ${formatCLP(
-    	precios.unitario.base300
-  	)}, Glossy ${formatCLP(precios.unitario.glossy)}, Matte ${formatCLP(
-    	precios.unitario.matte
-  	)} y Matte Premium ${formatCLP(
-    	precios.unitario.premium
-  	)}. Tenemos promos automáticas al armar mazo completo: Mazo 60 desde ${formatCLP(
+  	// La lista sale de los acabados que están a la venta AHORA. Escrita a
+  	// mano decía Glossy, Matte y Matte Premium — dos pausados y uno
+  	// descontinuado — y no mencionaba la Reforzada, que sí se vendía.
+  	a: `Cartas unitarias: ${FINISHES.filter((f) => precios.disponible[f])
+    	.map((f) => `${FINISH_INFO[f].label} ${formatCLP(precios.unitario[f])}`)
+    	.join(", ")}. Tenemos promos automáticas al armar mazo completo: Mazo 60 desde ${formatCLP(
     	Math.min(...Object.values(precios.mazo60))
   	)} y Commander 100 desde ${formatCLP(
     	Math.min(...Object.values(precios.commander100))

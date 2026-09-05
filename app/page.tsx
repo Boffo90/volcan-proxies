@@ -51,7 +51,7 @@ export default function Home() {
 	},
 	{
   	icon: CheckCircle2,
-  	title: "Mínimo 9 cartas",
+  	title: "Mínimo 8 cartas",
   	desc: "1 hoja completa, máximo aprovechamiento.",
 	},
   ];
@@ -435,7 +435,7 @@ export default function Home() {
         	¿Listo para armar tu próximo mazo?
       	</h2>
       	<p className="text-gray-300 mb-8 text-lg">
-        	Importa tu lista o navega el catálogo. Pedido mínimo: 9 cartas (1
+        	Importa tu lista o navega el catálogo. Pedido mínimo: 8 cartas (1
         	hoja completa).
       	</p>
       	<div className="flex flex-col sm:flex-row gap-3 justify-center">

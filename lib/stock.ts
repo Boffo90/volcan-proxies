@@ -1,8 +1,10 @@
-import { FINISHES, MIN_CARDS, type Finish } from "./pricing";
+import { CARTAS_POR_HOJA, FINISHES, type Finish } from "./pricing";
 
 export const MATERIALES = [
   "papel200",
+  "papel260",
   "papel300",
+  "papelAdhesivo",
   "pouchMatte",
   "pouchGlossy",
   "filmFrio",
@@ -23,15 +25,25 @@ export const MATERIAL_INFO: Record<MaterialKey, MaterialInfo> = {
 	unidad: "hojas",
 	ayuda: "Para Glossy, Matte y Matte Premium.",
   },
+  papel260: {
+	label: "Papel semibrillante 260g",
+	unidad: "hojas",
+	ayuda: "El frente de la Reforzada y del Premium.",
+  },
   papel300: {
 	label: "Papel 300g doble faz",
 	unidad: "hojas",
-	ayuda: "Para la Básica 300g y la 300g Reforzada.",
+	ayuda: "Solo para la Básica.",
+  },
+  papelAdhesivo: {
+	label: "Papel adhesivo mate 130g",
+	unidad: "hojas",
+	ayuda: "El refuerzo de la Reforzada y del Premium: va pegado por detrás en las dos. Es el mismo papel, den 130 o 135 gramos.",
   },
   pouchMatte: {
 	label: "Pouch termolaminar matte",
 	unidad: "láminas",
-	ayuda: "Matte usa una por hoja; Reforzada y Premium, una cada dos hojas.",
+	ayuda: "Una por hoja de Matte. El Matte Premium descontinuado usaba una cada dos.",
   },
   pouchGlossy: {
 	label: "Pouch termolaminar glossy",
@@ -41,7 +53,7 @@ export const MATERIAL_INFO: Record<MaterialKey, MaterialInfo> = {
   filmFrio: {
 	label: "Laminado en frío matte",
 	unidad: "hojas",
-	ayuda: "Solo para Matte Premium, una por hoja.",
+	ayuda: "Una por hoja del Premium. El Matte Premium descontinuado también lo usaba.",
   },
   tinta: {
 	label: "Tinta",
@@ -55,7 +67,9 @@ export type Stock = Record<MaterialKey, NivelStock>;
 
 export const STOCK_DEFAULT: Stock = {
   papel200: { cantidad: 0, minimo: 50 },
+  papel260: { cantidad: 0, minimo: 50 },
   papel300: { cantidad: 0, minimo: 50 },
+  papelAdhesivo: { cantidad: 0, minimo: 50 },
   pouchMatte: { cantidad: 0, minimo: 100 },
   pouchGlossy: { cantidad: 0, minimo: 100 },
   filmFrio: { cantidad: 0, minimo: 50 },
@@ -84,15 +98,19 @@ export function normalizeStock(raw: unknown): Stock {
 }
 
 /**
-* Lo que consume UNA hoja A4 (9 cartas) de cada acabado.
+* Lo que consume UNA hoja A4 (8 cartas, 4×2) de cada acabado.
 *
-* El pouch del Premium va en 0,5 porque se meten dos hojas por lámina; para
+* El pouch del Matte Premium descontinuado va en 0,5 porque se metían dos
+* hojas por lámina; para
 * contar láminas enteras de un pedido está `consumoDeItems`, que redondea.
 */
 export const RECETA: Record<Finish, Partial<Record<MaterialKey, number>>> = {
   base300: { papel300: 1, tinta: 1 },
-  // Una lámina de pouch cada dos hojas: se laminan espalda con espalda.
-  reforzada300: { papel300: 1, pouchMatte: 0.5, tinta: 1 },
+  // La clave dice "300" por historia; el acabado hoy es 260g más una hoja de
+  // refuerzo por detrás, y ya no lleva pouch. La receta anterior contaba
+  // papel de 300g y láminas de pouch que no se usan.
+  reforzada300: { papel260: 1, papelAdhesivo: 1, tinta: 1 },
+  premiumFrio: { papel200: 1, papelAdhesivo: 1, filmFrio: 1, tinta: 1 },
   glossy: { papel200: 1, pouchGlossy: 1, tinta: 1 },
   matte: { papel200: 1, pouchMatte: 1, tinta: 1 },
   premium: { papel200: 1, pouchMatte: 0.5, filmFrio: 1, tinta: 1 },
@@ -130,7 +148,7 @@ export function consumoDeItems(
   	.reduce((s, i) => s + (i.quantity || 0), 0);
 	if (cartas <= 0) continue;
 
-	const hojas = Math.ceil(cartas / MIN_CARDS);
+	const hojas = Math.ceil(cartas / CARTAS_POR_HOJA);
 
 	for (const [mat, porHoja] of Object.entries(RECETA[f]) as Array<
   	[MaterialKey, number]
@@ -144,7 +162,7 @@ export function consumoDeItems(
 	const conDorso = items
   	.filter((i) => i.finish === f && i.dorsoUrl)
   	.reduce((s, i) => s + (i.quantity || 0), 0);
-	if (conDorso > 0) total.tinta += Math.ceil(conDorso / MIN_CARDS);
+	if (conDorso > 0) total.tinta += Math.ceil(conDorso / CARTAS_POR_HOJA);
   }
 
   return total;

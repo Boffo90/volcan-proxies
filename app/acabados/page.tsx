@@ -48,17 +48,30 @@ const DETALLE: Record<Finish, Detalle> = {
   },
   reforzada300: {
 	proceso: [
-  	"Impresión sobre papel fotográfico de 300g doble faz, semibrillo.",
-  	"Se imprimen dos hojas y se ponen espalda con espalda dentro de una sola lámina de laminado mate.",
-  	"El laminado va solo por el dorso: el frente queda con el semibrillo del papel.",
+  	"Impresión sobre papel fotográfico de 260g, en alta calidad.",
+  	"Se refuerza con un segundo papel por detrás, que es lo que le da el cuerpo.",
 	],
 	sensacion:
-  	"El laminado del dorso le da firmeza y snap muy parecidos a los de una carta real, y el frente conserva el semibrillo del papel, que ya se parece bastante al de una carta.",
+  	"El refuerzo del dorso le da firmeza y snap muy parecidos a los de una carta real, y el frente conserva el semibrillo del papel, que ya se parece bastante al de una carta.",
 	idealPara:
   	"El mazo que juegas seguido y quieres que se sienta como carta de verdad al barajar.",
 	grosor: "Como carta real",
 	brillo: "Semibrillo",
 	durabilidad: "Alta",
+  },
+  premiumFrio: {
+	proceso: [
+  	"Impresión sobre papel fotográfico de 200g, en la máxima calidad que da la impresora.",
+  	"Se refuerza con un papel adhesivo por detrás, que es lo que le da el cuerpo.",
+  	"Laminado en frío por delante, que le da la textura y la protección.",
+	],
+	sensacion:
+  	"Es la que mejor se siente de todas: el refuerzo le da el cuerpo de una carta real y el laminado en frío le suma una textura pareja que protege el frente del roce.",
+	idealPara:
+  	"El mazo que va a durar años, o cuando quieres el mejor acabado posible sin discutir el precio.",
+	grosor: "Como carta real",
+	brillo: "Semibrillo",
+	durabilidad: "La más alta",
   },
   glossy: {
 	proceso: [
@@ -335,7 +348,7 @@ export default function AcabadosPage() {
             	</div>
             	<figcaption className="mt-2 text-xs text-gray-400 text-center">
               	En ángulo se nota lo que de frente no se ve: el reflejo del
-              	Glossy y la curvatura leve del Premium.
+              	Glossy.
             	</figcaption>
           	</figure>
         	)}
@@ -503,7 +516,7 @@ export default function AcabadosPage() {
           	impreso sin costo extra.
         	</li>
         	<li>
-          	• Pedido mínimo de <b className="text-white">9 cartas</b> (una hoja
+          	• Pedido mínimo de <b className="text-white">8 cartas</b> (una hoja
           	completa), en cualquier acabado.
         	</li>
         	<li>

@@ -1,6 +1,7 @@
 export const FINISHES = [
   "base300",
   "reforzada300",
+  "premiumFrio",
   "glossy",
   "matte",
   "premium",
@@ -25,7 +26,7 @@ export type FinishInfo = {
 };
 
 // Los pros y contras son los reales de cada proceso: decirlos hace creíble
-// que el Premium valga el triple que la Básica.
+// que la Reforzada valga el triple que la Básica.
 export const FINISH_INFO: Record<Finish, FinishInfo> = {
   base300: {
 	label: "Básica 300g",
@@ -34,12 +35,26 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	pro: "Acabado muy parecido al de una carta real, y la más económica.",
 	contra: "Más delgada que una carta real y sin protección al uso.",
   },
+  // La clave dice "300" por historia: cuando se creó el acabado era papel de
+  // 300g laminado. Hoy es 260g reforzado con un segundo papel, pero la clave
+  // NO se puede renombrar: es la que guardan todos los pedidos hechos hasta
+  // ahora. Lo que ve el cliente es el `label`.
   reforzada300: {
-	label: "Premium 300g",
+	label: "Reforzada",
+	corto: "Reforzada",
+	desc: "Papel de 260g reforzado con un segundo papel por detrás, impreso en alta calidad.",
+	pro: "Rigidez de carta real y mejor impresión que la Básica.",
+	contra: "Cuesta casi el doble que la Básica.",
+  },
+  // El "Matte Premium" descontinuado ocupa la clave `premium`, y esa NO se
+  // puede reutilizar: hay pedidos antiguos guardados con ella y mostrarían la
+  // descripción de este acabado, que es otro. Por eso la clave nueva.
+  premiumFrio: {
+	label: "Premium",
 	corto: "Premium",
-	desc: "Papel de 300g semibrillante con laminado mate por detrás.",
-	pro: "La mejor calidad de imagen, con la firmeza y el snap de una carta real.",
-	contra: "Se curva levemente, y el frente va sin laminar.",
+	desc: "Papel de 200g con un adhesivo por detrás y laminado en frío por delante, impreso en la máxima calidad.",
+	pro: "La mejor textura y la más duradera de todas.",
+	contra: "La más cara y la que más demora en producirse.",
   },
   glossy: {
 	label: "Glossy",
@@ -56,13 +71,13 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	contra: "Los negros se opacan un poco.",
   },
   // Descontinuado: el doble laminado daba prácticamente el mismo resultado que
-  // el Premium 300g con el doble de trabajo. Se conserva para que los pedidos
+  // la Reforzada con el doble de trabajo. Se conserva para que los pedidos
   // antiguos sigan mostrando el acabado con el que se hicieron.
   premium: {
 	label: "Matte Premium (descontinuado)",
 	corto: "Descontinuado",
 	desc: "Doble laminado: pouch mate por detrás y laminado en frío por delante.",
-	pro: "Reemplazado por el Premium 300g, que da el mismo resultado.",
+	pro: "Reemplazado por la Reforzada, que da el mismo resultado.",
 	contra: "Ya no se produce.",
 	descontinuado: true,
   },
@@ -92,22 +107,27 @@ export type Precios = {
 };
 
 // Precios vigentes. Glossy y Matte son los que ya estaban en producción; la
-// Básica y el Premium se fijaron sobre su costo real (materiales + flete a
+// Básica y la Reforzada se fijaron sobre su costo real (materiales + flete a
 // Pucón + mano de obra), apuntando al mismo ~65% de margen que el resto.
 export const PRECIOS_DEFAULT: Precios = {
   unitario: {
 	base300: 130,
 	reforzada300: 250,
+	// Provisorio: hereda el precio del Matte Premium, que era el tope
+	// anterior. Nace NO disponible justamente para que no se venda a un
+	// precio que todavía no se calculó; se activa desde /admin/precios.
+	premiumFrio: 400,
 	glossy: 200,
 	matte: 250,
 	premium: 400,
   },
   // Las promos descuentan ~15% a las 60 cartas y ~20% a las 100, el mismo
-  // escalón que ya tenían Glossy y Matte. Básica y Premium nacieron sin
+  // escalón que ya tenían Glossy y Matte. Básica y Reforzada nacieron sin
   // descuento real (llegaban a costar más que las cartas sueltas).
   mazo60: {
 	base300: 6600,
 	reforzada300: 12900,
+	premiumFrio: 20400,
 	glossy: 9900,
 	matte: 12900,
 	premium: 20400,
@@ -115,6 +135,7 @@ export const PRECIOS_DEFAULT: Precios = {
   commander100: {
 	base300: 10400,
 	reforzada300: 19900,
+	premiumFrio: 32000,
 	glossy: 15500,
 	matte: 19900,
 	premium: 31900,
@@ -122,6 +143,8 @@ export const PRECIOS_DEFAULT: Precios = {
   disponible: {
 	base300: true,
 	reforzada300: true,
+	// Apagado hasta que Seba le saque el costo y fije el precio.
+	premiumFrio: false,
 	glossy: true,
 	matte: true,
 	premium: true,
@@ -222,8 +245,21 @@ export function parseFinish(v: unknown): Finish {
 
 export const PRICES = PRECIOS_DEFAULT;
 
-// Mínimo de cartas por pedido (1 hoja de papel = 9 cartas)
-export const MIN_CARDS = 9;
+/**
+* Cuántas cartas salen de una hoja A4.
+*
+* Ocho, no nueve: se imprime en 4×2. Con 3×3 no quedan márgenes para las
+* marcas de registro del corte.
+*
+* Va SEPARADO del mínimo de compra aunque hoy valgan lo mismo. Eran la misma
+* constante y eso escondía un error: el panel de stock calculaba las hojas
+* dividiendo por el mínimo de compra, así que el día que uno de los dos
+* cambiara, el otro se habría movido solo.
+*/
+export const CARTAS_POR_HOJA = 8;
+
+/** Mínimo de cartas por pedido: una hoja completa. */
+export const MIN_CARDS = 8;
 
 // Costo único de envío (tarifa plana a todo Chile)
 export const SHIPPING_COST = 4990;

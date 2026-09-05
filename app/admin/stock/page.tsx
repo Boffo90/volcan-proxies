@@ -258,7 +258,7 @@ export default function AdminStockPage() {
       	<h2 className="font-bold mb-2 text-sm">Cómo se calcula la cola</h2>
       	<ul className="text-xs text-gray-400 space-y-1">
         	<li>
-          	• Cada hoja A4 rinde <b className="text-gray-300">9 cartas</b>, y
+          	• Cada hoja A4 rinde <b className="text-gray-300">8 cartas</b> (4×2), y
           	las hojas se redondean hacia arriba: un pedido de 60 cartas ocupa 7
           	hojas, no 6,67.
         	</li>

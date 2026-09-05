@@ -12,7 +12,7 @@ export type Formula = {
   juegos: string;
   /** Tamaño de carta, con medidas para no confundirse al armar la hoja. */
   tamano: string;
-  /** "Premium", "Básica", o lo que se defina más adelante. */
+  /** "Reforzada", "Básica", o lo que se defina más adelante. */
   variante: string;
   /** Papel o papeles que la componen. */
   papeles: string;
@@ -27,13 +27,22 @@ export const TAMANO_JAPONES = "Japonés · 59 × 86 mm";
 
 export const FORMULAS_DEFAULT: Formula[] = [
   {
+	id: "mtg-reforzada",
+	juegos: "MTG, Pokémon",
+	tamano: TAMANO_INGLES,
+	variante: "Reforzada",
+	papeles: "Semi-Glossy 260gr + adhesivo mate 130gr",
+	calidad: "Alta",
+	notas: "",
+  },
+  {
 	id: "mtg-premium",
 	juegos: "MTG, Pokémon",
 	tamano: TAMANO_INGLES,
 	variante: "Premium",
-	papeles: "Semi-Glossy 260gr + Semi-Glossy 135gr",
-	calidad: "La más alta",
-	notas: "",
+	papeles: "Semi-Glossy 200gr + adhesivo mate 130gr + laminado en frío",
+	calidad: "Máxima",
+	notas: "El adhesivo es el mismo de la Reforzada. Ninguna lleva laminado en caliente: era lo que curvaba la hoja.",
   },
   {
 	id: "mtg-basica",
@@ -45,13 +54,22 @@ export const FORMULAS_DEFAULT: Formula[] = [
 	notas: "",
   },
   {
+	id: "jp-reforzada",
+	juegos: "Yu-Gi-Oh!, Mitos y Leyendas, Cardfight! Vanguard",
+	tamano: TAMANO_JAPONES,
+	variante: "Reforzada",
+	papeles: "Semi-Glossy 260gr + adhesivo mate 130gr",
+	calidad: "Alta",
+	notas: "",
+  },
+  {
 	id: "jp-premium",
 	juegos: "Yu-Gi-Oh!, Mitos y Leyendas, Cardfight! Vanguard",
 	tamano: TAMANO_JAPONES,
 	variante: "Premium",
-	papeles: "Semi-Glossy 260gr + Semi-Glossy 135gr",
-	calidad: "La más alta",
-	notas: "",
+	papeles: "Semi-Glossy 200gr + adhesivo mate 130gr + laminado en frío",
+	calidad: "Máxima",
+	notas: "El adhesivo es el mismo de la Reforzada. Ninguna lleva laminado en caliente: era lo que curvaba la hoja.",
   },
   {
 	id: "jp-basica",
@@ -63,13 +81,13 @@ export const FORMULAS_DEFAULT: Formula[] = [
 	notas: "",
   },
   {
-	id: "riftbound-premium",
+	id: "riftbound-reforzada",
 	juegos: "Riftbound",
 	tamano: TAMANO_INGLES,
-	variante: "Premium",
-	papeles: "Semi-Glossy 300gr + Semi-Glossy 135gr",
-	calidad: "La más alta",
-	notas: "Ojo: acá el papel base es 300gr, no 260gr como en las otras Premium.",
+	variante: "Reforzada",
+	papeles: "Semi-Glossy 300gr + adhesivo mate 130gr",
+	calidad: "Alta",
+	notas: "Ojo: acá el papel base es 300gr, no 260gr como en las otras Reforzadas.",
   },
   {
 	id: "riftbound-basica",

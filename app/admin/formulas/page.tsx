@@ -75,7 +75,7 @@ export default function AdminFormulasPage() {
     	id: "formula-" + Date.now().toString(36),
     	juegos: "",
     	tamano: TAMANO_INGLES,
-    	variante: "Premium",
+    	variante: "Reforzada",
     	papeles: "",
     	calidad: "",
     	notas: "",
