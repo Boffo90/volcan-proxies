@@ -18,6 +18,10 @@ import { CONTACTO_EMAIL } from "@/lib/emailPedido";
 
 type PedidoItem = {
   id: string;
+  /** Juego del que viene la carta; decide la receta de producción. */
+  juego?: string;
+  /** Idioma de esta carta. Los pedidos viejos no lo traen: son inglés. */
+  idioma?: string;
   name: string;
   set: string;
   set_name: string;
@@ -65,6 +69,9 @@ export async function POST(req: Request) {
   	idioma?: string;
 	};
 
+	// Ya no es una elección del checkout sino el resumen de lo que trae el
+	// carrito: cada carta se eligió en su idioma al navegar, y cada línea de
+	// `items` lleva el suyo. Esto es para el correo y el panel.
 	const idiomaFinal = (idioma || "Inglés").slice(0, 30);
 
 	if (!nombre || !email || !items?.length) {
@@ -394,7 +401,7 @@ export async function POST(req: Request) {
           	${agrupadoHtml}
           	<p><b>Método de pago:</b> ${metodoLabel}</p>
           	<p><b>Entrega:</b> ${entregaLabel}</p>
-          	<p><b>Idioma de las cartas:</b> ${idiomaFinal} (las no disponibles van en inglés)</p>
+          	<p><b>Idioma de las cartas:</b> ${idiomaFinal}</p>
 
           	<div style="${boxStyle}">
             	<h3 style="margin-top:0;">Cliente</h3>
@@ -539,8 +546,8 @@ export async function POST(req: Request) {
             	Tu pedido <b style="color:#FF4D1A;">#${pedido.numero}</b> fue recibido correctamente.
           	</p>
           	<p style="color:#666;font-size:13px;">
-            	Idioma de las cartas: <b>${idiomaFinal}</b> — las cartas sin
-            	versión en ese idioma se imprimen en inglés.
+            	Idioma de las cartas: <b>${idiomaFinal}</b> — el mismo de las
+            	cartas que elegiste en el catálogo.
           	</p>
 
           	<div style="${boxStyle}">

@@ -12,7 +12,14 @@ import {
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Reveal from "@/components/animation/Reveal";
-import { getCart, clearCart, toCalcItems, type CartItem } from "@/lib/cart";
+import {
+  getCart,
+  clearCart,
+  toCalcItems,
+  idiomasDelPedido,
+  type CartItem,
+} from "@/lib/cart";
+import { etiquetaDeIdioma } from "@/lib/catalogo";
 import {
   calculateTotalWith,
   FINISH_INFO,
@@ -57,7 +64,6 @@ export default function CheckoutPage() {
   });
 
   const [deliveryType, setDeliveryType] = useState<DeliveryType>("envio");
-  const [idioma, setIdioma] = useState("Inglés");
   const [metodo, setMetodo] = useState<"flow" | "transferencia">(
 	"transferencia"
   );
@@ -112,6 +118,15 @@ export default function CheckoutPage() {
   	clearTimeout(t);
 	};
   }, [deliveryType, form]);
+
+  /**
+  * El idioma ya no se pregunta acá: cada carta se eligió en su idioma al
+  * navegar el catálogo, y esto solo lo dice. Preguntarlo al final era una
+  * promesa que nadie cumplía — el pedido guardaba la palabra y las imágenes
+  * ya estaban fijadas desde que el cliente apretó "Agregar al carrito".
+  */
+  const idiomasEnCarrito = idiomasDelPedido(items);
+  const idioma = idiomasEnCarrito.map(etiquetaDeIdioma).join(" y ");
 
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const cumpleMinimo = totalQty >= MIN_CARDS;
@@ -389,33 +404,21 @@ export default function CheckoutPage() {
               	</div>
             	)}
 
+            	{/* El idioma se elige carta por carta en el catálogo, así que
+                	acá se muestra, no se pregunta. */}
             	<div className="md:col-span-2">
               	<label className="block text-xs text-gray-400 mb-1">
                 	Idioma de las cartas
               	</label>
-              	<select
-                	value={idioma}
-                	onChange={(e) => setIdioma(e.target.value)}
-                	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2"
-              	>
-                	{[
-                  	"Inglés",
-                  	"Español",
-                  	"Portugués",
-                  	"Japonés",
-                  	"Alemán",
-                  	"Francés",
-                  	"Italiano",
-                	].map((l) => (
-                  	<option key={l} value={l}>
-                    	{l}
-                  	</option>
-                	))}
-              	</select>
+              	<p className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2">
+                	{idioma || "—"}
+              	</p>
               	<p className="text-xs text-gray-500 mt-1">
-                	No todas las cartas existen en todos los idiomas: las que
-                	estén disponibles irán en el idioma elegido y el resto en
-                	inglés (estándar).
+                	{idiomasEnCarrito.length > 1
+                  	? "Tu pedido lleva cartas en más de un idioma, tal como las elegiste."
+                  	: "Es el idioma de las cartas que elegiste."}{" "}
+                	Para cambiarlo, vuelve al catálogo y elige el idioma antes de
+                	agregar la carta: así ves exactamente la que vas a recibir.
               	</p>
             	</div>
 

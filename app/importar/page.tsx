@@ -18,7 +18,14 @@ import {
   resolveDeck,
   type ImportedCard,
 } from "@/lib/deckParser";
-import { getCardImage, getAllPrints, type ScryfallCard } from "@/lib/scryfall";
+import {
+  catalogo as catalogoDeJuego,
+  etiquetaDeIdioma,
+  IDIOMA_BASE,
+  type CartaCatalogo,
+  type IdiomaId,
+} from "@/lib/catalogo";
+import { versiones } from "@/lib/catalogo/cliente";
 import { addToCart } from "@/lib/cart";
 import {
   defaultFinish,
@@ -42,13 +49,16 @@ export default function ImportarPage() {
   const { precios } = usePrecios();
   const [text, setText] = useState("");
   const [globalFinish, setGlobalFinish] = useState<Finish>("glossy");
+  const [idioma, setIdioma] = useState<IdiomaId>(IDIOMA_BASE);
   const [includeSideboard, setIncludeSideboard] = useState(true);
   const [cards, setCards] = useState<CardWithFinish[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [printPickerIdx, setPrintPickerIdx] = useState<number | null>(null);
+  // Las versiones ya cargadas, por grupo de carta (todas las impresiones de
+  // la misma). Se cachean acá para no volver a pedirlas al reabrir el selector.
   const [printsByOracle, setPrintsByOracle] = useState<
-	Record<string, ScryfallCard[]>
+	Record<string, CartaCatalogo[]>
   >({});
   const [loadingPrints, setLoadingPrints] = useState(false);
 
@@ -69,16 +79,16 @@ export default function ImportarPage() {
 	);
   }, [precios, globalFinish]);
 
-  const openPrintPicker = async (idx: number, oracleId: string) => {
+  const openPrintPicker = async (idx: number, carta: CartaCatalogo) => {
 	setPrintPickerIdx(idx);
-	if (printsByOracle[oracleId]) return;
+	if (printsByOracle[carta.grupoId]) return;
 	setLoadingPrints(true);
-	const prints = await getAllPrints(oracleId);
-	setPrintsByOracle((prev) => ({ ...prev, [oracleId]: prints }));
+	const prints = await versiones(carta.uid);
+	setPrintsByOracle((prev) => ({ ...prev, [carta.grupoId]: prints }));
 	setLoadingPrints(false);
   };
 
-  const chooseArt = (idx: number, print: ScryfallCard) => {
+  const chooseArt = (idx: number, print: CartaCatalogo) => {
 	setCards((prev) => {
   	const next = [...prev];
   	next[idx] = { ...next[idx], card: print };
@@ -96,8 +106,10 @@ export default function ImportarPage() {
 	setLoading(true);
 	setProgress({ done: 0, total: parsed.length });
 	setCards([]);
-	const resolved = await resolveDeck(parsed, (done, total) =>
-  	setProgress({ done, total })
+	const resolved = await resolveDeck(
+  	parsed,
+  	(done, total) => setProgress({ done, total }),
+  	idioma
 	);
 	setCards(resolved);
 	setLoading(false);
@@ -127,12 +139,14 @@ export default function ImportarPage() {
 	eligible.forEach((c) => {
   	if (!c.card) return;
   	addToCart({
-    	id: c.card.id,
+    	id: c.card.uid,
+    	juego: c.card.juego,
+    	idioma: c.card.idioma,
     	name: c.card.name,
     	set: c.card.set,
     	set_name: c.card.set_name,
     	collector_number: c.card.collector_number,
-    	image: getCardImage(c.card, "normal"),
+    	image: c.card.imagenes.normal,
     	finish: getFinish(c),
     	quantity: c.quantity,
   	});
@@ -141,6 +155,11 @@ export default function ImportarPage() {
   };
 
   const okCards = cards.filter((c) => c.status === "ok");
+  // Las que no se pudieron traer en el idioma pedido, para decirlo una vez
+  // arriba en vez de obligar a contar las etiquetas amarillas.
+  const sinTraducir = okCards.filter(
+	(c) => c.card && c.card.idioma !== idioma
+  ).length;
   const notFoundCards = cards.filter((c) => c.status === "not_found");
   const totalOk = okCards.reduce((s, c) => s + c.quantity, 0);
   const estimateTotal = okCards.reduce((s, c) => {
@@ -193,6 +212,35 @@ export default function ImportarPage() {
             	onChange={setGlobalFinish}
           	/>
         	</div>
+
+        	{/* Las listas de Moxfield y Archidekt vienen en inglés, así que
+            	el idioma se aplica a la impresión ya encontrada. Solo los que
+            	Scryfall entrega de verdad. */}
+        	<label className="block text-xs text-gray-400 mb-1">
+          	Idioma de las cartas
+        	</label>
+        	<div className="flex gap-1.5 flex-wrap mb-2">
+          	{catalogoDeJuego("mtg").idiomas.map((id) => (
+            	<button
+              	key={id}
+              	type="button"
+              	onClick={() => setIdioma(id)}
+              	className={
+                	"px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors border " +
+                	(id === idioma
+                  	? "bg-white/10 border-white/40 text-white"
+                  	: "border-white/10 text-gray-400 hover:border-white/30")
+              	}
+            	>
+              	{etiquetaDeIdioma(id)}
+            	</button>
+          	))}
+        	</div>
+        	<p className="text-xs text-gray-500 mb-4">
+          	Pega la lista en inglés igual: la carta que no exista en el idioma
+          	elegido — o que solo tenga una imagen sin escanear — se queda en
+          	inglés, y abajo verás cuál es cuál.
+        	</p>
 
         	<label className="flex items-center gap-2 text-sm mb-4 cursor-pointer">
           	<input
@@ -289,14 +337,23 @@ export default function ImportarPage() {
           	</div>
         	)}
 
-        	<h2 className="font-bold text-lg mb-3">
+        	<h2 className="font-bold text-lg mb-1">
           	Cartas detectadas ({okCards.length})
         	</h2>
+        	{sinTraducir > 0 ? (
+          	<p className="text-xs text-yellow-300/90 mb-3">
+            	{sinTraducir} de {okCards.length} no existe en{" "}
+            	{etiquetaDeIdioma(idioma)} con una imagen imprimible, así que va
+            	en inglés. Están marcadas abajo.
+          	</p>
+        	) : (
+          	<div className="mb-3" />
+        	)}
         	<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
           	{cards.map((c, idx) => {
             	if (c.status !== "ok" || !c.card) return null;
             	const cardFinish = getFinish(c);
-            	const imgSrc = getCardImage(c.card, "normal");
+            	const imgSrc = c.card.imagenes.normal;
             	return (
               	<div
                 	key={idx}
@@ -321,6 +378,14 @@ export default function ImportarPage() {
                   	<p className="text-[10px] text-gray-400 truncate">
                     	{c.card.set_name}
                   	</p>
+                  	{/* Solo cuando NO salió en el idioma pedido: decirlo en
+                      	todas sería ruido, y callarlo sería la sorpresa que
+                      	llega en el sobre. */}
+                  	{c.card.idioma !== idioma ? (
+                    	<p className="text-[10px] text-yellow-300/90 truncate">
+                      	Solo en {etiquetaDeIdioma(c.card.idioma)}
+                    	</p>
+                  	) : null}
                   	<div className="mt-2">
                     	<FinishButtons
                       	precios={precios}
@@ -333,7 +398,7 @@ export default function ImportarPage() {
                     	onClick={() =>
                       	printPickerIdx === idx
                         	? setPrintPickerIdx(null)
-                        	: openPrintPicker(idx, c.card!.oracle_id)
+                        	: openPrintPicker(idx, c.card!)
                     	}
                     	className="w-full mt-1 py-1 text-[10px] rounded bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition"
                   	>
@@ -343,29 +408,26 @@ export default function ImportarPage() {
                   	</button>
                   	{printPickerIdx === idx ? (
                     	<div className="mt-2 flex gap-1 overflow-x-auto pb-1">
-                      	{loadingPrints && !printsByOracle[c.card.oracle_id] ? (
+                      	{loadingPrints && !printsByOracle[c.card.grupoId] ? (
                         	<Loader2
                           	className="animate-spin text-[#FF4D1A] mx-auto my-2"
                           	size={16}
                         	/>
                       	) : (
-                        	(printsByOracle[c.card.oracle_id] || []).map(
+                        	(printsByOracle[c.card.grupoId] || []).map(
                           	(p) => (
                             	<button
-                              	key={p.id}
+                              	key={p.uid}
                               	onClick={() => chooseArt(idx, p)}
                               	aria-label={p.set_name}
                               	className={
                                 	"relative flex-shrink-0 w-10 aspect-[5/7] rounded border overflow-hidden bg-center bg-cover bg-no-repeat transition " +
-                                	(p.id === c.card!.id
+                                	(p.uid === c.card!.uid
                                   	? "border-[#FF4D1A]"
                                   	: "border-white/10 hover:border-white/30")
                               	}
                               	style={{
-                                	backgroundImage: `url(${getCardImage(
-                                  	p,
-                                  	"small"
-                                	)})`,
+                                	backgroundImage: `url(${p.imagenes.small})`,
                               	}}
                             	/>
                           	)

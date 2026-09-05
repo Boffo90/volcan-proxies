@@ -1,7 +1,26 @@
 import type { Finish } from "./pricing";
+import { parseUid, type JuegoId } from "./catalogo/tipos";
+import { IDIOMA_BASE, type IdiomaId } from "./catalogo/idiomas";
 
 export type CartItem = {
+  /** El uid del catálogo ("mtg:xxx"). Los carritos viejos traen un id pelado. */
   id: string;
+  /**
+   * De qué juego es. Se guarda además del uid porque es lo que decide la
+   * receta de producción (el tamaño de la carta) y así el panel no tiene que
+   * deducirlo. Ausente en los carritos guardados antes de que hubiera más de
+   * un juego: ahí se lee del id.
+   */
+  juego?: JuegoId;
+  /**
+  * El idioma de ESTA carta, tal como la eligió el cliente.
+  *
+  * Va por línea y no por pedido porque no todos los juegos sirven todos los
+  * idiomas: un pedido puede llevar Pokémon en español y Riftbound en inglés,
+  * y prometer un idioma único para todo sería mentir en una de las dos.
+  * Ausente en los carritos de antes: se leen como inglés.
+  */
+  idioma?: IdiomaId;
   name: string;
   set: string;
   set_name: string;
@@ -124,6 +143,26 @@ export function toCalcItems(items: CartItem[]) {
 	isCustom: i.isCustom,
 	dorsoUrl: i.dorsoUrl,
   }));
+}
+
+/** El juego de una línea, tolerando el carrito viejo que no lo guardaba. */
+export function juegoDe(item: CartItem): JuegoId {
+  return item.juego ?? parseUid(item.id).juego;
+}
+
+/** El idioma de una línea. Sin dato, inglés, que es lo que se imprimía antes. */
+export function idiomaDe(item: CartItem): IdiomaId {
+  return item.idioma ?? IDIOMA_BASE;
+}
+
+/**
+* Los idiomas que lleva el pedido, sin repetir.
+*
+* El checkout ya no pregunta el idioma: lo dice. Esto es lo que muestra, y si
+* devuelve más de uno es porque el cliente mezcló a propósito.
+*/
+export function idiomasDelPedido(items: CartItem[]): IdiomaId[] {
+  return [...new Set(items.map(idiomaDe))];
 }
 
 export function toMtgoFormat(items: CartItem[]): string {

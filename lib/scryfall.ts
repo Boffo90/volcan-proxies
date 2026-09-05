@@ -1,4 +1,15 @@
+import { TIMEOUT_MS } from "./catalogo/http";
+
 const BASE = "https://api.scryfall.com";
+
+/**
+* Plazo para cada llamada.
+*
+* Scryfall contesta en menos de un segundo cuando está sano, pero una API que
+* deja de responder sin cerrar la conexión cuelga la petición hasta que Vercel
+* corta la función. Pasó de verdad con otra API el 4-sep-2026.
+*/
+const corte = () => AbortSignal.timeout(TIMEOUT_MS);
 
 const headers = {
   "User-Agent": "VolcanProxies/1.0",
@@ -9,6 +20,13 @@ export type ScryfallCard = {
   id: string;
   oracle_id: string;
   name: string;
+  /**
+  * El nombre impreso en la carta cuando no es inglesa. Scryfall guarda el
+  * nombre en inglés en `name` siempre, y el traducido acá.
+  */
+  printed_name?: string;
+  printed_type_line?: string;
+  printed_text?: string;
   mana_cost?: string;
   cmc?: number;
   type_line?: string;
@@ -19,6 +37,12 @@ export type ScryfallCard = {
   colors?: string[];
   color_identity?: string[];
   rarity: string;
+  /**
+  * Qué tan buena es la imagen: "highres_scan", "lowres", "placeholder" o
+  * "missing". Los dos últimos NO son la carta — son un cartel que dice que la
+  * imagen no está.
+  */
+  image_status?: string;
   set: string;
   set_name: string;
   collector_number: string;
@@ -33,6 +57,9 @@ export type ScryfallCard = {
   };
   card_faces?: Array<{
 	name: string;
+	printed_name?: string;
+	printed_type_line?: string;
+	printed_text?: string;
 	mana_cost?: string;
 	type_line?: string;
 	oracle_text?: string;
@@ -89,7 +116,7 @@ export async function searchCards(
   )}&page=${page}&unique=cards&order=name`;
 
   try {
-	const res = await fetch(url, { headers, next: { revalidate: 3600 } });
+	const res = await fetch(url, { headers, signal: corte(), next: { revalidate: 3600 } });
 	if (res.status === 404)
   	return { object: "list", total_cards: 0, has_more: false, data: [] };
 	if (!res.ok) throw new Error(`Scryfall ${res.status}`);
@@ -104,6 +131,7 @@ export async function getCardById(id: string): Promise<ScryfallCard | null> {
   try {
 	const res = await fetch(`${BASE}/cards/${id}`, {
   	headers,
+  	signal: corte(),
   	next: { revalidate: 3600 },
 	});
 	if (!res.ok) return null;
@@ -117,7 +145,7 @@ export async function getAllPrints(oracleId: string): Promise<ScryfallCard[]> {
   try {
 	const res = await fetch(
   	`${BASE}/cards/search?q=oracleid%3A${oracleId}&unique=prints&order=released`,
-  	{ headers, next: { revalidate: 3600 } }
+  	{ headers, signal: corte(), next: { revalidate: 3600 } }
 	);
 	if (!res.ok) return [];
 	const json: SearchResponse = await res.json();
@@ -131,6 +159,7 @@ export async function getRulings(cardId: string): Promise<ScryfallRuling[]> {
   try {
 	const res = await fetch(`${BASE}/cards/${cardId}/rulings`, {
   	headers,
+  	signal: corte(),
   	next: { revalidate: 3600 },
 	});
 	if (!res.ok) return [];
@@ -141,21 +170,30 @@ export async function getRulings(cardId: string): Promise<ScryfallRuling[]> {
   }
 }
 
-export async function getRandomCards(count: number = 10): Promise<ScryfallCard[]> {
-  const promises = Array.from({ length: count }, async () => {
-	try {
-  	const res = await fetch(`${BASE}/cards/random`, {
-    	headers,
-    	cache: "no-store",
-  	});
-  	if (!res.ok) return null;
-  	return await res.json();
-	} catch {
-  	return null;
-	}
-  });
-  const results = await Promise.all(promises);
-  return results.filter((c): c is ScryfallCard => c !== null);
+/**
+* Una impresión concreta en otro idioma.
+*
+* Es la ruta que Scryfall expone para esto: `/cards/{set}/{number}/{lang}`.
+* Devuelve null si esa carta no salió en ese idioma, que es lo normal en
+* promos y sets suplementarios.
+*/
+export async function getPrintingInLanguage(
+  set: string,
+  collectorNumber: string,
+  lang: string
+): Promise<ScryfallCard | null> {
+  try {
+	const res = await fetch(
+  	`${BASE}/cards/${encodeURIComponent(set)}/${encodeURIComponent(
+    	collectorNumber
+  	)}/${encodeURIComponent(lang)}`,
+  	{ headers, signal: corte(), next: { revalidate: 3600 } }
+	);
+	if (!res.ok) return null;
+	return await res.json();
+  } catch {
+	return null;
+  }
 }
 
 export async function autocomplete(q: string): Promise<string[]> {
@@ -163,7 +201,7 @@ export async function autocomplete(q: string): Promise<string[]> {
   try {
 	const res = await fetch(
   	`${BASE}/cards/autocomplete?q=${encodeURIComponent(q)}`,
-  	{ headers }
+  	{ headers, signal: corte() }
 	);
 	if (!res.ok) return [];
 	const json = await res.json();
@@ -177,6 +215,7 @@ export async function getSymbology(): Promise<ScryfallSymbol[]> {
   try {
 	const res = await fetch(`${BASE}/symbology`, {
   	headers,
+  	signal: corte(),
   	next: { revalidate: 86400 },
 	});
 	if (!res.ok) return [];
@@ -189,7 +228,7 @@ export async function getSymbology(): Promise<ScryfallSymbol[]> {
 
 export function getCardImage(
   card: ScryfallCard,
-  size: "small" | "normal" | "large" = "normal"
+  size: "small" | "normal" | "large" | "png" = "normal"
 ): string {
   if (card.image_uris) return card.image_uris[size];
   if (card.card_faces?.[0]?.image_uris) return card.card_faces[0].image_uris[size];

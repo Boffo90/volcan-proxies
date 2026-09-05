@@ -19,21 +19,18 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/animation/Reveal";
 import Embers from "@/components/animation/Embers";
-import {
-  getRandomCards,
-  getCardImage,
-  type ScryfallCard,
-} from "@/lib/scryfall";
+import { IDIOMA_BASE, JUEGO_DEFAULT, type CartaCatalogo } from "@/lib/catalogo";
+import { aleatorias } from "@/lib/catalogo/cliente";
 import { usePrecios } from "@/hooks/usePrecios";
 import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function Home() {
   const router = useRouter();
   const { precios } = usePrecios();
-  const [showcase, setShowcase] = useState<ScryfallCard[]>([]);
+  const [showcase, setShowcase] = useState<CartaCatalogo[]>([]);
 
   useEffect(() => {
-	getRandomCards(6).then((cards) => setShowcase(cards));
+	aleatorias(JUEGO_DEFAULT, 6, IDIOMA_BASE).then((cards) => setShowcase(cards));
   }, []);
 
   const features = [
@@ -156,7 +153,7 @@ export default function Home() {
             	const card = showcase[idx];
             	const bgStyle = card
               	? {
-                  	backgroundImage: `url(${getCardImage(card, "normal")})`,
+                  	backgroundImage: `url(${card.imagenes.normal})`,
                 	}
               	: { background: placeholderGradient };
             	return (
@@ -341,7 +338,7 @@ export default function Home() {
       	{Array.from({ length: 6 }).map((_, idx) => {
         	const card = showcase[idx];
         	const bgStyle = card
-          	? { backgroundImage: `url(${getCardImage(card, "normal")})` }
+          	? { backgroundImage: `url(${card.imagenes.normal})` }
           	: { background: placeholderGradient };
         	return (
           	<Reveal key={idx} delay={idx * 0.05}>

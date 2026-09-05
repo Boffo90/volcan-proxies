@@ -7,13 +7,14 @@ import NavBar from "@/components/NavBar";
 import ManaSymbols from "@/components/ManaSymbols";
 import Reveal from "@/components/animation/Reveal";
 import {
-  getCardById,
-  getAllPrints,
-  getCardImage,
-  getRulings,
-  type ScryfallCard,
-  type ScryfallRuling,
-} from "@/lib/scryfall";
+  catalogo as catalogoDeJuego,
+  etiquetaDeIdioma,
+  parseUid,
+  type CampoFicha,
+  type CartaCatalogo,
+  type Ruling,
+} from "@/lib/catalogo";
+import { ficha as pedirFicha } from "@/lib/catalogo/cliente";
 import {
   defaultFinish,
   finishDisponible,
@@ -26,23 +27,57 @@ import FinishButtons from "@/components/FinishButtons";
 import { addToCart as addItemToCart } from "@/lib/cart";
 import type { MpcCard } from "@/app/api/mpcfill/route";
 
+/**
+ * El uid tal como viaja en la URL.
+ *
+ * `useParams` de Next devuelve el segmento crudo, todavía codificado, así que
+ * el ":" del uid llega como "%3A"; sin decodificarlo se vuelve a codificar al
+ * armar la consulta ("%253A") y la carta nunca se encuentra. Un id viejo de
+ * Scryfall pelado pasa por acá sin cambios.
+ */
+function uidDeLaUrl(raw: string): string {
+  try {
+	return decodeURIComponent(raw);
+  } catch {
+	return raw;
+  }
+}
+
+/** Una fila de la ficha: el catálogo decidió el rótulo y cómo se pinta. */
+function Campo({ campo }: { campo: CampoFicha }) {
+  return (
+	<p className="mb-2 flex items-center gap-2 flex-wrap">
+  	<span className="text-gray-400 text-sm">{campo.label}:</span>
+  	{campo.render === "mana" ? (
+    	<ManaSymbols text={campo.value} size={20} />
+  	) : (
+    	<span>{campo.value}</span>
+  	)}
+	</p>
+  );
+}
+
 export default function CartaDetalle() {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string }>();
+  const uid = uidDeLaUrl(params.id || "");
   const { precios } = usePrecios();
-  const [card, setCard] = useState<ScryfallCard | null>(null);
-  const [prints, setPrints] = useState<ScryfallCard[]>([]);
-  const [selectedPrint, setSelectedPrint] = useState<ScryfallCard | null>(null);
+  const [card, setCard] = useState<CartaCatalogo | null>(null);
+  const [prints, setPrints] = useState<CartaCatalogo[]>([]);
+  const [selectedPrint, setSelectedPrint] = useState<CartaCatalogo | null>(null);
   const [finish, setFinish] = useState<Finish>("glossy");
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [rulings, setRulings] = useState<ScryfallRuling[]>([]);
+  const [rulings, setRulings] = useState<Ruling[]>([]);
   const [showRulings, setShowRulings] = useState(false);
   const [mpcCards, setMpcCards] = useState<MpcCard[]>([]);
   const [mpcLoading, setMpcLoading] = useState(false);
   const [mpcSearched, setMpcSearched] = useState(false);
   const [mpcError, setMpcError] = useState("");
   const [mpcSelected, setMpcSelected] = useState<MpcCard | null>(null);
+
+  // El uid dice de qué juego es la carta, incluso antes de que llegue.
+  const catalogo = catalogoDeJuego(parseUid(uid).juego);
 
   // Si el acabado elegido se desactiva desde el admin, saltar al disponible.
   useEffect(() => {
@@ -53,21 +88,15 @@ export default function CartaDetalle() {
 
   useEffect(() => {
 	(async () => {
-  	if (!id) return;
-  	const c = await getCardById(id);
-  	setCard(c);
-  	setSelectedPrint(c);
-  	if (c) {
-    	const [p, r] = await Promise.all([
-      	getAllPrints(c.oracle_id),
-      	getRulings(c.id),
-    	]);
-    	setPrints(p);
-    	setRulings(r);
-  	}
+  	if (!uid) return;
+  	const f = await pedirFicha(uid);
+  	setCard(f?.carta ?? null);
+  	setSelectedPrint(f?.carta ?? null);
+  	setPrints(f?.versiones ?? []);
+  	setRulings(f?.rulings ?? []);
   	setLoading(false);
 	})();
-  }, [id]);
+  }, [uid]);
 
   const buscarMpc = async () => {
 	if (!card) return;
@@ -91,9 +120,11 @@ export default function CartaDetalle() {
 	if (!selectedPrint) return;
 	if (mpcSelected) {
   	// Arte HD de MPCFill: id propio para que no se mezcle con la versión
-  	// Scryfall de la misma carta en el carrito.
+  	// del catálogo de la misma carta en el carrito.
   	addItemToCart({
-    	id: `${selectedPrint.id}-mpc-${mpcSelected.id}`,
+    	id: `${selectedPrint.uid}-mpc-${mpcSelected.id}`,
+    	juego: selectedPrint.juego,
+    	idioma: selectedPrint.idioma,
     	name: selectedPrint.name,
     	set: selectedPrint.set,
     	set_name: `MPCFill HD · ${mpcSelected.name}`,
@@ -106,12 +137,14 @@ export default function CartaDetalle() {
   	return;
 	}
 	addItemToCart({
-  	id: selectedPrint.id,
+  	id: selectedPrint.uid,
+  	juego: selectedPrint.juego,
+  	idioma: selectedPrint.idioma,
   	name: selectedPrint.name,
   	set: selectedPrint.set,
   	set_name: selectedPrint.set_name,
   	collector_number: selectedPrint.collector_number,
-  	image: getCardImage(selectedPrint, "small"),
+  	image: selectedPrint.imagenes.small,
   	finish,
   	quantity: qty,
 	});
@@ -139,9 +172,7 @@ export default function CartaDetalle() {
 
   const display = selectedPrint || card;
   const unitPrice = precioUnitario(precios, finish);
-  const mainImg = mpcSelected
-	? mpcSelected.thumb
-	: getCardImage(display, "large");
+  const mainImg = mpcSelected ? mpcSelected.thumb : display.imagenes.large;
 
   return (
 	<main className="min-h-screen bg-[#0b0d11] text-white">
@@ -156,10 +187,14 @@ export default function CartaDetalle() {
     	</button>
 
     	<Reveal className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      	{/* Una carta apaisada en marco vertical se recorta hasta no verse. */}
       	<div
         	role="img"
         	aria-label={display.name}
-        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat"
+        	className={
+          	"relative rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat " +
+          	(display.apaisada ? "aspect-[7/5]" : "aspect-[5/7]")
+        	}
         	style={{ backgroundImage: `url(${mainImg})` }}
       	/>
 
@@ -167,80 +202,69 @@ export default function CartaDetalle() {
         	<h1 className="font-display font-extrabold text-3xl mb-1">{display.name}</h1>
         	<p className="text-sm text-gray-400 mb-4">
           	{display.set_name} · #{display.collector_number} ·{" "}
-          	<span className="capitalize">{display.rarity}</span>
+          	{etiquetaDeIdioma(display.idioma)}
+          	{display.rarity ? (
+            	<>
+              	{" · "}
+              	<span className="capitalize">{display.rarity}</span>
+            	</>
+          	) : null}
         	</p>
 
-        	{display.mana_cost ? (
-          	<p className="mb-2 flex items-center gap-2 flex-wrap">
-            	<span className="text-gray-400 text-sm">Costo:</span>
-            	<ManaSymbols text={display.mana_cost} size={20} />
-          	</p>
-        	) : null}
-        	{display.type_line ? (
-          	<p className="mb-2">
-            	<span className="text-gray-400 text-sm">Tipo: </span>
-            	{display.type_line}
-          	</p>
-        	) : null}
-        	{display.oracle_text ? (
+        	{display.ficha.map((campo) => (
+          	<Campo key={campo.label} campo={campo} />
+        	))}
+        	{display.texto ? (
           	<div className="mb-4 text-sm glass-card p-3 rounded-lg whitespace-pre-wrap leading-relaxed">
-            	<ManaSymbols text={display.oracle_text} size={14} />
+            	{display.texto.render === "mana" ? (
+              	<ManaSymbols text={display.texto.value} size={14} />
+            	) : (
+              	display.texto.value
+            	)}
           	</div>
         	) : null}
-        	<div className="mb-4">
-          	<button
-            	onClick={() => rulings.length > 0 && setShowRulings((v) => !v)}
-            	disabled={rulings.length === 0}
-            	className={
-              	"flex items-center gap-2 text-sm font-semibold transition " +
-              	(rulings.length > 0
-                	? "text-gray-300 hover:text-white cursor-pointer"
-                	: "text-gray-500 cursor-default")
-            	}
-          	>
-            	{rulings.length > 0 ? (
-              	<ChevronDown
-                	size={16}
-                	className={
-                  	"transition-transform " +
-                  	(showRulings ? "rotate-180" : "")
-                	}
-              	/>
+
+        	{/* Rulings: hoy solo Magic los publica. */}
+        	{catalogo.rulings ? (
+          	<div className="mb-4">
+            	<button
+              	onClick={() => rulings.length > 0 && setShowRulings((v) => !v)}
+              	disabled={rulings.length === 0}
+              	className={
+                	"flex items-center gap-2 text-sm font-semibold transition " +
+                	(rulings.length > 0
+                  	? "text-gray-300 hover:text-white cursor-pointer"
+                  	: "text-gray-500 cursor-default")
+              	}
+            	>
+              	{rulings.length > 0 ? (
+                	<ChevronDown
+                  	size={16}
+                  	className={
+                    	"transition-transform " + (showRulings ? "rotate-180" : "")
+                  	}
+                	/>
+              	) : null}
+              	{rulings.length > 0
+                	? `Rulings (${rulings.length})`
+                	: "Sin rulings publicados para esta carta"}
+            	</button>
+            	{showRulings && rulings.length > 0 ? (
+              	<div className="mt-2 space-y-3 text-sm glass-card p-3 rounded-lg max-h-72 overflow-y-auto">
+                	{rulings.map((r, idx) => (
+                  	<div
+                    	key={idx}
+                    	className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
+                  	>
+                    	<p className="text-xs text-gray-500 mb-1">{r.fecha}</p>
+                    	<p className="text-gray-300 leading-relaxed">{r.texto}</p>
+                  	</div>
+                	))}
+              	</div>
             	) : null}
-            	{rulings.length > 0
-              	? `Rulings (${rulings.length})`
-              	: "Sin rulings publicados para esta carta"}
-          	</button>
-          	{showRulings && rulings.length > 0 ? (
-            	<div className="mt-2 space-y-3 text-sm glass-card p-3 rounded-lg max-h-72 overflow-y-auto">
-              	{rulings.map((r, idx) => (
-                	<div
-                  	key={idx}
-                  	className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
-                	>
-                  	<p className="text-xs text-gray-500 mb-1">
-                    	{r.published_at}
-                  	</p>
-                  	<p className="text-gray-300 leading-relaxed">
-                    	{r.comment}
-                  	</p>
-                	</div>
-              	))}
-            	</div>
-          	) : null}
-        	</div>
-        	{display.power || display.toughness ? (
-          	<p className="mb-2">
-            	<span className="text-gray-400 text-sm">P/R: </span>
-            	{display.power}/{display.toughness}
-          	</p>
+          	</div>
         	) : null}
-        	{display.loyalty ? (
-          	<p className="mb-2">
-            	<span className="text-gray-400 text-sm">Lealtad: </span>
-            	{display.loyalty}
-          	</p>
-        	) : null}
+
         	{display.artist ? (
           	<p className="mb-6 text-sm text-gray-400">
             	Ilustrador: {display.artist}
@@ -254,23 +278,23 @@ export default function CartaDetalle() {
             	</p>
             	<div className="flex gap-2 overflow-x-auto pb-2">
               	{prints.map((p) => {
-                	const isSel = selectedPrint?.id === p.id;
+                	const isSel = selectedPrint?.uid === p.uid;
                 	const btnClass =
-                  	"relative flex-shrink-0 w-20 aspect-[5/7] rounded border-2 overflow-hidden transition bg-center bg-cover bg-no-repeat " +
+                  	"relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition bg-center bg-cover bg-no-repeat " +
+                  	(p.apaisada ? "aspect-[7/5] " : "aspect-[5/7] ") +
                   	(isSel
                     	? "border-[#FF4D1A]"
                     	: "border-white/10 hover:border-white/30");
-                	const thumbImg = getCardImage(p, "small");
                 	return (
                   	<button
-                    	key={p.id}
+                    	key={p.uid}
                     	onClick={() => {
                       	setSelectedPrint(p);
                       	setMpcSelected(null);
                     	}}
                     	aria-label={p.name}
                     	className={btnClass}
-                    	style={{ backgroundImage: `url(${thumbImg})` }}
+                    	style={{ backgroundImage: `url(${p.imagenes.small})` }}
                   	/>
                 	);
               	})}
@@ -279,81 +303,81 @@ export default function CartaDetalle() {
         	) : null}
 
         	{/* ARTES HD DE MPCFILL */}
-        	<div className="mb-6">
-          	{!mpcSearched && !mpcLoading ? (
-            	<button
-              	onClick={buscarMpc}
-              	className="w-full glass-card hover:border-[#FF4D1A]/50 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
-            	>
-              	✨ Buscar artes HD en MPCFill
-            	</button>
-          	) : null}
-          	{mpcLoading ? (
-            	<div className="flex items-center gap-2 text-sm text-gray-400 py-2">
-              	<Loader2 className="animate-spin text-[#FF4D1A]" size={16} />
-              	Buscando en MPCFill...
-            	</div>
-          	) : null}
-          	{mpcError ? (
-            	<p className="text-sm text-red-400 py-2">{mpcError}</p>
-          	) : null}
-          	{mpcSearched && !mpcLoading && mpcCards.length === 0 && !mpcError ? (
-            	<p className="text-sm text-gray-500 py-2">
-              	No hay versiones de esta carta en MPCFill — el arte de
-              	Scryfall se ve excelente igual.
-            	</p>
-          	) : null}
-          	{mpcCards.length > 0 ? (
-            	<>
-              	<p className="text-sm font-semibold mb-1">
-                	Artes HD de MPCFill ({mpcCards.length})
-              	</p>
-              	<p className="text-xs text-gray-500 mb-2">
-                	Réplicas digitales en alta resolución — mayor nitidez de
-                	impresión que los escaneos de Scryfall (la diferencia es
-                	sutil, pero existe).
-              	</p>
-              	<div className="flex gap-2 overflow-x-auto pb-2">
-                	{mpcCards.map((m) => {
-                  	const isSel = mpcSelected?.id === m.id;
-                  	return (
-                    	<button
-                      	key={m.id}
-                      	onClick={() =>
-                        	setMpcSelected(isSel ? null : m)
-                      	}
-                      	aria-label={m.name}
-                      	title={`${m.name} · ${m.dpi} DPI · ${m.language}`}
-                      	className={
-                        	"relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition " +
-                        	(isSel
-                          	? "border-[#FF4D1A]"
-                          	: "border-white/10 hover:border-white/30")
-                      	}
-                    	>
-                      	{/* eslint-disable-next-line @next/next/no-img-element */}
-                      	<img
-                        	src={m.thumb}
-                        	alt={m.name}
-                        	loading="lazy"
-                        	className="w-full aspect-[5/7] object-cover"
-                      	/>
-                      	<span className="absolute bottom-0 inset-x-0 bg-black/70 text-[8px] text-center py-0.5">
-                        	{m.dpi} DPI · {m.language}
-                      	</span>
-                    	</button>
-                  	);
-                	})}
+        	{catalogo.soportaMpcfill ? (
+          	<div className="mb-6">
+            	{!mpcSearched && !mpcLoading ? (
+              	<button
+                	onClick={buscarMpc}
+                	className="w-full glass-card hover:border-[#FF4D1A]/50 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              	>
+                	✨ Buscar artes HD en MPCFill
+              	</button>
+            	) : null}
+            	{mpcLoading ? (
+              	<div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+                	<Loader2 className="animate-spin text-[#FF4D1A]" size={16} />
+                	Buscando en MPCFill...
               	</div>
-              	{mpcSelected ? (
-                	<p className="text-xs text-[#FF4D1A] mt-1">
-                  	Arte HD seleccionado: {mpcSelected.name} (
-                  	{mpcSelected.dpi} DPI)
+            	) : null}
+            	{mpcError ? (
+              	<p className="text-sm text-red-400 py-2">{mpcError}</p>
+            	) : null}
+            	{mpcSearched && !mpcLoading && mpcCards.length === 0 && !mpcError ? (
+              	<p className="text-sm text-gray-500 py-2">
+                	No hay versiones de esta carta en MPCFill — el arte de
+                	Scryfall se ve excelente igual.
+              	</p>
+            	) : null}
+            	{mpcCards.length > 0 ? (
+              	<>
+                	<p className="text-sm font-semibold mb-1">
+                  	Artes HD de MPCFill ({mpcCards.length})
                 	</p>
-              	) : null}
-            	</>
-          	) : null}
-        	</div>
+                	<p className="text-xs text-gray-500 mb-2">
+                  	Réplicas digitales en alta resolución — mayor nitidez de
+                  	impresión que los escaneos de Scryfall (la diferencia es
+                  	sutil, pero existe).
+                	</p>
+                	<div className="flex gap-2 overflow-x-auto pb-2">
+                  	{mpcCards.map((m) => {
+                    	const isSel = mpcSelected?.id === m.id;
+                    	return (
+                      	<button
+                        	key={m.id}
+                        	onClick={() => setMpcSelected(isSel ? null : m)}
+                        	aria-label={m.name}
+                        	title={`${m.name} · ${m.dpi} DPI · ${m.language}`}
+                        	className={
+                          	"relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition " +
+                          	(isSel
+                            	? "border-[#FF4D1A]"
+                            	: "border-white/10 hover:border-white/30")
+                        	}
+                      	>
+                        	{/* eslint-disable-next-line @next/next/no-img-element */}
+                        	<img
+                          	src={m.thumb}
+                          	alt={m.name}
+                          	loading="lazy"
+                          	className="w-full aspect-[5/7] object-cover"
+                        	/>
+                        	<span className="absolute bottom-0 inset-x-0 bg-black/70 text-[8px] text-center py-0.5">
+                          	{m.dpi} DPI · {m.language}
+                        	</span>
+                      	</button>
+                    	);
+                  	})}
+                	</div>
+                	{mpcSelected ? (
+                  	<p className="text-xs text-[#FF4D1A] mt-1">
+                    	Arte HD seleccionado: {mpcSelected.name} (
+                    	{mpcSelected.dpi} DPI)
+                  	</p>
+                	) : null}
+              	</>
+            	) : null}
+          	</div>
+        	) : null}
 
         	<div className="glass-card p-5 rounded-xl">
           	<p className="text-sm font-semibold mb-3">Acabado</p>
@@ -398,4 +422,3 @@ export default function CartaDetalle() {
 	</main>
   );
 }
-

@@ -1,4 +1,7 @@
 import { searchCards, type ScryfallCard } from "./scryfall";
+import { aCarta, enIdioma } from "./catalogo/mtg";
+import { IDIOMA_BASE, type IdiomaId } from "./catalogo/idiomas";
+import type { CartaCatalogo } from "./catalogo/tipos";
 
 export type ParsedLine = {
   raw: string;
@@ -11,7 +14,11 @@ export type ParsedLine = {
 
 export type ImportedCard = ParsedLine & {
   status: "ok" | "not_found" | "pending";
-  card?: ScryfallCard;
+  /**
+  * Ya normalizada al contrato de catálogo: el resto del sitio no distingue
+  * una carta que llegó por decklist de una que llegó por el buscador.
+  */
+  card?: CartaCatalogo;
   errorMsg?: string;
 };
 
@@ -83,8 +90,16 @@ export function parseDeck(text: string): ParsedLine[] {
 * Para una línea parseada, busca la carta en Scryfall.
 * Si tiene set+collector, usa /cards/{set}/{cn}
 * Si solo tiene nombre, usa búsqueda exacta
+*
+* El idioma se aplica al final, sobre la impresión ya encontrada: las listas
+* de Moxfield y Archidekt vienen en inglés, así que primero hay que saber de
+* qué carta se trata y recién después pedirla traducida. Es el mismo orden que
+* recomienda Scryfall, que no tiene búsqueda por nombre en otro idioma.
 */
-export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
+export async function resolveCard(
+  line: ParsedLine,
+  idioma: IdiomaId = IDIOMA_BASE
+): Promise<ImportedCard> {
   // Caso 1: tiene set + collector
   if (line.set && line.collector_number) {
 	try {
@@ -94,7 +109,7 @@ export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
   	);
   	if (res.ok) {
     	const card: ScryfallCard = await res.json();
-    	return { ...line, status: "ok", card };
+    	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
   	}
 	} catch {
   	// sigue al siguiente intento
@@ -105,7 +120,11 @@ export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
   if (line.set && !line.collector_number) {
 	const search = await searchCards(`!"${line.name}" set:${line.set}`);
 	if (search?.data?.length) {
-  	return { ...line, status: "ok", card: search.data[0] };
+  	return {
+    	...line,
+    	status: "ok",
+    	card: aCarta(await enIdioma(search.data[0], idioma)),
+  	};
 	}
   }
 
@@ -117,7 +136,7 @@ export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return { ...line, status: "ok", card };
+  	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
 	}
   } catch {
 	// sigue
@@ -131,7 +150,7 @@ export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return { ...line, status: "ok", card };
+  	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
 	}
   } catch {
 	// sigue
@@ -147,11 +166,12 @@ export async function resolveCard(line: ParsedLine): Promise<ImportedCard> {
 /** Procesa todas las líneas con rate limiting (~100ms entre requests) */
 export async function resolveDeck(
   lines: ParsedLine[],
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
+  idioma: IdiomaId = IDIOMA_BASE
 ): Promise<ImportedCard[]> {
   const results: ImportedCard[] = [];
   for (let i = 0; i < lines.length; i++) {
-	const result = await resolveCard(lines[i]);
+	const result = await resolveCard(lines[i], idioma);
 	results.push(result);
 	onProgress?.(i + 1, lines.length);
 	// pequeño delay para respetar a Scryfall (recomiendan 50-100ms)

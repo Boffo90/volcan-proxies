@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Search, ShoppingCart, Menu, X, Flame, User } from "lucide-react";
-import { autocomplete } from "@/lib/scryfall";
+import { IDIOMA_BASE, JUEGO_DEFAULT } from "@/lib/catalogo";
+import { autocompletar } from "@/lib/catalogo/cliente";
 import { getCart } from "@/lib/cart";
 import { useUser } from "@/hooks/useUser";
 import CartDrawer from "@/components/CartDrawer";
@@ -41,7 +42,7 @@ export default function NavBar() {
   	return;
 	}
 	debounceRef.current = setTimeout(async () => {
-  	const data = await autocomplete(query);
+  	const data = await autocompletar(JUEGO_DEFAULT, query, IDIOMA_BASE);
   	setSuggestions(data.slice(0, 8));
   	setActiveIdx(-1);
 	}, 200);

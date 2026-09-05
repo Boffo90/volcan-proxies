@@ -25,6 +25,10 @@ import { REGIONES } from "@/lib/envio";
 
 type PedidoItem = {
   id: string;
+  /** Juego del que viene la carta. Los pedidos viejos no lo traen: son MTG. */
+  juego?: string;
+  /** Idioma de esta carta. Los pedidos viejos no lo traen: son inglés. */
+  idioma?: string;
   name: string;
   set: string;
   set_name: string;
@@ -543,9 +547,20 @@ export default function AdminPedidoDetail() {
   // Scryfall/Gatherer (printing por set+número) → textbox "Resolve & add".
   // Custom (imagen propia) → se cargan a mano.
   const allItems = pedido?.items || [];
+  // El juego decide por dónde entra la carta a Cardwright. Un pedido sin el
+  // campo es de cuando el sitio era solo Magic.
+  const esMtg = (it: PedidoItem) => (it.juego ?? "mtg") === "mtg";
   const mpcItems = allItems.filter((it) => it.mpcfillId && !it.isCustom);
-  const scryfallItems = allItems.filter((it) => !it.mpcfillId && !it.isCustom);
+  const scryfallItems = allItems.filter(
+	(it) => !it.mpcfillId && !it.isCustom && esMtg(it)
+  );
+  // Yu-Gi-Oh y lo que venga después: Cardwright los tiene en su buscador pero
+  // no los importa por lista, así que van aparte y se cargan a mano.
+  const otrosJuegos = allItems.filter(
+	(it) => !it.mpcfillId && !it.isCustom && !esMtg(it)
+  );
   const customItems = allItems.filter((it) => it.isCustom);
+
 
   // Los dorsos van agrupados por imagen: lo normal es uno solo para todo el
   // pedido, y lo que interesa al producir es cuántas cartas lo llevan.
@@ -1238,6 +1253,29 @@ export default function AdminPedidoDetail() {
           	<pre className="bg-[#0F1115] text-[#FF4D1A] p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-auto">
 {scryfallDeck}
           	</pre>
+        	</div>
+      	)}
+
+      	{/* Otros juegos: Cardwright los busca pero no los importa por lista */}
+      	{otrosJuegos.length > 0 && (
+        	<div className="bg-[#1E242B] p-5 rounded-xl border border-blue-400/30 mb-4">
+          	<h3 className="font-bold flex items-center gap-2 mb-2">
+            	🎴 Otros juegos ({sumQty(otrosJuegos)} cartas)
+          	</h3>
+          	<p className="text-xs text-blue-200/80 mb-3">
+            	Cardwright tiene el buscador de estos juegos, pero <b>no importa
+            	listas</b>: búscalas por nombre en su pestaña y elige el arte que
+            	dice el número. Ojo con el <b>tamaño de carta</b>, que no es el de
+            	Magic — mira la receta en <b>Fórmulas</b>.
+          	</p>
+          	<ul className="text-xs text-gray-300 space-y-1">
+            	{otrosJuegos.map((it, i) => (
+              	<li key={i}>
+                	• {it.quantity}× {it.name} — arte {it.collector_number} ·{" "}
+                	<span className="uppercase">{it.juego}</span> [{it.finish}]
+              	</li>
+            	))}
+          	</ul>
         	</div>
       	)}
 
