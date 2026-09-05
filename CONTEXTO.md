@@ -4,14 +4,14 @@ Documento de traspaso. Si estás retomando el proyecto en una sesión nueva,
 lee esto antes de tocar código: acá está lo que no se deduce leyendo los
 archivos.
 
-Última actualización: 25 de agosto de 2026.
+Última actualización: 5 de septiembre de 2026.
 
 ---
 
 ## 1. Qué es
 
-Tienda online de **proxies de Magic: The Gathering** (y otros TCG), hechas a
-mano en **Pucón, Chile**, con despacho a todo el país. La opera una sola
+Tienda online de **proxies de cartas** —Magic, Pokémon, Yu-Gi-Oh y Riftbound—
+hechas a mano en **Pucón, Chile**, con despacho a todo el país. La opera una sola
 persona: **Sebastián (Seba)**. Todo el sitio y la comunicación con clientes
 está en **español de Chile**.
 
@@ -39,7 +39,8 @@ mano** en el SQL Editor del dashboard de Supabase. El código está escrito para
 sobrevivir sin la migración: ver `lib/db.ts` (`esColumnaFaltante`), que detecta
 el error de columna inexistente y reintenta la consulta sin ese filtro.
 
-Ya aplicadas: `confirmacion_enviada_at` y `archivado_at` en `pedidos`.
+Ya aplicadas: `confirmacion_enviada_at` y `archivado_at` en `pedidos`, y
+`riftbound_cartas` (ver la sección de catálogos).
 
 ---
 
@@ -72,7 +73,80 @@ cambia de cuenta, hay que tocar código. Vale la pena cablearlo algún día.
 
 ---
 
-## 4. Sistema de acabados
+## 4. Catálogos de cartas: un módulo por juego
+
+El sitio vendía solo Magic hasta septiembre de 2026. Hoy vende cuatro juegos y
+la forma está pensada para que agregar el quinto sea barato.
+
+`lib/catalogo/tipos.ts` define el contrato y hay un módulo por juego
+(`mtg.ts`, `pokemon.ts`, `ygo.ts`, `riftbound.ts`), registrados en `index.ts`.
+Es la misma idea que usa Cardwright en `sources.py`. Agregar un juego es
+escribir su adaptador y sumarlo a `CATALOGOS`; TypeScript después obliga a
+completar el resto, igual que con los acabados.
+
+**Todo pasa por `/api/catalogo`, nunca desde el navegador.** Dos razones que no
+se ven en el código:
+
+1. `next: { revalidate }` **no hace nada** en un componente de cliente. Antes
+   el catálogo consultaba Scryfall desde el navegador y ese revalidate era
+   decorativo: cada visita repetía la búsqueda. Desde el servidor sí se cachea.
+2. YGOPRODeck pide explícitamente no hotlinkear sus imágenes. Por eso existe
+   `/api/imagen-carta`, que las trae y las sirve desde nuestro CDN. Tiene lista
+   blanca de hosts: sin eso sería un proxy abierto que cualquiera puede usar
+   para descargar lo que quiera desde nuestra IP.
+
+### De dónde salen las cartas
+
+| Juego | Fuente | Llave | Imagen para imprimir |
+|---|---|---|---|
+| Magic | Scryfall | no | 745×1040 PNG |
+| Pokémon | TCGdex | no | 600×825 PNG |
+| Yu-Gi-Oh | YGOPRODeck | no | 813×1185 JPEG |
+| Riftbound | copia propia en Supabase | no | 744×1039 PNG (CDN de Riot) |
+
+`imagenes.print` va aparte de `imagenes.large` a propósito. `large` es lo que
+se ve bien en pantalla; `print` es la que se manda a producir, y ahí una
+miniatura no se nota hasta que la carta sale impresa y borrosa.
+
+**El techo de Pokémon es del ecosistema, no de TCGdex**: 600×825 es lo máximo
+que existe en cualquier catálogo de Pokémon, se midió contra pokemontcg.io y da
+exactamente lo mismo. Está bajo lo que pide una carta de 63×88 mm a 1200 DPI,
+así que el upscale trabaja desde casi 5× en vez del 4× de Magic. Se dice en el
+aviso del catálogo, no se esconde.
+
+**Los precios no cambian por juego.** Una carta de Yu-Gi-Oh mide 59×86 mm pero
+entra igual 3×3 en una hoja A4, así que siguen siendo 9 cartas por hoja y el
+modelo de costos vale tal cual.
+
+### Riftbound vive en nuestra base, y eso tiene una razón
+
+**Riftcodex responde 403 a los servidores de Vercel.** Está detrás de
+Cloudflare y bloquea el tráfico de datacenter. Desde una máquina con IP
+residencial anda perfecto — por eso Cardwright nunca lo sufrió, y por eso en
+desarrollo local no se ve.
+
+Costó un despliegue roto descubrirlo: el catálogo andaba impecable en local y
+en producción la pestaña de Riftbound salía vacía. Si algún día vuelve a pasar
+con otro juego, ese es el primer sospechoso.
+
+La salida fue copiar las cartas a la tabla `riftbound_cartas`:
+
+- Se sincroniza con `node scripts/sync-riftbound.mjs`, **desde la máquina de
+  Seba**, que sí pasa el filtro. Son ~1.450 cartas y 1,9 MB.
+- Se guarda la carta **cruda** de Riftcodex en una columna `jsonb`. El
+  adaptador la convierte al leer, así que cualquier arreglo en esa conversión
+  vale para lo ya guardado sin resincronizar.
+- Hay que volver a correrlo **cuando salga un set nuevo**. Es lo único del
+  catálogo que no se actualiza solo.
+- Las imágenes no pasan por ahí: son del CDN de Riot y las carga el navegador
+  del cliente directo, así que el bloqueo no las toca.
+
+Si el catálogo de Riftbound aparece vacío, lo primero que hay que mirar es si
+la sincronización se corrió.
+
+---
+
+## 5. Sistema de acabados
 
 `FINISHES` en `lib/pricing.ts` es la fuente de verdad. Agregar un acabado es
 agregar una clave ahí; TypeScript después te obliga a completar todos los
@@ -83,7 +157,7 @@ agregar una clave ahí; TypeScript después te obliga a completar todos los
 contra se muestra al cliente a propósito: es lo que hace creíble la diferencia
 de precio. No la suavices.
 
-### Estado del catálogo (24-ago-2026)
+### Estado de los acabados (24-ago-2026)
 
 | Clave | Nombre visible | Precio | Estado |
 |---|---|---|---|
@@ -105,7 +179,7 @@ La página `/acabados` distingue ambos casos: los pausados se anuncian como
 
 ---
 
-## 5. Lógica de negocio que no es obvia
+## 6. Lógica de negocio que no es obvia
 
 ### Promos acumulables
 
@@ -163,6 +237,47 @@ máquina extra, contra la hoja suelta que hoy agregan las MDFC.
 
 Los dos montos se editan en `/admin/precios` sin desplegar.
 
+### Idioma de las cartas
+
+**Se elige navegando, carta por carta, y viaja dentro del uid.** No se pregunta
+en el checkout.
+
+Antes sí se preguntaba ahí, y era **una promesa que nadie cumplía**: el pedido
+guardaba la palabra ("Español"), el correo la repetía, el panel la mostraba, y
+nada resolvía las cartas en ese idioma. Para Magic funcionaba solo si Seba se
+acordaba de cambiar el "Card language" de Cardwright a mano. Para los otros
+tres juegos era imposible: la imagen queda fija al agregar al carrito, así que
+ningún paso posterior puede cambiarla.
+
+Hoy el checkout **muestra** lo que trae el carrito en vez de preguntarlo, y un
+pedido puede llevar cartas en más de un idioma si el cliente lo armó así.
+
+Cada catálogo declara en `idiomas` lo que su fuente entrega **de verdad**,
+medido contra la API y no copiado de su documentación:
+
+| | Inglés | Español | Portugués | Japonés | Alemán | Francés | Italiano |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Magic | sí | sí | sí | sí | sí | sí | sí |
+| Pokémon | sí | sí | sí | **no** | sí | sí | sí |
+| Yu-Gi-Oh | sí | **no** | sí | **no** | sí | sí | sí |
+| Riftbound | sí | no | no | no | no | no | no |
+
+Yu-Gi-Oh no tiene español y su propia API lo enumera en el mensaje de error
+("accepts: 'fr', 'de', 'it' or 'pt'"). Pokémon no tiene japonés: la ruta
+responde 404, no devuelve la carta en inglés. Ofrecer un idioma que después no
+se puede imprimir se paga en el despacho, no en la búsqueda — por eso el
+selector solo muestra lo que el juego sirve.
+
+Cuando la carta no existe en el idioma pedido, se entrega en inglés **y la
+carta dice que vino en inglés**. El cliente ve lo que va a recibir, no una
+etiqueta.
+
+Un detalle de Magic que no es obvio: Scryfall guarda siempre el nombre inglés
+en `name` y el traducido en `printed_name`. Sin eso, elegir español mostraba
+"Arc Lightning" en vez de "Relámpago arco". Y **se filtran las impresiones con
+`image_status` placeholder o missing**: no son la carta, son un cartel que dice
+"Localized Image Not Available". En una búsqueda en español eran 11 de 39.
+
 ### Envío agrupado
 
 Si un cliente ya tiene un pedido **pagado**, sin despachar y a la **misma
@@ -194,7 +309,7 @@ y reintenta 5 veces en ~10 segundos antes de concluir que falló.
 
 ---
 
-## 6. Trampas conocidas
+## 7. Trampas conocidas
 
 **`EMAIL_FROM` debe ser de un dominio verificado en Resend.** Estuvo meses en
 `onboarding@resend.dev`, que solo permite enviar a la casilla del dueño de la
@@ -212,6 +327,30 @@ servidor local no puede cobrarle a un cliente real.
 Todo lo del panel se verifica por API, por lógica o por consulta a la base;
 la pantalla la prueba Seba.
 
+**Verificar en local NO alcanza para un catálogo.** Es la trampa que costó un
+despliegue roto en septiembre de 2026: Riftbound andaba impecable en desarrollo
+y en producción salía vacío. Dos motivos que local nunca reproduce:
+
+- **La IP es distinta.** Tu conexión de casa pasa filtros que los servidores de
+  Vercel no (ver Riftcodex más arriba).
+- **La API está tibia.** Después de una tarde probando, la API de turno
+  responde al instante; producción la toca una vez cada mucho y siempre fría.
+
+Para cualquier fuente nueva, la prueba que vale es contra `volcanproxies.cl`
+después de desplegar, no `localhost`.
+
+**Un catálogo caído devuelve el motivo.** `/api/catalogo` responde 502 con un
+campo `motivo` que dice qué pasó ("Riftcodex 403", un plazo vencido, la API
+caída). Antes decía solo "El catálogo no respondió" y con eso las tres causas
+eran indistinguibles: hubo que adivinar. Si algo falla en producción, eso es lo
+primero que hay que mirar.
+
+**Ningún fetch a un catálogo va sin plazo.** `lib/catalogo/http.ts` les pone 8
+segundos. Una API que deja de responder sin cerrar la conexión — le pasó a
+TCGdex — cuelga la función de Vercel hasta que la corten. Ojo también con
+encadenar dos llamadas seguidas: son dos plazos, y el límite de la función es
+de 10 segundos.
+
 **El lint tiene errores preexistentes** de `setState` dentro de `useEffect` en
 casi todas las páginas. Son del estilo del proyecto y no bloquean el build. No
 los confundas con algo que rompiste.
@@ -228,7 +367,7 @@ pedidos.
 
 ---
 
-## 7. Modelo de costos
+## 8. Modelo de costos
 
 Todo se calcula por **hoja A4 = 9 cartas**, y las hojas se **redondean hacia
 arriba**: 60 cartas ocupan 7 hojas, no 6,67. La estimación es conservadora a
@@ -253,7 +392,7 @@ https://claude.ai/code/artifact/91c5b420-5d80-4d0b-bf90-191b7e357612
 
 ---
 
-## 8. Panel de administración
+## 9. Panel de administración
 
 `/admin` — tablero por estado. Botones: Precios, Customs, Fórmulas, Stock,
 Archivados.
@@ -274,10 +413,27 @@ Archivados.
   reclama con un update condicional para no duplicar el envío (Flow reintenta
   su webhook), y **se libera la marca si el envío falla**, o el pedido quedaría
   como avisado sin haberlo sido.
-- **Importar a Cardwright:** separado por fuente. Las cartas con arte MPCFill
-  salen como XML de orden (formato mpc-autofill, con el Drive id de cada
-  diseño); las de Scryfall como decklist MTGO. Son dos vías distintas de import
-  en Cardwright y ambas caen en la misma cola.
+- **Importar a Cardwright:** hay tres vías. La **lista de cartas** (`.json`)
+  trae el pedido entero de una vez y sirve para cualquier juego — es la única
+  para Pokémon, Yu-Gi-Oh, Riftbound y las customs, porque el decklist es
+  Magic-only. Las cartas con arte MPCFill salen además como XML de orden
+  (formato mpc-autofill, con el Drive id de cada diseño) y las de Scryfall como
+  decklist MTGO. Todas caen en la misma cola.
+
+  La lista **resuelve la imagen de impresión**: lo que guarda el pedido es la
+  miniatura que vio el cliente, y mandar eso a imprimir sale borroso. Si alguna
+  no se puede resolver, el panel dice cuál.
+
+  Del lado de Cardwright, el botón es **Import → "Card list…"**, y el formato
+  está documentado en su `cardlist.py`. Ojo: **el `.exe` publicado puede no
+  tenerlo**; para probarlo hay que correr Cardwright desde el código.
+
+- **Aviso de tamaños mezclados:** un pedido con Magic y Yu-Gi-Oh son dos tandas
+  de impresión, porque Cardwright imprime con el tamaño de carta que tenga
+  seleccionado y no avisa.
+
+- **Bloque de otros juegos:** lista las cartas que no son de Magic con su
+  número de arte, para cuando se cargan a mano.
 - **Editar envío**, bloqueado si ya hay tracking, y con registro del cambio en
   las notas internas.
 - **Archivar**, que saca el pedido del panel sin borrarlo y deja de reservar
@@ -289,7 +445,7 @@ hechos a la medida de sus parsers reales.
 
 ---
 
-## 9. Cómo trabajar con Seba
+## 10. Cómo trabajar con Seba
 
 - **Nunca despliega solo.** Se construye, se verifica, se le muestra qué
   cambió, y **él dice explícitamente "súbelo a producción"**. Respetar eso.
@@ -308,8 +464,28 @@ hechos a la medida de sus parsers reales.
 
 ---
 
-## 10. Pendientes
+## 11. Pendientes
 
+- **Resincronizar Riftbound cuando salga un set**: `node scripts/sync-riftbound.mjs`
+  desde la máquina de Seba. Es lo único del catálogo que no se actualiza solo.
+- **Probar los botones nuevos del panel.** El de la lista de cartas y el de
+  "otros juegos" nunca se apretaron: se verificaron por API y por tipos, la
+  pantalla no. Lo mismo con **"Card list…"** en Cardwright.
+- **Los pedidos con varios juegos son varias tandas de impresión** si mezclan
+  tamaños de carta. El panel avisa, pero el flujo de producción para eso no
+  está pensado todavía.
+- **El autocompletado de Magic sigue en inglés.** Scryfall no acepta idioma en
+  ese endpoint (`include_multilingual` devuelve vacío, está medido). La
+  búsqueda sí entiende el nombre traducido, así que solo la sugerencia del
+  navbar queda en inglés.
+- **Importar lista no compara el nombre con lo que resolvió.** Si la línea trae
+  set y número, esos mandan: `1 Sol Ring (CMR) 410` trae "Abrade", porque CMR
+  410 es Abrade y el número estaba mal. Antes se notaba menos; con la
+  traducción salta a la vista. Vale la pena avisar cuando el nombre no calza.
+- **Más juegos**: One Piece, Digimon y Dragon Ball están en `apitcg.com`, que
+  **pide llave**. Eso bloquea a Cardwright (un binario repartido no puede
+  guardarla) pero **no al sitio**: acá la llave vive en una variable de entorno.
+  Es el camino más corto para el quinto juego.
 - **Fotos de los acabados**: subir `base300.jpg` y `reforzada300.jpg` a
   `public/acabados/`. La comparativa en `/acabados` aparece sola cuando los
   archivos existen (los detecta el navegador, no hay que tocar código).
