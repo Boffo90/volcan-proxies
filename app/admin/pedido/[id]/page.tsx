@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { catalogo, type JuegoId } from "@/lib/catalogo";
 import {
   Loader2,
   ArrowLeft,
@@ -178,6 +179,8 @@ export default function AdminPedidoDetail() {
   const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
   const [copiedDeck, setCopiedDeck] = useState(false);
   const [copiedXml, setCopiedXml] = useState(false);
+  const [generandoLista, setGenerandoLista] = useState(false);
+  const [avisoLista, setAvisoLista] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const [flowEstado, setFlowEstado] = useState<FlowEstado | null>(null);
   const [verificandoFlow, setVerificandoFlow] = useState(false);
@@ -561,6 +564,15 @@ export default function AdminPedidoDetail() {
   );
   const customItems = allItems.filter((it) => it.isCustom);
 
+  // Un pedido puede mezclar tamaños: 63×88 de Magic y 59×86 de Yu-Gi-Oh no
+  // salen en la misma tanda, y Cardwright imprime con el tamaño que tenga
+  // seleccionado sin avisar. Una carta de Yu-Gi-Oh estirada a tamaño Magic se
+  // ve mal recién cuando ya está impresa.
+  const tamanos = [
+	...new Set(
+  	allItems.map((it) => catalogo((it.juego as JuegoId) ?? "mtg").tamano)
+	),
+  ];
 
   // Los dorsos van agrupados por imagen: lo normal es uno solo para todo el
   // pedido, y lo que interesa al producir es cuántas cartas lo llevan.
@@ -603,6 +615,41 @@ export default function AdminPedidoDetail() {
 	await navigator.clipboard.writeText(mpcXml);
 	setCopiedXml(true);
 	setTimeout(() => setCopiedXml(false), 2000);
+  };
+
+  /**
+  * Baja el pedido entero como lista de cartas para Cardwright.
+  *
+  * El servidor vuelve a resolver cada carta contra su catálogo para sacar la
+  * imagen de impresión: lo que guarda el pedido es la miniatura que vio el
+  * cliente, y eso impreso sale borroso.
+  */
+  const descargarLista = async () => {
+	setGenerandoLista(true);
+	setAvisoLista("");
+	try {
+  	const res = await fetch(`/api/admin/pedido/${id}/cardwright`);
+  	const data = await res.json();
+  	if (!res.ok) throw new Error(data.error || "No se pudo generar la lista");
+  	const blob = new Blob([JSON.stringify(data.lista, null, 2)], {
+    	type: "application/json",
+  	});
+  	const url = URL.createObjectURL(blob);
+  	const a = document.createElement("a");
+  	a.href = url;
+  	a.download = `pedido-${pedido?.numero ?? "lista"}-cardwright.json`;
+  	a.click();
+  	URL.revokeObjectURL(url);
+  	if (data.sinResolver?.length) {
+    	setAvisoLista(
+      	`Ojo: no se pudo resolver la imagen buena de ${data.sinResolver.length} carta(s) (${data.sinResolver.join(", ")}). Van con la miniatura, que impresa se va a ver mal. Búscalas a mano en Cardwright.`
+    	);
+  	}
+	} catch (e: unknown) {
+  	setAvisoLista(e instanceof Error ? e.message : "No se pudo generar la lista");
+	} finally {
+  	setGenerandoLista(false);
+	}
   };
 
   const downloadXml = () => {
@@ -1192,9 +1239,43 @@ export default function AdminPedidoDetail() {
     	<div className="mt-6">
       	<h2 className="font-bold text-lg mb-1">Importar a Cardwright</h2>
       	<p className="text-xs text-gray-400 mb-4">
-        	Pedido separado por fuente. Cada bloque se importa por su vía en
-        	Cardwright y ambos caen en la misma cola.
+        	La lista de cartas trae el pedido entero de una vez. Los bloques de
+        	abajo siguen sirviendo si prefieres importar por fuente.
       	</p>
+
+      	{/* El pedido completo, en un archivo → botón "Card list…" */}
+      	<div className="bg-[#1E242B] p-5 rounded-xl border border-green-400/30 mb-4">
+        	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
+          	<h3 className="font-bold flex items-center gap-2">
+            	📦 Lista de cartas ({sumQty(allItems)} cartas)
+          	</h3>
+          	<button
+            	onClick={descargarLista}
+            	disabled={generandoLista}
+            	className="bg-[#0F1115] hover:bg-white/5 disabled:opacity-50 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+          	>
+            	<Download size={14} />
+            	{generandoLista ? "Generando…" : "Descargar .json"}
+          	</button>
+        	</div>
+        	<p className="text-xs text-gray-400">
+          	Todo el pedido en un archivo: cada carta con su imagen de
+          	impresión, su acabado y el dorso personalizado si lo lleva. En
+          	Cardwright: <b>Import → botón &quot;Card list…&quot;</b>. Sirve para
+          	cualquier juego, y el tamaño de carta se cambia solo.
+        	</p>
+        	{tamanos.length > 1 ? (
+          	<p className="text-xs text-yellow-300 mt-2">
+            	Este pedido mezcla {tamanos.length} tamaños de carta (
+            	{tamanos.join(" y ")}). Son dos tandas: importa la lista, deja
+            	en la cola solo las de un tamaño, imprime, y repite con las
+            	otras. Cardwright usa el tamaño que tenga puesto y no avisa.
+          	</p>
+        	) : null}
+        	{avisoLista ? (
+          	<p className="text-xs text-yellow-300 mt-2">{avisoLista}</p>
+        	) : null}
+      	</div>
 
       	{/* MPCFill: arte HD exacto por Drive id → botón "MPC XML…" */}
       	{mpcItems.length > 0 && (
