@@ -268,12 +268,24 @@ export const RIFTBOUND: Catalogo = {
 	const cards = await filas((c) =>
   	c.ilike("nombre_busqueda", `%${texto}%`).limit(MAX_RESULTADOS * 3)
 	);
-	// El exacto primero: quien escribe el nombre completo quiere esa carta
-	// arriba, no los vecinos que comparten una palabra.
+	// El orden lo pone la base, que es el de inserción: sin esto, buscar
+	// "Poppy" mostraba "Poppy - Paragon (Alternate Art)" antes que la carta
+	// normal, y "Jinx" empezaba por una variante numerada.
+	//
+	// Tres criterios, en orden: la coincidencia exacta manda, después la carta
+	// base antes que sus variantes —"(Alternate Art)", "(Overnumbered)",
+	// "(Signature)" van entre paréntesis— y al final alfabético para que dos
+	// búsquedas iguales devuelvan lo mismo.
+	const variante = (n: string) => (/\(.*\)\s*$/.test(n) ? 1 : 0);
 	cards.sort((a, b) => {
-  	const ea = normalizar(a.name ?? "") === texto ? 0 : 1;
-  	const eb = normalizar(b.name ?? "") === texto ? 0 : 1;
-  	return ea - eb;
+  	const na = a.name ?? "";
+  	const nb = b.name ?? "";
+  	const exacta =
+    	(normalizar(na) === texto ? 0 : 1) - (normalizar(nb) === texto ? 0 : 1);
+  	if (exacta !== 0) return exacta;
+  	const v = variante(na) - variante(nb);
+  	if (v !== 0) return v;
+  	return na.localeCompare(nb, "es");
 	});
 	const cartas = aCartas(cards).slice(0, MAX_RESULTADOS);
 	return { cartas, total: cartas.length };
