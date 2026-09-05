@@ -269,9 +269,35 @@ pedidos históricos que lo usaron sigan mostrando su acabado real.
 La página `/acabados` distingue ambos casos: los pausados se anuncian como
 "vuelven pronto", el descontinuado ni se menciona.
 
-**La FAQ arma la lista de precios sola**, con los acabados disponibles en ese
-momento. Estuvo escrita a mano nombrando Glossy, Matte y Matte Premium —dos
-pausados y uno descontinuado— sin mencionar la Reforzada, que sí se vendía.
+### Ninguna página nombra un acabado a mano
+
+Portada, `/promos`, `/faq` y `/acabados` derivan todo de
+`precios.disponible`: los nombres, la lista de precios, las tarjetas de promo
+y hasta cuántas columnas tiene la grilla. Activar un acabado en
+`/admin/precios` lo hace aparecer en las cuatro sin tocar código.
+
+Esto se hizo porque **la copia escrita a mano se pudrió sin que nadie lo
+notara**. En septiembre de 2026 el sitio todavía ofrecía "Glossy (brillante)
+o Matte" en la portada, en `/nosotros` y en la FAQ; prometía "laminado en
+calor" en cuatro lugares incluyendo el subtítulo del hero y el meta
+description; y `/promos` mostraba doce tarjetas, ocho de ellas en gris con el
+cartel "no disponible". Todo eso sobrevivió a varios cambios de fórmula
+porque **nada rompe cuando un texto queda mentiroso** — no hay error de
+compilación, no hay test que falle.
+
+La regla: **si una página nombra un acabado, un gramaje o un proceso, tiene
+que sacarlo de los precios.** Si la página es un server component y no puede
+leer el hook —el caso de `/nosotros`— entonces no nombra ninguno y enlaza a
+`/acabados`.
+
+Los pausados y el descontinuado **ya no aparecen en la portada ni en
+`/promos`**. La única página que los menciona es `/acabados`, que para eso
+está: ahí los pausados se anuncian como "vuelven pronto" y el descontinuado
+ni se nombra.
+
+Al filtrar quedó un detalle que conviene recordar: `promos.length` decide las
+columnas del grid, y **las clases de Tailwind tienen que ser literales**.
+`"lg:grid-cols-" + n` compila pero no genera CSS.
 
 ---
 

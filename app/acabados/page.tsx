@@ -340,15 +340,15 @@ export default function AcabadosPage() {
             	<div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10 bg-[#0b0d11]">
               	<Image
                 	src={FOTO_ANGULO}
-                	alt="Los cuatro acabados vistos en ángulo, mostrando reflejo y curvatura"
+                	alt="Los acabados vistos en ángulo, mostrando la textura de cada uno"
                 	fill
                 	sizes="(max-width: 1024px) 100vw, 900px"
                 	className="object-cover"
               	/>
             	</div>
             	<figcaption className="mt-2 text-xs text-gray-400 text-center">
-              	En ángulo se nota lo que de frente no se ve: el reflejo del
-              	Glossy.
+              	En ángulo se nota lo que de frente no se ve: la textura de cada
+              	acabado.
             	</figcaption>
           	</figure>
         	)}
@@ -473,7 +473,7 @@ export default function AcabadosPage() {
           	},
           	{
             	si: "Es mi mazo principal y quiero lo mejor que hacemos",
-            	elige: "premium" as Finish,
+            	elige: "premiumFrio" as Finish,
           	},
         	]
           	.filter(({ elige }) => precios.disponible[elige])

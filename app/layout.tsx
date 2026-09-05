@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Compra proxies premium de Magic: The Gathering, Pokémon, One Piece, Yu-Gi-Oh! y otros TCG. Impresión fotográfica de alta calidad, acabado Glossy o Matte y envíos a todo Chile desde Pucón.",
+    "Compra proxies premium de Magic: The Gathering, Pokémon, One Piece, Yu-Gi-Oh! y otros TCG. Impresión fotográfica de alta calidad sobre papel de alto gramaje y envíos a todo Chile desde Pucón.",
 
   keywords: [
     "proxies mtg chile",

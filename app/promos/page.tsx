@@ -15,15 +15,19 @@ export default function PromosPage() {
   const perCard = (total: number, cantidad: number) =>
 	"≈ " + formatCLP(Math.round(total / cantidad)) + " por carta";
 
-  // Las 8 combinaciones (2 promos × 4 acabados) salen de los mismos datos, así
-  // que agregar o quitar un acabado no obliga a tocar esta página.
+  const vivos = FINISHES.filter((f) => precios.disponible[f]);
+
+  // Solo los acabados que se venden hoy: con los pausados esta página
+  // mostraba doce tarjetas, ocho de ellas en gris, y confundía más de lo que
+  // informaba. Las combinaciones salen de los datos, así que activar un
+  // acabado en /admin/precios las hace aparecer solas.
   const PROMOS = (
 	[
   	{ key: "mazo60" as const, qty: 60, titulo: "Mazo 60", contexto: "Ideal para Modern, Standard, Pioneer." },
   	{ key: "commander100" as const, qty: 100, titulo: "Commander 100", contexto: "Tu mazo EDH/Commander completo, con comandante." },
 	]
   ).flatMap((promo) =>
-	FINISHES.map((f) => {
+	vivos.map((f) => {
   	const info = FINISH_INFO[f];
   	const precio = precios[promo.key][f];
   	return {
@@ -37,10 +41,8 @@ export default function PromosPage() {
       	`✓ ${info.pro}`,
       	`⚠ ${info.contra}`,
     	],
-    	// El Commander 100 Matte es el que mejor equilibra precio y calidad.
-    	featured:
-      	promo.key === "commander100" && f === "matte" && precios.disponible[f],
-    	disponible: precios.disponible[f],
+    	// El Commander 100 Reforzada es el que mejor equilibra precio y calidad.
+    	featured: promo.key === "commander100" && f === "reforzada300",
   	};
 	})
   );
@@ -61,29 +63,30 @@ export default function PromosPage() {
       	</p>
     	</Reveal>
 
-    	<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    	<div
+      	className={
+        	// Clases literales: Tailwind no genera las que se arman
+        	// concatenando strings.
+        	"grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 " +
+        	(PROMOS.length >= 4 ? "lg:grid-cols-4" : "max-w-3xl mx-auto")
+      	}
+    	>
       	{PROMOS.map((p, idx) => (
         	<Reveal
           	key={p.name}
           	delay={idx * 0.08}
           	className={
             	"p-6 rounded-xl relative transition " +
-            	(!p.disponible
-              	? "glass-card opacity-60 "
-              	: p.featured
+            	(p.featured
               	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
               	: "glass-card glow-hover")
           	}
         	>
-          	{!p.disponible ? (
-            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white/10 text-gray-300 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap border border-white/20">
-              	No disponible por ahora
-            	</span>
-          	) : p.featured ? (
+          	{p.featured && (
             	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
               	⭐ MÁS POPULAR
             	</span>
-          	) : null}
+          	)}
           	<h3 className="font-display font-bold text-lg mb-2">{p.name}</h3>
           	<p className="text-3xl font-display font-extrabold text-lava mb-1">
             	{p.price}
@@ -122,7 +125,7 @@ export default function PromosPage() {
         	</li>
         	<li>
           	<b className="text-white">Cada acabado tiene la suya:</b> si
-          	llevas 100 Matte y 100 Glossy, cada grupo recibe su promo. Mezclar
+          	llevas 100 Básicas y 100 Reforzadas, cada grupo recibe su promo. Mezclar
           	acabados ya no te hace perderlas.
         	</li>
         	<li>
@@ -143,12 +146,10 @@ export default function PromosPage() {
         	Precio por carta unitaria
       	</h2>
       	<div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        	{FINISHES.map((f) => (
+        	{vivos.map((f) => (
           	<div
             	key={f}
-            	className={
-              	"text-center" + (precios.disponible[f] ? "" : " opacity-40")
-            	}
+            	className="text-center"
           	>
             	<p className="text-xs text-gray-400 uppercase mb-1">
               	{FINISH_INFO[f].label}
@@ -157,7 +158,7 @@ export default function PromosPage() {
               	{formatCLP(precios.unitario[f])}
             	</p>
             	<p className="text-xs text-gray-500 mt-1">
-              	{precios.disponible[f] ? "por carta" : "no disponible"}
+              	por carta
             	</p>
           	</div>
         	))}

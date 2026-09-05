@@ -27,6 +27,12 @@ import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 export default function Home() {
   const router = useRouter();
   const { precios } = usePrecios();
+
+  // Los acabados que se venden hoy. La portada los nombraba a mano y quedó
+  // ofreciendo dos que están pausados; que salgan de los precios.
+  const acabadosVivos = FINISHES.filter((f) => precios.disponible[f]).map(
+	(f) => FINISH_INFO[f].label
+  );
   const [showcase, setShowcase] = useState<CartaCatalogo[]>([]);
 
   useEffect(() => {
@@ -37,7 +43,7 @@ export default function Home() {
 	{
   	icon: Flame,
   	title: "Impresión Premium",
-  	desc: "Papel fotográfico + laminado en calor.",
+  	desc: "Papel semi-brillante de alto gramaje, impreso en alta calidad.",
 	},
 	{
   	icon: MapPin,
@@ -65,12 +71,12 @@ export default function Home() {
 	{
   	icon: ShoppingCart,
   	title: "Elige acabado",
-  	desc: "Glossy (brillante) o Matte (mate premium). Mezcla cantidades libremente.",
+  	desc: `${acabadosVivos.join(", ")}. Mezcla cantidades libremente.`,
 	},
 	{
   	icon: Printer,
   	title: "Imprimimos en 48 hrs",
-  	desc: "Impresión fotográfica + laminado en calor con bolsas tamaño carta.",
+  	desc: "Impresión fotográfica y acabado a mano, carta por carta.",
 	},
 	{
   	icon: Package,
@@ -84,16 +90,15 @@ export default function Home() {
 
   // Un Commander 100 por acabado: es la forma más directa de mostrar la
   // escalera completa de calidad y precio.
-  const promos = FINISHES.map((f) => ({
+  const promos = FINISHES.filter((f) => precios.disponible[f]).map((f) => ({
 	name: "Commander 100",
 	subtitle: FINISH_INFO[f].label,
 	price: formatCLP(precios.commander100[f]),
 	desc: FINISH_INFO[f].pro,
 	qty: "100 cartas",
 	perCard: perCard(precios.commander100[f], 100),
-	// El matte es el que mejor equilibra precio y sensación de carta real.
-	featured: f === "matte" && precios.disponible[f],
-	disponible: precios.disponible[f],
+	// La Reforzada es la que mejor equilibra precio y sensación de carta real.
+	featured: f === "reforzada300",
   }));
 
   const placeholderGradient =
@@ -123,9 +128,9 @@ export default function Home() {
           	<span className="text-lava">a la billetera.</span>
         	</h1>
         	<p className="text-lg text-gray-300 mb-8 max-w-lg">
-          	Proxies premium de MTG con impresión fotográfica y laminado en
-          	calor. Importa tu mazo entero desde Moxfield o Archidekt en
-          	segundos.
+          	Proxies de Magic, Pokémon, Yu-Gi-Oh!, Riftbound y Mitos y Leyendas,
+          	impresas en papel de alto gramaje y terminadas a mano. Importa tu
+          	mazo entero desde Moxfield o Archidekt en segundos.
         	</p>
         	<div className="flex flex-col sm:flex-row gap-3">
           	<motion.button
@@ -262,29 +267,34 @@ export default function Home() {
         	</p>
       	</Reveal>
 
-      	<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      	{/* Las columnas siguen a la cantidad de acabados vivos: con cuatro
+        	fijas quedaban huecos a la derecha al pausar acabados. */}
+      	<div
+        	className={
+          	"grid sm:grid-cols-2 gap-4 mb-8 " +
+          	(promos.length >= 4
+            	? "lg:grid-cols-4"
+            	: promos.length === 3
+            	? "lg:grid-cols-3"
+            	: "max-w-2xl mx-auto")
+        	}
+      	>
         	{promos.map((p, idx) => (
           	<Reveal
             	key={p.name + p.subtitle}
             	delay={idx * 0.1}
             	className={
               	"p-6 rounded-xl relative transition " +
-              	(!p.disponible
-                	? "glass-card opacity-60 "
-                	: p.featured
+              	(p.featured
                 	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
                 	: "glass-card glow-hover")
             	}
           	>
-            	{!p.disponible ? (
-              	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white/10 text-gray-300 text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap border border-white/20">
-                	No disponible por ahora
-              	</span>
-            	) : p.featured ? (
+            	{p.featured && (
               	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
                 	⭐ MÁS POPULAR
               	</span>
-            	) : null}
+            	)}
             	<p className="text-xs text-gray-400 uppercase tracking-wide">
               	{p.subtitle}
             	</p>
@@ -372,8 +382,8 @@ export default function Home() {
       	<p className="text-gray-300 mb-8 text-center max-w-2xl mx-auto">
         	Volcán Proxies son{" "}
         	<b className="text-white">proxies artesanales</b> hechas a mano en
-        	Pucón con impresión fotográfica y laminado en calor. Queremos ser
-        	transparentes sobre qué esperar:
+        	Pucón con impresión fotográfica sobre papel de alto gramaje. Queremos
+        	ser transparentes sobre qué esperar:
       	</p>
 
       	<div className="grid md:grid-cols-2 gap-6">

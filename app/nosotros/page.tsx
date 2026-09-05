@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Flame, Heart, Printer, Users } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
@@ -54,8 +55,8 @@ export default function NosotrosPage() {
         	<Printer className="mx-auto text-[#FF4D1A] mb-3" size={32} />
         	<h3 className="font-display font-bold mb-2">Impresión premium</h3>
         	<p className="text-sm text-gray-400">
-          	Papel fotográfico + laminado en calor para que se sientan como
-          	cartas reales.
+          	Papel semi-brillante de alto gramaje, reforzado por detrás para que
+          	se sientan como cartas reales.
         	</p>
       	</Reveal>
       	<Reveal delay={0.08} className="glass-card glow-hover p-6 rounded-xl text-center">
@@ -80,12 +81,16 @@ export default function NosotrosPage() {
       	<ol className="space-y-3 text-gray-200">
         	<li>
           	<b className="text-[#FF4D1A]">1.</b> Eliges tus cartas desde
-          	nuestro catálogo conectado a Scryfall (con todos los artes
-          	disponibles).
+          	nuestro catálogo de Magic, Pokémon, Yu-Gi-Oh!, Riftbound y Mitos y
+          	Leyendas, con todos los artes disponibles.
         	</li>
         	<li>
-          	<b className="text-[#FF4D1A]">2.</b> Eliges el acabado: Glossy
-          	(brillante) o Matte (mate, sin reflejo).
+          	<b className="text-[#FF4D1A]">2.</b> Eliges el acabado. Los
+          	comparamos uno a uno en{" "}
+          	<Link href="/acabados" className="text-[#FF4D1A] underline">
+            	Acabados
+          	</Link>
+          	.
         	</li>
         	<li>
           	<b className="text-[#FF4D1A]">3.</b> Pagas por transferencia y en{" "}
