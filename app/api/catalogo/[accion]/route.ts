@@ -49,8 +49,12 @@ function esAccion(v: string): v is Accion {
  * inglés en vez de devolver vacío. Cada catálogo declara lo suyo en `idiomas`.
  */
 function idiomaServible(cat: Catalogo, pedido: string | null): IdiomaId {
-  if (!pedido || !esIdioma(pedido)) return IDIOMA_BASE;
-  return cat.idiomas.includes(pedido) ? pedido : IDIOMA_BASE;
+  // El respaldo es el primero que ESTE catálogo sirve, no el inglés global:
+  // Mitos y Leyendas solo publica español, y caer al inglés ahí sería pedirle
+  // algo que no existe.
+  const respaldo = cat.idiomas[0] ?? IDIOMA_BASE;
+  if (!pedido || !esIdioma(pedido)) return respaldo;
+  return cat.idiomas.includes(pedido) ? pedido : respaldo;
 }
 
 /** El catálogo y el id que nombra un uid ("mtg:xxx" o un id pelado). */

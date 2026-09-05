@@ -14,7 +14,7 @@
 import type { IdiomaId } from "./idiomas";
 
 /** Un juego con catálogo propio. Agregar uno acá obliga a completar el resto. */
-export type JuegoId = "mtg" | "ygo" | "rift" | "pkmn";
+export type JuegoId = "mtg" | "ygo" | "rift" | "pkmn" | "myl";
 
 export type ImagenesCarta = {
   /** Miniatura de grilla. */
@@ -179,7 +179,7 @@ export function parseUid(uid: string): { juego: JuegoId; nativoId: string } {
   return { juego: "mtg", nativoId: uid };
 }
 
-const JUEGOS: readonly string[] = ["mtg", "ygo", "rift", "pkmn"] satisfies readonly JuegoId[];
+const JUEGOS: readonly string[] = ["mtg", "ygo", "rift", "pkmn", "myl"] satisfies readonly JuegoId[];
 
 export function esJuego(v: string): v is JuegoId {
   return JUEGOS.includes(v);

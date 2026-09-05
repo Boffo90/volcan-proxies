@@ -33,7 +33,7 @@ export default async function CatalogoPage({
   const idioma: IdiomaId =
     esIdioma(idiomaPedido) && soportados.includes(idiomaPedido)
       ? idiomaPedido
-      : IDIOMA_BASE;
+      : soportados[0] ?? IDIOMA_BASE;
 
   return <Buscador q={q} juego={juego} idioma={idioma} />;
 }

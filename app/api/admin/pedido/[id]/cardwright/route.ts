@@ -39,6 +39,9 @@ const JUEGO_CARDWRIGHT: Record<JuegoId, string> = {
   ygo: "ygo",
   rift: "riftbound",
   pkmn: "pokemon",
+  // Cardwright no tiene catálogo de Mitos y Leyendas, así que no hay id que
+  // darle: la lista igual sirve, solo que sin dorso ni tamaño automáticos.
+  myl: "",
 };
 
 /**

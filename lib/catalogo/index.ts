@@ -9,6 +9,7 @@ import { MTG } from "./mtg";
 import { YGO } from "./ygo";
 import { RIFTBOUND } from "./riftbound";
 import { POKEMON } from "./pokemon";
+import { MYL } from "./myl";
 import { esJuego, type Catalogo, type JuegoId } from "./tipos";
 
 export * from "./tipos";
@@ -22,7 +23,7 @@ export * from "./idiomas";
  * `node scripts/sync-riftbound.mjs` desde una máquina con IP residencial. Si
  * el catálogo aparece vacío, lo que falta es correr esa sincronización.
  */
-export const CATALOGOS: Catalogo[] = [MTG, POKEMON, YGO, RIFTBOUND];
+export const CATALOGOS: Catalogo[] = [MTG, POKEMON, YGO, MYL, RIFTBOUND];
 
 /** El que se muestra si nadie eligió: Magic sigue siendo el grueso de la venta. */
 export const JUEGO_DEFAULT: JuegoId = "mtg";
