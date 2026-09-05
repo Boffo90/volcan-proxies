@@ -35,6 +35,9 @@ const REVALIDATE = 3600;
 /** Lo máximo que acepta su paginado: con 200 devuelve una lista vacía. */
 const MAX_POR_PAGINA = 100;
 
+/** Cuántas páginas tiene el catálogo, recordado tras la primera consulta. */
+let paginasConocidas: number | null = null;
+
 type RiftCard = {
   id?: string;
   name?: string;
@@ -249,17 +252,30 @@ export const RIFTBOUND: Catalogo = {
 	// nombre; `fuzzy` lo cortan en 10 pero pesca lo escrito a medias. El
 	// exacto va primero para que un nombre conocido liste su tirada completa
 	// antes que los vecinos.
+	// En paralelo, no una tras otra.
+	//
+	// Secuenciales eran dos plazos encadenados, y el límite de una función de
+	// Vercel es de diez segundos: bastaba que Riftcodex tardara un poco — está
+	// en Railway y despierta frío — para que la búsqueda se pasara y el
+	// catálogo saliera vacío en producción mientras andaba bien en local.
+	const [exacta, difusa] = await Promise.allSettled([
+  	consultar("/cards/name", { exact: q, size: "60" }),
+  	consultar("/cards/name", { fuzzy: q, size: "60" }),
+	]);
+
+	// Si las dos fallan no hay nada que mostrar y hay que decirlo; si una sola
+	// falla, la otra alcanza.
+	if (exacta.status === "rejected" && difusa.status === "rejected") {
+  	throw exacta.reason;
+	}
+
+	// El exacto primero: un nombre conocido lista su tirada completa antes que
+	// los vecinos que trae el difuso.
 	const vistas = new Set<string>();
 	const cartas: CartaCatalogo[] = [];
-	for (const clave of ["exact", "fuzzy"] as const) {
-  	let pagina: RiftPagina;
-  	try {
-    	pagina = await consultar("/cards/name", { [clave]: q, size: "60" });
-  	} catch {
-    	if (cartas.length) break; // la primera ya trajo algo
-    	throw new Error("Riftcodex no respondió");
-  	}
-  	for (const carta of aCartas(pagina.items)) {
+	for (const r of [exacta, difusa]) {
+  	if (r.status !== "fulfilled") continue;
+  	for (const carta of aCartas(r.value.items)) {
     	if (vistas.has(carta.uid)) continue;
     	vistas.add(carta.uid);
     	cartas.push(carta);
@@ -286,9 +302,17 @@ export const RIFTBOUND: Catalogo = {
 
   async aleatorias(n: number) {
 	// No tienen endpoint aleatorio (/cards/random responde 500), así que se
-	// pide una página al azar del catálogo completo.
-	const primera = await consultar("/cards", { size: "1", page: "1" });
-	const paginas = Math.max(1, Math.ceil((primera.total ?? 1) / MAX_POR_PAGINA));
+	// pide una página al azar del catálogo completo. Cuántas páginas hay se
+	// recuerda: preguntarlo cada vez era un viaje extra antes del que importa,
+	// y son dos plazos dentro del límite de diez segundos de Vercel.
+	if (paginasConocidas === null) {
+  	const primera = await consultar("/cards", { size: "1", page: "1" });
+  	paginasConocidas = Math.max(
+    	1,
+    	Math.ceil((primera.total ?? 1) / MAX_POR_PAGINA)
+  	);
+	}
+	const paginas = paginasConocidas;
 	const page = 1 + Math.floor(Math.random() * paginas);
 	const pagina = await consultar("/cards", {
   	size: String(MAX_POR_PAGINA),

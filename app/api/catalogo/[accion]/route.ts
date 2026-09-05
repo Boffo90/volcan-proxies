@@ -130,8 +130,15 @@ export async function GET(
     }
   } catch (err) {
     console.error(`catálogo/${accion}:`, err);
-    // El catálogo caído no puede tumbar la página: devuelve vacío y la página
-    // muestra "no se encontraron cartas", que es lo que el cliente ve igual.
-    return NextResponse.json({ error: "El catálogo no respondió" }, { status: 502 });
+    // La razón viaja en la respuesta a propósito.
+    //
+    // Antes decía solo "El catálogo no respondió", y con eso una caída en
+    // producción es indistinguible de un bloqueo o de un plazo vencido: hubo
+    // que adivinar. Es texto nuestro sobre una API pública, no filtra nada.
+    const motivo = err instanceof Error ? err.message : String(err);
+    return NextResponse.json(
+      { error: "El catálogo no respondió", motivo, cartas: [], total: 0 },
+      { status: 502 }
+    );
   }
 }
