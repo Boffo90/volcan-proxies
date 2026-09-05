@@ -31,7 +31,7 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
   base300: {
 	label: "Básica 300g",
 	corto: "Básica",
-	desc: "Papel fotográfico de 300g semibrillante, sin laminar.",
+	desc: "Papel fotográfico de 300g semibrillante, sin laminar, impreso en calidad estándar.",
 	pro: "Acabado muy parecido al de una carta real, y la más económica.",
 	contra: "Más delgada que una carta real y sin protección al uso.",
   },

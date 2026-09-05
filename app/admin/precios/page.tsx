@@ -44,6 +44,11 @@ export default function AdminPreciosPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  // Los cambios solo viven en el estado hasta que se aprieta Guardar. Sin este
+  // aviso, activar un acabado y salir de la página se siente como guardado y
+  // no lo está.
+  const [sucio, setSucio] = useState(false);
 
   const fetchPrecios = useCallback(async () => {
 	setLoading(true);
@@ -66,13 +71,30 @@ export default function AdminPreciosPage() {
   const handleSave = async () => {
 	if (!precios) return;
 	setSaving(true);
-	await fetch("/api/admin/precios", {
-  	method: "PATCH",
-  	headers: { "Content-Type": "application/json" },
-  	body: JSON.stringify(precios),
-	});
-	setSaving(false);
-	setSavedAt(new Date().toLocaleTimeString("es-CL"));
+	setSaveError(null);
+	// Antes se daba por guardado sin mirar la respuesta: un 401 por sesión
+	// vencida mostraba igual "Guardado a las HH:MM" y el cambio se perdía.
+	try {
+  	const res = await fetch("/api/admin/precios", {
+    	method: "PATCH",
+    	headers: { "Content-Type": "application/json" },
+    	body: JSON.stringify(precios),
+  	});
+  	if (!res.ok) {
+    	setSaveError(
+      	res.status === 401
+        	? "Se venció la sesión de admin. Vuelve a entrar y guarda de nuevo."
+        	: `No se pudo guardar (error ${res.status}).`
+    	);
+    	return;
+  	}
+  	setSavedAt(new Date().toLocaleTimeString("es-CL"));
+  	setSucio(false);
+	} catch {
+  	setSaveError("No se pudo guardar: falló la conexión.");
+	} finally {
+  	setSaving(false);
+	}
   };
 
   const setPrecio = (
@@ -82,6 +104,7 @@ export default function AdminPreciosPage() {
   ) => {
 	if (!precios) return;
 	setPrecios({ ...precios, [grupo]: { ...precios[grupo], [f]: valor } });
+	setSucio(true);
   };
 
   const toggleDisponible = (f: Finish) => {
@@ -90,6 +113,7 @@ export default function AdminPreciosPage() {
   	...precios,
   	disponible: { ...precios.disponible, [f]: !precios.disponible[f] },
 	});
+	setSucio(true);
   };
 
   if (loading || !precios) {
@@ -277,7 +301,13 @@ export default function AdminPreciosPage() {
       	</div>
 
       	<div className="border-t border-white/10 pt-4 mt-4 flex justify-between items-center">
-        	{savedAt ? (
+        	{saveError ? (
+          	<p className="text-xs text-red-400">{saveError}</p>
+        	) : sucio ? (
+          	<p className="text-xs text-amber-400">
+            	Tienes cambios sin guardar. Aprieta &quot;Guardar cambios&quot;.
+          	</p>
+        	) : savedAt ? (
           	<p className="text-xs text-green-400">Guardado a las {savedAt}</p>
         	) : (
           	<p className="text-xs text-gray-500">

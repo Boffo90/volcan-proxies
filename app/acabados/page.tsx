@@ -7,6 +7,7 @@ import {
   Layers,
   Sun,
   Shield,
+  Printer,
   Sparkles,
   Wallet,
   Hand,
@@ -27,6 +28,8 @@ type Detalle = {
   grosor: string;
   brillo: string;
   durabilidad: string;
+  /** Calidad de impresión: es lo que más separa un acabado del siguiente. */
+  impresion: string;
 };
 
 // El detalle de fabricación vive acá y no en lib/pricing porque es copy de
@@ -35,7 +38,7 @@ type Detalle = {
 const DETALLE: Record<Finish, Detalle> = {
   base300: {
 	proceso: [
-  	"Impresión sobre papel fotográfico de 300g doble faz, semibrillo.",
+  	"Impresión sobre papel fotográfico de 300g doble faz, semibrillo, en calidad estándar.",
   	"Sin laminado: la carta sale directo de la impresora al corte.",
 	],
 	sensacion:
@@ -45,6 +48,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Más delgada",
 	brillo: "Semibrillo",
 	durabilidad: "Básica",
+	impresion: "Estándar",
   },
   reforzada300: {
 	proceso: [
@@ -58,6 +62,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Como carta real",
 	brillo: "Semibrillo",
 	durabilidad: "Alta",
+	impresion: "Alta",
   },
   premiumFrio: {
 	proceso: [
@@ -72,6 +77,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Como carta real",
 	brillo: "Semibrillo",
 	durabilidad: "La más alta",
+	impresion: "Máxima",
   },
   glossy: {
 	proceso: [
@@ -85,6 +91,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Como carta real",
 	brillo: "Alto",
 	durabilidad: "Alta",
+	impresion: "—",
   },
   matte: {
 	proceso: [
@@ -98,6 +105,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Como carta real",
 	brillo: "Sin reflejo",
 	durabilidad: "Alta",
+	impresion: "—",
   },
   premium: {
 	proceso: [
@@ -112,6 +120,7 @@ const DETALLE: Record<Finish, Detalle> = {
 	grosor: "Como carta real",
 	brillo: "Mate parejo",
 	durabilidad: "Máxima",
+	impresion: "—",
   },
 };
 
@@ -158,6 +167,7 @@ const COLUMNAS: Array<{
   { icon: Layers, label: "Grosor", get: (f) => DETALLE[f].grosor },
   { icon: Sun, label: "Brillo", get: (f) => DETALLE[f].brillo },
   { icon: Shield, label: "Durabilidad", get: (f) => DETALLE[f].durabilidad },
+  { icon: Printer, label: "Impresión", get: (f) => DETALLE[f].impresion },
 ];
 
 export default function AcabadosPage() {
@@ -225,23 +235,10 @@ export default function AcabadosPage() {
             	</tr>
           	</thead>
           	<tbody>
-            	{disponibles.map((f) => {
-              	const disponible = true;
-              	return (
-                	<tr
-                  	key={f}
-                  	className={
-                    	"border-t border-white/10 " +
-                    	(disponible ? "" : "opacity-40")
-                  	}
-                	>
+            	{disponibles.map((f) => (
+              	<tr key={f} className="border-t border-white/10">
                   	<td className="py-3 pr-4 font-semibold whitespace-nowrap">
                     	{FINISH_INFO[f].label}
-                    	{!disponible && (
-                      	<span className="block text-[10px] text-gray-400 font-normal">
-                        	no disponible
-                      	</span>
-                    	)}
                   	</td>
                   	{COLUMNAS.map((c) => (
                     	<td key={c.label} className="py-3 pr-4 text-gray-300">
@@ -252,16 +249,15 @@ export default function AcabadosPage() {
                     	{formatCLP(precios.unitario[f])}
                   	</td>
                 	</tr>
-              	);
-            	})}
+              	))}
           	</tbody>
         	</table>
       	</div>
       	<p className="text-sm text-gray-300 mt-4">
-        	<b className="text-white">Sobre el grosor:</b> los tres acabados
-        	laminados quedan prácticamente iguales a una carta real, así que se
-        	barajan sin notarse dentro del mazo. La Básica 300g es la única que
-        	queda más delgada.
+        	<b className="text-white">Sobre el grosor:</b> los acabados con
+        	refuerzo por detrás quedan prácticamente iguales a una carta real, así
+        	que se barajan sin notarse dentro del mazo. La Básica 300g es la única
+        	que queda más delgada, porque va sin refuerzo.
       	</p>
       	{(() => {
         	// Solo los pausados vuelven; los descontinuados no se mencionan.
