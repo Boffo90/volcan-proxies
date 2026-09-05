@@ -296,6 +296,12 @@ export const RIFTBOUND: Catalogo = {
 	return cards.length ? aCarta(cards[0]) : null;
   },
 
+  async porIds(nativoIds: string[]) {
+	// Están en nuestra base: una sola consulta, sin importar cuántas sean.
+	const cards = await filas((c) => c.in("id", nativoIds));
+	return aCartas(cards);
+  },
+
   async versiones(carta: CartaCatalogo) {
 	const cards = await filas((c) =>
   	c.eq("nombre_busqueda", normalizar(carta.grupoId)).limit(60)

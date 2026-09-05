@@ -177,6 +177,36 @@ export async function getRulings(cardId: string): Promise<ScryfallRuling[]> {
 * Devuelve null si esa carta no salió en ese idioma, que es lo normal en
 * promos y sets suplementarios.
 */
+/**
+* Muchas cartas de una vez, por id.
+*
+* Scryfall acepta hasta 75 identificadores por llamada. Existe justamente para
+* esto: pedirlas una por una es lo que hace que te corten — ellos piden 50-100
+* ms entre peticiones, y 375 cartas sueltas no caben en ese presupuesto ni en
+* el límite de una función de Vercel.
+*/
+export async function getCardsByIds(ids: string[]): Promise<ScryfallCard[]> {
+  const encontradas: ScryfallCard[] = [];
+  for (let i = 0; i < ids.length; i += 75) {
+	const lote = ids.slice(i, i + 75);
+	try {
+  	const res = await fetch(`${BASE}/cards/collection`, {
+    	method: "POST",
+    	headers: { ...headers, "Content-Type": "application/json" },
+    	signal: corte(),
+    	body: JSON.stringify({ identifiers: lote.map((id) => ({ id })) }),
+  	});
+  	if (!res.ok) continue;
+  	const json = await res.json();
+  	encontradas.push(...((json?.data ?? []) as ScryfallCard[]));
+	} catch {
+  	// Un lote que falla no puede llevarse los demás: las que sí llegaron
+  	// sirven, y de las que faltan avisa quien llamó.
+	}
+  }
+  return encontradas;
+}
+
 export async function getPrintingInLanguage(
   set: string,
   collectorNumber: string,

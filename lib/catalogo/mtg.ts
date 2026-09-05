@@ -10,6 +10,7 @@ import {
   autocomplete,
   getAllPrints,
   getCardById,
+  getCardsByIds,
   getCardImage,
   getPrintingInLanguage,
   getRulings,
@@ -185,6 +186,10 @@ export const MTG: Catalogo = {
   async porId(nativoId: string) {
     const c = await getCardById(nativoId);
     return c ? aCarta(c) : null;
+  },
+
+  async porIds(nativoIds: string[]) {
+    return aCartas(await getCardsByIds(nativoIds));
   },
 
   async versiones(carta: CartaCatalogo) {

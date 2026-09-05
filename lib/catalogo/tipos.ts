@@ -137,6 +137,16 @@ export type Catalogo = {
   buscar(q: string, idioma: IdiomaId): Promise<ResultadoBusqueda>;
   /** El idioma viaja dentro del id, así que acá no se pasa. */
   porId(nativoId: string): Promise<CartaCatalogo | null>;
+  /**
+   * Muchas cartas de una vez.
+   *
+   * Lo implementa quien tenga cómo hacerlo en pocas llamadas. Sin esto, armar
+   * el archivo de un pedido de 375 cartas eran 375 consultas en paralelo y la
+   * fuente nos cortaba: volvían 374 sin resolver y se habrían impreso desde la
+   * miniatura. Quien no lo implemente se resuelve de a poco, ver
+   * `/api/admin/pedido/[id]/cardwright`.
+   */
+  porIds?(nativoIds: string[]): Promise<CartaCatalogo[]>;
   /** Las otras versiones de la misma carta, para el selector de arte. */
   versiones(carta: CartaCatalogo): Promise<CartaCatalogo[]>;
   aleatorias(n: number, idioma: IdiomaId): Promise<CartaCatalogo[]>;

@@ -56,6 +56,65 @@ function etiquetaAcabado(finish: string): string {
   return FINISH_INFO[finish as Finish]?.label ?? finish;
 }
 
+/**
+ * Cuántas se piden a la vez cuando hay que ir de a una.
+ *
+ * Scryfall pide 50-100 ms entre peticiones y el resto de las fuentes son
+ * proyectos chicos. Un pedido grande disparado entero en paralelo es lo que
+ * hace que te corten.
+ */
+const A_LA_VEZ = 8;
+
+/**
+ * La imagen de impresión de cada uid.
+ *
+ * Agrupadas por juego, y en una sola llamada donde el catálogo sabe hacerlo.
+ * Sin esto, un pedido de 375 cartas eran 375 consultas simultáneas: Scryfall
+ * cortaba y volvían 374 sin resolver, o sea 374 cartas que se habrían impreso
+ * desde la miniatura que vio el cliente.
+ *
+ * Lo que no se pueda resolver se queda fuera del mapa a propósito: quien llama
+ * lo reporta en `sinResolver` y el panel lo muestra.
+ */
+async function resolverImagenes(uids: string[], destino: Map<string, string>) {
+  const porJuego = new Map<JuegoId, string[]>();
+  for (const uid of uids) {
+    const { juego } = parseUid(uid);
+    const lista = porJuego.get(juego) ?? [];
+    lista.push(uid);
+    porJuego.set(juego, lista);
+  }
+
+  for (const [juego, delJuego] of porJuego) {
+    const cat = catalogo(juego);
+    try {
+      if (cat.porIds) {
+        const cartas = await cat.porIds(delJuego.map((u) => parseUid(u).nativoId));
+        // Se vuelve a armar el uid desde la carta: el orden de la respuesta no
+        // tiene por qué coincidir con el de la consulta, y las que no existan
+        // simplemente no vuelven.
+        for (const c of cartas) destino.set(c.uid, c.imagenes.print);
+        continue;
+      }
+      // Sin consulta masiva: de a poco, para no gatillar el corte.
+      for (let i = 0; i < delJuego.length; i += A_LA_VEZ) {
+        await Promise.all(
+          delJuego.slice(i, i + A_LA_VEZ).map(async (uid) => {
+            try {
+              const carta = await cat.porId(parseUid(uid).nativoId);
+              if (carta) destino.set(uid, carta.imagenes.print);
+            } catch {
+              // Una carta que falla no bota al resto.
+            }
+          })
+        );
+      }
+    } catch {
+      // Un catálogo caído no bota el archivo entero.
+    }
+  }
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -92,18 +151,7 @@ export async function GET(
 	),
   ];
   const impresion = new Map<string, string>();
-  await Promise.all(
-	uids.map(async (uid) => {
-  	try {
-    	const { juego, nativoId } = parseUid(uid);
-    	const carta = await catalogo(juego).porId(nativoId);
-    	if (carta) impresion.set(uid, carta.imagenes.print);
-  	} catch {
-    	// Que un catálogo caído no bote el archivo entero: esa carta se
-    	// queda con la imagen guardada y el panel avisa cuál fue.
-  	}
-	})
-  );
+  await resolverImagenes(uids, impresion);
 
   const cartas = [];
   const sinResolver: string[] = [];
