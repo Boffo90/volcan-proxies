@@ -65,6 +65,27 @@ export async function aleatorias(
   return r.cartas;
 }
 
+/** Un nombre sugerido y de qué catálogo salió. */
+export type Sugerencia = { nombre: string; juego: JuegoId };
+
+/**
+ * Sugerencias de todos los catálogos a la vez, para la barra de arriba.
+ *
+ * Una sola petición: el abanico sobre los cinco catálogos lo abre el servidor.
+ * Desde el navegador serían cinco peticiones por cada tecla.
+ */
+export async function sugerencias(
+  q: string,
+  idioma: IdiomaId
+): Promise<Sugerencia[]> {
+  const r = await pedir<{ sugerencias: Sugerencia[] }>(
+    "sugerencias",
+    { q, idioma },
+    { sugerencias: [] }
+  );
+  return r.sugerencias;
+}
+
 export async function autocompletar(
   juego: JuegoId,
   q: string,

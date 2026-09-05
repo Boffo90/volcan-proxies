@@ -99,6 +99,34 @@ se ven en el código:
    blanca de hosts: sin eso sería un proxy abierto que cualquiera puede usar
    para descargar lo que quiera desde nuestra IP.
 
+### El buscador de la barra mira los cinco catálogos
+
+La barra de arriba autocompletaba solo contra Magic, así que "Charizard" no
+existía para el sitio aunque el catálogo de Pokémon estuviera ahí. Ahora
+consulta los cinco por la acción `sugerencias`, y cada resultado viene
+etiquetado con su juego y lleva a `/catalogo?q=…&juego=…`.
+
+- **El abanico se abre en el servidor, no en el navegador.** Es una petición
+  por tecla y no cinco, y la respuesta cacheada sirve a todos.
+- **Los cupos se reparten por turnos.** Magic devuelve diez nombres para casi
+  cualquier texto: concatenando llenaba la lista y los otros juegos no
+  aparecían nunca.
+- **Enter sin elegir de la lista usa el juego de la primera sugerencia.** Como
+  el reparto empieza por Magic, ese es Magic siempre que tenga alguna; y
+  "exodia", que no la tiene, cae en Yu-Gi-Oh en vez de llevar a un catálogo
+  donde no existe.
+- **Se descartan los nombres que no contienen lo escrito.** Hay fuentes que
+  buscan por aproximación: Mitos y Leyendas contestaba "Chashkel" a
+  "charizard". Si NADA calza al pie de la letra —un error de tipeo— se
+  devuelve sin filtrar, que ahí la aproximación es justo lo que sirve.
+
+**El plazo por catálogo importa y se mide, no se estima.** En frío: Riftbound
+0,5s, Magic y Pokémon 0,6s, Yu-Gi-Oh 1,4s, Mitos y Leyendas 2,1s. Estuvo en
+2,5s y dejaba fuera a los dos lentos justo cuando eran los que tenían la
+carta — buscar "exodia" no devolvía ninguna de Yu-Gi-Oh. El margen va sobre el
+más lento, no sobre el promedio. Hoy son 4s; en caliente los cinco contestan
+en menos de 0,3s.
+
 ### Agregar desde la grilla
 
 El catálogo deja sumar cartas al carrito sin entrar a cada ficha: cada

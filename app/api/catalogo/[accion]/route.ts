@@ -15,6 +15,7 @@
 
 import { NextResponse } from "next/server";
 import {
+  CATALOGOS,
   catalogoDe,
   parseUid,
   catalogo,
@@ -23,6 +24,7 @@ import {
   type Catalogo,
   type IdiomaId,
 } from "@/lib/catalogo";
+import type { JuegoId } from "@/lib/catalogo/tipos";
 
 /** Una hora, igual que el revalidate que ya tenía el cliente de Scryfall. */
 const CACHE = "public, s-maxage=3600, stale-while-revalidate=86400";
@@ -33,6 +35,7 @@ const ACCIONES = [
   "versiones",
   "aleatorias",
   "autocompletar",
+  "sugerencias",
 ] as const;
 
 type Accion = (typeof ACCIONES)[number];
@@ -55,6 +58,79 @@ function idiomaServible(cat: Catalogo, pedido: string | null): IdiomaId {
   const respaldo = cat.idiomas[0] ?? IDIOMA_BASE;
   if (!pedido || !esIdioma(pedido)) return respaldo;
   return cat.idiomas.includes(pedido) ? pedido : respaldo;
+}
+
+/**
+ * Cuánto se espera a un catálogo en el autocompletado de la barra.
+ *
+ * Por debajo del plazo normal de 8s: acá se consultan los cinco a la vez y el
+ * más lento marcaría el ritmo de todos. El que no alcanza queda fuera de esta
+ * pulsación y aparece en la siguiente; peor sería una barra que se congela
+ * mientras el visitante escribe.
+ *
+ * Medido en frío: Riftbound 0,5s, Magic y Pokémon 0,6s, Yu-Gi-Oh 1,4s y Mitos
+ * y Leyendas 2,1s. Estuvo en 2,5s y dejaba fuera a los dos últimos justo
+ * cuando eran los que tenían la carta —buscar "exodia" no devolvía ninguna de
+ * Yu-Gi-Oh—, así que el margen tiene que ser sobre el más lento, no sobre el
+ * promedio. En caliente los cinco responden en menos de 0,3s.
+ */
+const PLAZO_SUGERENCIA_MS = 4000;
+
+/** Sin tildes, sin mayúsculas: para comparar lo escrito con lo devuelto. */
+function plano(v: string): string {
+  return v
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+export type Sugerencia = { nombre: string; juego: JuegoId };
+
+/** Lo que ofrece un catálogo, o nada si tarda o falla. */
+async function sugerenciasDe(
+  cat: Catalogo,
+  q: string,
+  pedido: string | null
+): Promise<Sugerencia[]> {
+  const idioma = idiomaServible(cat, pedido);
+  try {
+    const nombres = await Promise.race([
+      cat.autocompletar(q, idioma),
+      new Promise<string[]>((_, rechazar) =>
+        setTimeout(() => rechazar(new Error("plazo")), PLAZO_SUGERENCIA_MS)
+      ),
+    ]);
+    return nombres.map((nombre) => ({ nombre, juego: cat.id }));
+  } catch {
+    // Un catálogo caído no puede dejar sin sugerencias a los otros cuatro.
+    return [];
+  }
+}
+
+/**
+ * Reparte los cupos por turnos en vez de concatenar.
+ *
+ * Magic devuelve diez nombres para casi cualquier texto, así que concatenando
+ * llenaba la lista entera y los otros juegos no aparecían nunca — que es justo
+ * el problema que esto viene a resolver.
+ */
+function repartir(porJuego: Sugerencia[][], tope: number): Sugerencia[] {
+  const salida: Sugerencia[] = [];
+  const vistos = new Set<string>();
+  const largoMayor = Math.max(0, ...porJuego.map((l) => l.length));
+  for (let i = 0; i < largoMayor && salida.length < tope; i++) {
+    for (const lista of porJuego) {
+      if (salida.length >= tope) break;
+      const s = lista[i];
+      if (!s) continue;
+      const clave = `${s.juego}:${s.nombre.toLowerCase()}`;
+      if (vistos.has(clave)) continue;
+      vistos.add(clave);
+      salida.push(s);
+    }
+  }
+  return salida;
 }
 
 /** El catálogo y el id que nombra un uid ("mtg:xxx" o un id pelado). */
@@ -130,6 +206,42 @@ export async function GET(
         if (q.length < 2) return NextResponse.json({ nombres: [] });
         const nombres = await cat.autocompletar(q, idioma);
         return NextResponse.json({ nombres }, { headers: { "Cache-Control": CACHE } });
+      }
+
+      // Autocompletado de la barra de arriba: los cinco catálogos a la vez.
+      //
+      // El abanico se abre acá y no en el navegador para que la barra haga
+      // una petición y no cinco, y para que la respuesta ya cacheada sirva a
+      // todos. Cada catálogo resuelve su propio idioma servible: pedir "en"
+      // en Mitos y Leyendas, que solo publica español, devolvería vacío.
+      case "sugerencias": {
+        if (q.length < 2) return NextResponse.json({ sugerencias: [] });
+        const tope = Math.min(
+          12,
+          Math.max(1, Number(url.searchParams.get("n")) || 8)
+        );
+        const pedido = url.searchParams.get("idioma");
+        const porJuego = await Promise.all(
+          CATALOGOS.map((c) => sugerenciasDe(c, q, pedido))
+        );
+
+        // Algunas fuentes buscan por aproximación y devuelven cosas que no
+        // contienen lo escrito: Mitos y Leyendas contestaba "Chashkel" a
+        // "charizard". En una lista de un solo juego se perdona; mezclando
+        // cinco, es ruido que tapa las buenas.
+        const buscado = plano(q);
+        const calzan = porJuego.map((lista) =>
+          lista.filter((s) => plano(s.nombre).includes(buscado))
+        );
+
+        // Si NADA calza al pie de la letra suele ser un error de tipeo, y ahí
+        // la aproximación es justo lo que sirve. Se devuelve sin filtrar.
+        const hayCalce = calzan.some((l) => l.length > 0);
+
+        return NextResponse.json(
+          { sugerencias: repartir(hayCalce ? calzan : porJuego, tope) },
+          { headers: { "Cache-Control": CACHE } }
+        );
       }
     }
   } catch (err) {

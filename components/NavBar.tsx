@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Search, ShoppingCart, Menu, X, Flame, User } from "lucide-react";
-import { IDIOMA_BASE, JUEGO_DEFAULT } from "@/lib/catalogo";
-import { autocompletar } from "@/lib/catalogo/cliente";
+import { catalogo, IDIOMA_BASE } from "@/lib/catalogo";
+import { sugerencias, type Sugerencia } from "@/lib/catalogo/cliente";
+import type { JuegoId } from "@/lib/catalogo/tipos";
 import { getCart } from "@/lib/cart";
 import { useUser } from "@/hooks/useUser";
 import CartDrawer from "@/components/CartDrawer";
@@ -14,7 +15,7 @@ export default function NavBar() {
   const router = useRouter();
   const { user } = useUser();
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Sugerencia[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [cartCount, setCartCount] = useState(0);
@@ -42,7 +43,9 @@ export default function NavBar() {
   	return;
 	}
 	debounceRef.current = setTimeout(async () => {
-  	const data = await autocompletar(JUEGO_DEFAULT, query, IDIOMA_BASE);
+  	// Los cinco catálogos, no solo Magic: quien busca "Charizard" no tiene
+  	// por qué saber que la barra solo miraba uno.
+  	const data = await sugerencias(query, IDIOMA_BASE);
   	setSuggestions(data.slice(0, 8));
   	setActiveIdx(-1);
 	}, 200);
@@ -68,19 +71,26 @@ export default function NavBar() {
 	}
   }, [activeIdx]);
 
-  const goSearch = (q: string) => {
+  const goSearch = (q: string, juego?: JuegoId) => {
 	setShowSuggestions(false);
 	setActiveIdx(-1);
 	setQuery("");
-	router.push("/catalogo?q=" + encodeURIComponent(q));
+	const params = new URLSearchParams({ q });
+	if (juego) params.set("juego", juego);
+	router.push("/catalogo?" + params.toString());
   };
 
   const handleSubmit = (e: React.FormEvent) => {
 	e.preventDefault();
 	if (activeIdx >= 0 && suggestions[activeIdx]) {
-  	goSearch(suggestions[activeIdx]);
+  	const s = suggestions[activeIdx];
+  	goSearch(s.nombre, s.juego);
 	} else if (query.trim()) {
-  	goSearch(query.trim());
+  	// Sin elegir de la lista, manda el juego de la primera sugerencia. Como
+  	// se reparten por turnos empezando por Magic, ese es Magic siempre que
+  	// tenga alguna: "Charizard", que no la tiene, cae en Pokémon en vez de
+  	// llevar a un catálogo donde no existe.
+  	goSearch(query.trim(), suggestions[0]?.juego);
 	}
   };
 
@@ -100,7 +110,7 @@ export default function NavBar() {
   	setActiveIdx(-1);
 	} else if (e.key === "Tab" && activeIdx >= 0) {
   	e.preventDefault();
-  	setQuery(suggestions[activeIdx]);
+  	setQuery(suggestions[activeIdx].nombre);
   	setActiveIdx(-1);
 	}
   };
@@ -164,22 +174,27 @@ export default function NavBar() {
               	const isActive = idx === activeIdx;
               	return (
                 	<button
-                  	key={s}
+                  	key={s.juego + ":" + s.nombre}
                   	ref={(el) => {
                     	itemsRef.current[idx] = el;
                   	}}
                   	role="option"
                   	aria-selected={isActive}
                   	onMouseEnter={() => setActiveIdx(idx)}
-                  	onClick={() => goSearch(s)}
+                  	onClick={() => goSearch(s.nombre, s.juego)}
                   	className={
-                    	"w-full text-left px-4 py-2 text-sm transition " +
+                    	"w-full text-left px-4 py-2 text-sm transition flex items-center justify-between gap-3 " +
                     	(isActive
                       	? "bg-[#FF4D1A]/30 text-white"
                       	: "hover:bg-[#FF4D1A]/10")
                   	}
                 	>
-                  	{s}
+                  	<span className="truncate">{s.nombre}</span>
+                  	{/* Sin la etiqueta, dos juegos con cartas de nombre
+                      	parecido son indistinguibles en la lista. */}
+                  	<span className="text-[10px] uppercase tracking-wide text-gray-400 whitespace-nowrap shrink-0">
+                    	{catalogo(s.juego).corto}
+                  	</span>
                 	</button>
               	);
             	})}
