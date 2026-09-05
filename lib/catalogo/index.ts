@@ -14,7 +14,19 @@ import { esJuego, type Catalogo, type JuegoId } from "./tipos";
 export * from "./tipos";
 export * from "./idiomas";
 
-export const CATALOGOS: Catalogo[] = [MTG, POKEMON, YGO, RIFTBOUND];
+/**
+ * Riftbound está fuera a propósito.
+ *
+ * Riftcodex nos responde 403 desde los servidores de Vercel: está detrás de
+ * Cloudflare y bloquea el tráfico de datacenter. Desde una máquina con IP
+ * residencial anda perfecto, que es por qué Cardwright nunca lo sufrió y por
+ * qué en local no se veía.
+ *
+ * El módulo se queda porque sirve igual: la sincronización a nuestra propia
+ * base corre desde la máquina de Seba, que sí pasa. Vuelve a la lista cuando
+ * haya datos cargados.
+ */
+export const CATALOGOS: Catalogo[] = [MTG, POKEMON, YGO];
 
 /** El que se muestra si nadie eligió: Magic sigue siendo el grueso de la venta. */
 export const JUEGO_DEFAULT: JuegoId = "mtg";
