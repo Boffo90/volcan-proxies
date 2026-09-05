@@ -160,6 +160,9 @@ export default function ImportarPage() {
   const sinTraducir = okCards.filter(
 	(c) => c.card && c.card.idioma !== idioma
   ).length;
+  // Las líneas cuyo set+número apuntaba a otra carta. Se resolvieron por
+  // nombre, pero el cliente tiene que enterarse: su lista traía un dato malo.
+  const corregidas = okCards.filter((c) => c.aviso);
   const notFoundCards = cards.filter((c) => c.status === "not_found");
   const totalOk = okCards.reduce((s, c) => s + c.quantity, 0);
   const estimateTotal = okCards.reduce((s, c) => {
@@ -340,6 +343,24 @@ export default function ImportarPage() {
         	<h2 className="font-bold text-lg mb-1">
           	Cartas detectadas ({okCards.length})
         	</h2>
+        	{corregidas.length > 0 ? (
+          	<div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-3">
+            	<p className="text-xs text-yellow-200 font-semibold mb-1">
+              	{corregidas.length === 1
+                	? "Una línea traía un set y número que no correspondían a esa carta"
+                	: `${corregidas.length} líneas traían un set y número que no correspondían a esa carta`}
+            	</p>
+            	<ul className="text-[11px] text-yellow-200/80 space-y-0.5">
+              	{corregidas.map((c, i) => (
+                	<li key={i}>• {c.aviso}</li>
+              	))}
+            	</ul>
+            	<p className="text-[11px] text-yellow-300/80 mt-1">
+              	Pasa con listas viejas o escritas a mano. Revisa que las cartas
+              	de abajo sean las que querías.
+            	</p>
+          	</div>
+        	) : null}
         	{sinTraducir > 0 ? (
           	<p className="text-xs text-yellow-300/90 mb-3">
             	{sinTraducir} de {okCards.length} no existe en{" "}
@@ -384,6 +405,14 @@ export default function ImportarPage() {
                   	{c.card.idioma !== idioma ? (
                     	<p className="text-[10px] text-yellow-300/90 truncate">
                       	Solo en {etiquetaDeIdioma(c.card.idioma)}
+                    	</p>
+                  	) : null}
+                  	{c.aviso ? (
+                    	<p
+                      	className="text-[10px] text-yellow-300 truncate"
+                      	title={c.aviso}
+                    	>
+                      	Resuelta por nombre
                     	</p>
                   	) : null}
                   	<div className="mt-2">

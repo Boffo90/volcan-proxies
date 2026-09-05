@@ -20,6 +20,11 @@ export type ImportedCard = ParsedLine & {
   */
   card?: CartaCatalogo;
   errorMsg?: string;
+  /**
+  * Algo que el cliente tiene que saber de esta línea aunque haya resuelto.
+  * Hoy solo uno: que el set y el número que traía apuntaban a otra carta.
+  */
+  aviso?: string;
 };
 
 /**
@@ -96,10 +101,47 @@ export function parseDeck(text: string): ParsedLine[] {
 * qué carta se trata y recién después pedirla traducida. Es el mismo orden que
 * recomienda Scryfall, que no tiene búsqueda por nombre en otro idioma.
 */
+/**
+ * El nombre, comparable: sin tildes, sin mayúsculas y sin puntuación.
+ *
+ * Las listas vienen escritas a mano o exportadas de sitios que no coinciden en
+ * apóstrofos y guiones, así que comparar tal cual da falsos negativos.
+ */
+function normalizarNombre(v: string): string {
+  return v
+	.normalize("NFD")
+	.replace(/[̀-ͯ]/g, "")
+	.toLowerCase()
+	.replace(/[^a-z0-9 ]/g, "")
+	.replace(/\s+/g, " ")
+	.trim();
+}
+
+/**
+ * Si la carta que resolvió el set+número es la que nombra la línea.
+ *
+ * Una carta de dos caras se llama "Delver of Secrets // Insectile Aberration"
+ * y la lista trae solo la primera, así que cada cara cuenta como coincidencia.
+ */
+function nombresCalzan(deLaLinea: string, deLaCarta: string): boolean {
+  const pedido = normalizarNombre(deLaLinea);
+  if (!pedido) return true;
+  return deLaCarta
+	.split("//")
+	.map(normalizarNombre)
+	.some((cara) => cara === pedido || normalizarNombre(deLaCarta) === pedido);
+}
+
 export async function resolveCard(
   line: ParsedLine,
   idioma: IdiomaId = IDIOMA_BASE
 ): Promise<ImportedCard> {
+  // El set y el número mandan sobre el nombre, PERO hay que comprobar que
+  // apunten a la misma carta. Si no, la lista con un número desactualizado te
+  // manda otra cosa sin avisar: "1 Sol Ring (CMR) 410" trae Abrade, porque CMR
+  // 410 es Abrade. El cliente pidió una carta y recibía otra.
+  let aviso: string | undefined;
+
   // Caso 1: tiene set + collector
   if (line.set && line.collector_number) {
 	try {
@@ -109,7 +151,14 @@ export async function resolveCard(
   	);
   	if (res.ok) {
     	const card: ScryfallCard = await res.json();
-    	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
+    	if (nombresCalzan(line.name, card.name)) {
+      	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
+    	}
+    	// Gana el nombre: es lo que un humano escribió y lo que reconoce. El
+    	// número es dato de máquina y es lo que se desactualiza.
+    	aviso =
+      	`(${line.set.toUpperCase()}) ${line.collector_number} es ` +
+      	`"${card.name}", no "${line.name}". Se usó el nombre.`;
   	}
 	} catch {
   	// sigue al siguiente intento
@@ -123,6 +172,7 @@ export async function resolveCard(
   	return {
     	...line,
     	status: "ok",
+    	aviso,
     	card: aCarta(await enIdioma(search.data[0], idioma)),
   	};
 	}
@@ -136,7 +186,12 @@ export async function resolveCard(
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
+  	return {
+    	...line,
+    	status: "ok",
+    	aviso,
+    	card: aCarta(await enIdioma(card, idioma)),
+  	};
 	}
   } catch {
 	// sigue
@@ -150,7 +205,12 @@ export async function resolveCard(
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
+  	return {
+    	...line,
+    	status: "ok",
+    	aviso,
+    	card: aCarta(await enIdioma(card, idioma)),
+  	};
 	}
   } catch {
 	// sigue
