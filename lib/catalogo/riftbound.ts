@@ -1,19 +1,27 @@
 /**
- * Catálogo de Riftbound (el TCG de League of Legends), sobre Riftcodex.
+ * Catálogo de Riftbound (el TCG de League of Legends), desde nuestra base.
  *
- * Riftcodex es un proyecto de fans, no oficial, y no pide llave. Las imágenes
- * son las de Riot: salen del mismo CDN que la galería oficial, a 744×1039, la
- * misma clase que Scryfall — de los cuatro juegos que vendemos es el que
- * mejor se imprime junto con Magic.
+ * Los datos vienen de Riftcodex, pero NO en vivo: **Riftcodex responde 403 a
+ * los servidores de Vercel**. Está detrás de Cloudflare y bloquea el tráfico
+ * de datacenter, así que desde una IP residencial anda perfecto y desde el
+ * sitio no. Por eso las cartas se copian a Supabase corriendo
+ * `node scripts/sync-riftbound.mjs` desde la máquina de Seba, y acá se leen de
+ * ahí.
+ *
+ * Lo que se guarda es la carta CRUDA de Riftcodex, así que la conversión de
+ * abajo es la misma de antes y cualquier arreglo en ella vale para lo ya
+ * guardado sin resincronizar.
+ *
+ * Las imágenes no pasan por esto: son del CDN de Riot (744×1039, la misma
+ * clase que Scryfall) y las carga el navegador del cliente directo.
  *
  * El CDN es Sanity y redimensiona por parámetro, así que la miniatura es un
  * `?w=`. **Solo hacia abajo**: pedirle 3000 de ancho devuelve una imagen de
- * 3000 px interpolada desde las 744 originales, o sea nitidez falsa. La
- * grande se pide nativa y el upscale lo hace Cardwright.
+ * 3000 px interpolada desde las 744 originales, o sea nitidez falsa.
  */
 
 import { TAMANO_INGLES } from "@/lib/formulas";
-import { pedirJson } from "./http";
+import { supabase } from "@/lib/supabase";
 import { IDIOMA_BASE } from "./idiomas";
 import {
   armarUid,
@@ -23,20 +31,8 @@ import {
   type ResultadoBusqueda,
 } from "./tipos";
 
-const API = "https://api.riftcodex.com";
-
-const HEADERS = {
-  "User-Agent": "VolcanProxies/1.0 (+https://volcanproxies.cl)",
-  Accept: "application/json",
-};
-
-const REVALIDATE = 3600;
-
-/** Lo máximo que acepta su paginado: con 200 devuelve una lista vacía. */
-const MAX_POR_PAGINA = 100;
-
-/** Cuántas páginas tiene el catálogo, recordado tras la primera consulta. */
-let paginasConocidas: number | null = null;
+/** Cuántas cartas trae una búsqueda antes de cortar. */
+const MAX_RESULTADOS = 60;
 
 type RiftCard = {
   id?: string;
@@ -55,20 +51,39 @@ type RiftCard = {
   orientation?: string;
 };
 
-type RiftPagina = { items?: RiftCard[]; total?: number; pages?: number };
+type Fila = { datos: RiftCard };
 
-async function consultar(
-  ruta: string,
-  params: Record<string, string>
-): Promise<RiftPagina> {
-  const qs = new URLSearchParams(params).toString();
-  const { ok, status, data } = await pedirJson<RiftPagina>(
-	`${API}${ruta}?${qs}`,
-	{ headers: HEADERS, revalidate: REVALIDATE }
-  );
-  if (status === 404) return {};
-  if (!ok) throw new Error(`Riftcodex ${status}`);
-  return data ?? {};
+const TABLA = "riftbound_cartas";
+
+/** Sin tildes ni mayúsculas, igual que lo que guarda la sincronización. */
+function normalizar(v: string): string {
+  return v
+	.normalize("NFD")
+	.replace(/[̀-ͯ]/g, "")
+	.toLowerCase()
+	.trim();
+}
+
+/**
+ * Las cartas de una consulta.
+ *
+ * Un error de Supabase se propaga en vez de devolver vacío: "no hay cartas" y
+ * "la base no contestó" son cosas distintas, y confundirlas fue justo lo que
+ * hizo difícil ver por qué Riftbound salía en blanco en producción.
+ */
+async function filas(
+  construir: (q: ReturnType<typeof consulta>) => PromiseLike<{
+	data: Fila[] | null;
+	error: { message: string } | null;
+  }>
+): Promise<RiftCard[]> {
+  const { data, error } = await construir(consulta());
+  if (error) throw new Error(`Base de Riftbound: ${error.message}`);
+  return (data ?? []).map((f) => f.datos);
+}
+
+function consulta() {
+  return supabase.from(TABLA).select("datos");
 }
 
 /** La imagen sin el parámetro de analítica que trae pegado. */
@@ -248,78 +263,49 @@ export const RIFTBOUND: Catalogo = {
   idiomas: ["en"],
 
   async buscar(q: string): Promise<ResultadoBusqueda> {
-	// Dos llamadas, mezcladas. `exact` devuelve TODAS las versiones de un
-	// nombre; `fuzzy` lo cortan en 10 pero pesca lo escrito a medias. El
-	// exacto va primero para que un nombre conocido liste su tirada completa
-	// antes que los vecinos.
-	// En paralelo, no una tras otra.
-	//
-	// Secuenciales eran dos plazos encadenados, y el límite de una función de
-	// Vercel es de diez segundos: bastaba que Riftcodex tardara un poco — está
-	// en Railway y despierta frío — para que la búsqueda se pasara y el
-	// catálogo saliera vacío en producción mientras andaba bien en local.
-	const [exacta, difusa] = await Promise.allSettled([
-  	consultar("/cards/name", { exact: q, size: "60" }),
-  	consultar("/cards/name", { fuzzy: q, size: "60" }),
-	]);
-
-	// Si las dos fallan no hay nada que mostrar y hay que decirlo; si una sola
-	// falla, la otra alcanza.
-	if (exacta.status === "rejected" && difusa.status === "rejected") {
-  	throw exacta.reason;
-	}
-
-	// El exacto primero: un nombre conocido lista su tirada completa antes que
-	// los vecinos que trae el difuso.
-	const vistas = new Set<string>();
-	const cartas: CartaCatalogo[] = [];
-	for (const r of [exacta, difusa]) {
-  	if (r.status !== "fulfilled") continue;
-  	for (const carta of aCartas(r.value.items)) {
-    	if (vistas.has(carta.uid)) continue;
-    	vistas.add(carta.uid);
-    	cartas.push(carta);
-  	}
-	}
+	const texto = normalizar(q);
+	if (!texto) return { cartas: [], total: 0 };
+	const cards = await filas((c) =>
+  	c.ilike("nombre_busqueda", `%${texto}%`).limit(MAX_RESULTADOS * 3)
+	);
+	// El exacto primero: quien escribe el nombre completo quiere esa carta
+	// arriba, no los vecinos que comparten una palabra.
+	cards.sort((a, b) => {
+  	const ea = normalizar(a.name ?? "") === texto ? 0 : 1;
+  	const eb = normalizar(b.name ?? "") === texto ? 0 : 1;
+  	return ea - eb;
+	});
+	const cartas = aCartas(cards).slice(0, MAX_RESULTADOS);
 	return { cartas, total: cartas.length };
   },
 
   async porId(nativoId: string) {
-	const { ok, data } = await pedirJson<RiftCard>(
-  	`${API}/cards/${encodeURIComponent(nativoId)}`,
-  	{ headers: HEADERS, revalidate: REVALIDATE }
-	);
-	return ok && data ? aCarta(data) : null;
+	const cards = await filas((c) => c.eq("id", nativoId).limit(1));
+	return cards.length ? aCarta(cards[0]) : null;
   },
 
   async versiones(carta: CartaCatalogo) {
-	const pagina = await consultar("/cards/name", {
-  	exact: carta.grupoId,
-  	size: String(60),
-	});
-	return aCartas(pagina.items);
+	const cards = await filas((c) =>
+  	c.eq("nombre_busqueda", normalizar(carta.grupoId)).limit(60)
+	);
+	return aCartas(cards);
   },
 
   async aleatorias(n: number) {
-	// No tienen endpoint aleatorio (/cards/random responde 500), así que se
-	// pide una página al azar del catálogo completo. Cuántas páginas hay se
-	// recuerda: preguntarlo cada vez era un viaje extra antes del que importa,
-	// y son dos plazos dentro del límite de diez segundos de Vercel.
-	if (paginasConocidas === null) {
-  	const primera = await consultar("/cards", { size: "1", page: "1" });
-  	paginasConocidas = Math.max(
-    	1,
-    	Math.ceil((primera.total ?? 1) / MAX_POR_PAGINA)
-  	);
-	}
-	const paginas = paginasConocidas;
-	const page = 1 + Math.floor(Math.random() * paginas);
-	const pagina = await consultar("/cards", {
-  	size: String(MAX_POR_PAGINA),
-  	page: String(page),
-	});
-	const cartas = aCartas(pagina.items);
-	// Barajadas, o la grilla mostraría siempre las primeras n de esa página.
+	// Supabase no ordena al azar, así que se toma una ventana en una posición
+	// cualquiera y se baraja. Con ~1.450 cartas alcanza y sobra.
+	const { count, error } = await supabase
+  	.from(TABLA)
+  	.select("id", { count: "exact", head: true });
+	if (error) throw new Error(`Base de Riftbound: ${error.message}`);
+	const total = count ?? 0;
+	if (!total) return [];
+
+	const ventana = Math.min(total, Math.max(n * 4, 40));
+	const desde = Math.floor(Math.random() * Math.max(1, total - ventana));
+	const cards = await filas((c) => c.range(desde, desde + ventana - 1));
+
+	const cartas = aCartas(cards);
 	for (let i = cartas.length - 1; i > 0; i--) {
   	const j = Math.floor(Math.random() * (i + 1));
   	[cartas[i], cartas[j]] = [cartas[j], cartas[i]];
@@ -328,7 +314,11 @@ export const RIFTBOUND: Catalogo = {
   },
 
   async autocompletar(q: string) {
-	const pagina = await consultar("/cards/name", { fuzzy: q, size: "10" });
-	return [...new Set(aCartas(pagina.items).map((c) => c.name))];
+	const texto = normalizar(q);
+	if (!texto) return [];
+	const cards = await filas((c) =>
+  	c.ilike("nombre_busqueda", `%${texto}%`).limit(20)
+	);
+	return [...new Set(cards.map((c) => c.name ?? ""))].filter(Boolean).slice(0, 10);
   },
 };
