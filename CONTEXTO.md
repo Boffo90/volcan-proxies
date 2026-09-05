@@ -10,7 +10,8 @@ archivos.
 
 ## 1. Qué es
 
-Tienda online de **proxies de cartas** —Magic, Pokémon, Yu-Gi-Oh y Riftbound—
+Tienda online de **proxies de cartas** —Magic, Pokémon, Yu-Gi-Oh, Mitos y
+Leyendas y Riftbound—
 hechas a mano en **Pucón, Chile**, con despacho a todo el país. La opera una sola
 persona: **Sebastián (Seba)**. Todo el sitio y la comunicación con clientes
 está en **español de Chile**.
@@ -29,6 +30,9 @@ se despliega afecta pedidos y plata de verdad.
 - **Supabase** — base de datos y auth de clientes.
 - **Flow.cl** — pasarela de pago chilena.
 - **Resend** — correos transaccionales.
+- **API TCG** (`apitcg.com`) — catálogo de Mitos y Leyendas. Es la única
+  fuente que pide llave: `APITCG_KEY`, que tiene que estar **en `.env.local` y
+  en Vercel**.
 - **Vercel** — hosting. **Desplegar = hacer push a `main`**; Vercel construye
   solo. No hay pipeline manual.
 
@@ -102,6 +106,7 @@ se ven en el código:
 | Magic | Scryfall | no | 745×1040 PNG |
 | Pokémon | TCGdex | no | 600×825 PNG |
 | Yu-Gi-Oh | YGOPRODeck | no | 813×1185 JPEG |
+| Mitos y Leyendas | API TCG (apitcg.com) | **sí** | 709×1016 PNG (servidor de MyL) |
 | Riftbound | copia propia en Supabase | no | 744×1039 PNG (CDN de Riot) |
 
 `imagenes.print` va aparte de `imagenes.large` a propósito. `large` es lo que
@@ -117,6 +122,66 @@ aviso del catálogo, no se esconde.
 **Los precios no cambian por juego.** Una carta de Yu-Gi-Oh mide 59×86 mm pero
 entra igual 3×3 en una hoja A4, así que siguen siendo 9 cartas por hoja y el
 modelo de costos vale tal cual.
+
+### API TCG: 17 juegos, una llave, calidad muy dispar
+
+`apitcg.com` cubre de una sola integración: Magic, Pokémon, Yu-Gi-Oh, One
+Piece, Digimon, Dragon Ball (Fusion y Masters), Gundam, Lorcana, Union Arena,
+Star Wars Unlimited, Final Fantasy, Flesh and Blood, hololive, **Cardfight
+Vanguard** y **Mitos y Leyendas**.
+
+**Pide llave** (`APITCG_KEY`, cuenta gratis en apitcg.com/register). Eso
+bloqueaba a Cardwright — un binario repartido a desconocidos no puede guardar
+una llave — pero **no al sitio**, donde vive en una variable de entorno. Tiene
+que estar en **`.env.local` Y en Vercel**: son configuraciones separadas y solo
+tener una es un error silencioso a medias.
+
+Sumar otro juego de ahí es copiar `lib/catalogo/myl.ts` y cambiar el slug.
+
+**Pero la calidad de imagen es muy dispar, y ese es el dato que decide.**
+Medido sobre cuatro cartas de cada uno, tomando la mejor talla que publican:
+
+| Juego | Mejor imagen | Upscale que necesita | Sirve? |
+|---|---|---|---|
+| Mitos y Leyendas | 709×1016, consistente | 4,2× | sí, el mejor de todos |
+| Gundam | 600–716 | 4,2–5× | sí, algo irregular |
+| One Piece | 600×838, consistente | 5,0× | sí, como Pokémon |
+| Lorcana | 372–716, **muy irregular** | 4,2–8× | impredecible |
+| Cardfight Vanguard | 500×729, consistente | 5,9× | sale blando |
+| **Digimon** | **249–300 de ancho** | **10–12×** | **no** |
+
+La vara: una carta de 63×88 mm a 1200 DPI necesita 2976×4160.
+
+**No prendas todos los juegos porque estén disponibles.** Digimon a 250 px
+ampliado doce veces no es una carta, es una mancha.
+
+Y una advertencia sobre cómo evaluar: **su portada no lista todos los juegos**
+(termina en "y más"). Descartar Vanguard y Mitos y Leyendas leyendo esa página
+fue un error; la lista de verdad sale de `GET /api/tcgs` con la llave puesta, o
+de su `openapi.json`, que es público y trae todos los endpoints y el esquema.
+
+### Mitos y Leyendas: lo propio de este catálogo
+
+**Las imágenes son de MyL, no de API TCG**, que solo indexa los datos. Y MyL
+sirve **el mismo PNG de ~1,2 MB** en las tres tallas: sesenta de esos en una
+grilla son 70 MB. Por eso las de pantalla pasan por el optimizador de Next
+(`/_next/image?url=…&w=…&q=75`), que las achica a 64 KB y las cachea — y de
+paso evita que el navegador de cada visitante golpee el servidor de MyL. La de
+impresión va sin tocar. `api.myl.cl` está en `remotePatterns` de
+`next.config.ts`; sin eso el optimizador responde 400.
+
+**Ojo con la calidad:** Next 16 solo sirve las que estén en `images.qualities`,
+y la única por defecto es **75**. Con `q=80` responde 400 y las imágenes salen
+rotas sin explicación.
+
+**Los nombres llegan todos en minúscula** ("amor de zeus"). Se capitalizan al
+mostrar, pero en castellano las preposiciones van en minúscula: es "Amor de
+Zeus", no "Amor De Zeus".
+
+**Es un juego chileno, de Salo.** Vender proxies de Magic es competirle a una
+multinacional al otro lado del mundo; de MyL, a una empresa en el mismo
+mercado y la misma escena. Seba lo decidió sabiendo eso. No es un detalle
+técnico y no debería tratarse como uno si algún día se revisa.
 
 ### Riftbound vive en nuestra base, y eso tiene una razón
 
@@ -260,6 +325,7 @@ medido contra la API y no copiado de su documentación:
 | Magic | sí | sí | sí | sí | sí | sí | sí |
 | Pokémon | sí | sí | sí | **no** | sí | sí | sí |
 | Yu-Gi-Oh | sí | **no** | sí | **no** | sí | sí | sí |
+| Mitos y Leyendas | no | **solo español** | no | no | no | no | no |
 | Riftbound | sí | no | no | no | no | no | no |
 
 Yu-Gi-Oh no tiene español y su propia API lo enumera en el mensaje de error
@@ -267,6 +333,10 @@ Yu-Gi-Oh no tiene español y su propia API lo enumera en el mensaje de error
 responde 404, no devuelve la carta en inglés. Ofrecer un idioma que después no
 se puede imprimir se paga en el despacho, no en la búsqueda — por eso el
 selector solo muestra lo que el juego sirve.
+
+El respaldo es **el primer idioma que sirve ESE catálogo**, no el inglés
+global: Mitos y Leyendas solo publica español, y caer al inglés ahí sería
+pedirle algo que no existe.
 
 Cuando la carta no existe en el idioma pedido, se entrega en inglés **y la
 carta dice que vino en inglés**. El cliente ve lo que va a recibir, no una
@@ -482,10 +552,10 @@ hechos a la medida de sus parsers reales.
   set y número, esos mandan: `1 Sol Ring (CMR) 410` trae "Abrade", porque CMR
   410 es Abrade y el número estaba mal. Antes se notaba menos; con la
   traducción salta a la vista. Vale la pena avisar cuando el nombre no calza.
-- **Más juegos**: One Piece, Digimon y Dragon Ball están en `apitcg.com`, que
-  **pide llave**. Eso bloquea a Cardwright (un binario repartido no puede
-  guardarla) pero **no al sitio**: acá la llave vive en una variable de entorno.
-  Es el camino más corto para el quinto juego.
+- **Más juegos**: la llave de API TCG ya está puesta, así que sumar otro es
+  copiar `lib/catalogo/myl.ts` y cambiar el slug. Por calidad de imagen valen
+  **One Piece** y **Gundam**; **Vanguard** sale blando y **Digimon no sirve**.
+  Los números están en la sección de catálogos.
 - **Fotos de los acabados**: subir `base300.jpg` y `reforzada300.jpg` a
   `public/acabados/`. La comparativa en `/acabados` aparece sola cuando los
   archivos existen (los detecta el navegador, no hay que tocar código).
