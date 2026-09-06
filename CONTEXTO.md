@@ -120,6 +120,16 @@ etiquetado con su juego y lleva a `/catalogo?q=…&juego=…`.
   "charizard". Si NADA calza al pie de la letra —un error de tipeo— se
   devuelve sin filtrar, que ahí la aproximación es justo lo que sirve.
 
+**Una respuesta incompleta no se cachea como buena.** Si algún catálogo no
+alcanzó, la respuesta sale con 30 segundos en vez de una hora, y no cae al
+modo aproximado: faltando alguno, "nada calzó" puede significar que el que
+tenía la carta no llegó. La primera petición tras un despliegue sale en frío
+y por eso es la más propensa a quedar coja — y quedó guardada una hora
+devolviendo pura basura de Mitos y Leyendas para "charizard" mientras la misma
+consulta sin caché contestaba bien. Los que faltaron viajan en el campo
+`faltaron`, por lo mismo que `motivo` en los errores: sin él, "este juego no
+tiene la carta" y "este juego no contestó" se ven idénticos desde afuera.
+
 **El plazo por catálogo importa y se mide, no se estima.** En frío: Riftbound
 0,5s, Magic y Pokémon 0,6s, Yu-Gi-Oh 1,4s, Mitos y Leyendas 2,1s. Estuvo en
 2,5s y dejaba fuera a los dos lentos justo cuando eran los que tenían la

@@ -29,6 +29,17 @@ import type { JuegoId } from "@/lib/catalogo/tipos";
 /** Una hora, igual que el revalidate que ya tenía el cliente de Scryfall. */
 const CACHE = "public, s-maxage=3600, stale-while-revalidate=86400";
 
+/**
+ * Lo que dura una respuesta a la que le faltó algún catálogo.
+ *
+ * Treinta segundos y no una hora: una respuesta incompleta cacheada largo es
+ * peor que ninguna. La primera petición después de un despliegue sale en frío,
+ * y la que quedó guardada tenía cuatro de los cinco catálogos fuera de plazo:
+ * buscar "charizard" devolvió pura basura de Mitos y Leyendas durante una hora
+ * mientras la misma consulta sin caché contestaba bien.
+ */
+const CACHE_PARCIAL = "public, s-maxage=30";
+
 const ACCIONES = [
   "buscar",
   "ficha",
@@ -87,12 +98,18 @@ function plano(v: string): string {
 
 export type Sugerencia = { nombre: string; juego: JuegoId };
 
-/** Lo que ofrece un catálogo, o nada si tarda o falla. */
+/**
+ * Lo que ofrece un catálogo, y si alcanzó a contestar.
+ *
+ * El `ok` no es lo mismo que la lista vacía: "no tengo esa carta" y "no llegué
+ * a tiempo" se ven igual desde afuera, y solo el segundo tiene que impedir que
+ * la respuesta se cachee como buena.
+ */
 async function sugerenciasDe(
   cat: Catalogo,
   q: string,
   pedido: string | null
-): Promise<Sugerencia[]> {
+): Promise<{ juego: JuegoId; lista: Sugerencia[]; ok: boolean }> {
   const idioma = idiomaServible(cat, pedido);
   try {
     const nombres = await Promise.race([
@@ -101,10 +118,14 @@ async function sugerenciasDe(
         setTimeout(() => rechazar(new Error("plazo")), PLAZO_SUGERENCIA_MS)
       ),
     ]);
-    return nombres.map((nombre) => ({ nombre, juego: cat.id }));
+    return {
+      juego: cat.id,
+      lista: nombres.map((nombre) => ({ nombre, juego: cat.id })),
+      ok: true,
+    };
   } catch {
     // Un catálogo caído no puede dejar sin sugerencias a los otros cuatro.
-    return [];
+    return { juego: cat.id, lista: [], ok: false };
   }
 }
 
@@ -221,9 +242,11 @@ export async function GET(
           Math.max(1, Number(url.searchParams.get("n")) || 8)
         );
         const pedido = url.searchParams.get("idioma");
-        const porJuego = await Promise.all(
+        const respuestas = await Promise.all(
           CATALOGOS.map((c) => sugerenciasDe(c, q, pedido))
         );
+        const porJuego = respuestas.map((r) => r.lista);
+        const completo = respuestas.every((r) => r.ok);
 
         // Algunas fuentes buscan por aproximación y devuelven cosas que no
         // contienen lo escrito: Mitos y Leyendas contestaba "Chashkel" a
@@ -233,14 +256,26 @@ export async function GET(
         const calzan = porJuego.map((lista) =>
           lista.filter((s) => plano(s.nombre).includes(buscado))
         );
-
-        // Si NADA calza al pie de la letra suele ser un error de tipeo, y ahí
-        // la aproximación es justo lo que sirve. Se devuelve sin filtrar.
         const hayCalce = calzan.some((l) => l.length > 0);
 
+        // Si NADA calza al pie de la letra suele ser un error de tipeo, y ahí
+        // la aproximación es justo lo que sirve. Pero solo si contestaron
+        // todos: faltando alguno, "nada calzó" puede significar que el que
+        // tenía la carta no llegó, y entonces lo aproximado del resto es una
+        // respuesta equivocada con cara de respuesta.
+        const usar = hayCalce ? calzan : completo ? porJuego : calzan;
+
+        // `faltaron` viaja en la respuesta por el mismo motivo que `motivo`
+        // en los errores: sin él, "este juego no tiene la carta" y "este juego
+        // no contestó" se ven idénticos desde afuera, y hubo que adivinar.
+        const faltaron = respuestas.filter((r) => !r.ok).map((r) => r.juego);
+
         return NextResponse.json(
-          { sugerencias: repartir(hayCalce ? calzan : porJuego, tope) },
-          { headers: { "Cache-Control": CACHE } }
+          {
+            sugerencias: repartir(usar, tope),
+            ...(faltaron.length ? { faltaron } : {}),
+          },
+          { headers: { "Cache-Control": completo ? CACHE : CACHE_PARCIAL } }
         );
       }
     }
