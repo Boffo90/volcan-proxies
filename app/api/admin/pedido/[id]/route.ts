@@ -6,6 +6,7 @@ import {
   enviarEmailConfirmacion,
   liberarConfirmacion,
   reclamarConfirmacion,
+  remitente,
 } from "@/lib/emailPedido";
 import { buscarPedidosAgrupables, REGIONES } from "@/lib/envio";
 import { Resend } from "resend";
@@ -320,7 +321,7 @@ export async function PATCH(
     	"</div>";
 
   	await resend.emails.send({
-    	from: process.env.EMAIL_FROM!,
+    	from: remitente(),
     	to: current.cliente_email,
     	replyTo: CONTACTO_EMAIL,
     	subject:

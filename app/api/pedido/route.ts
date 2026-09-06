@@ -14,7 +14,7 @@ import {
 } from "@/lib/pricing";
 import { getPreciosServer } from "@/lib/pricing-server";
 import { buscarPedidosAgrupables } from "@/lib/envio";
-import { CONTACTO_EMAIL } from "@/lib/emailPedido";
+import { CONTACTO_EMAIL, remitente } from "@/lib/emailPedido";
 
 type PedidoItem = {
   id: string;
@@ -386,7 +386,7 @@ export async function POST(req: Request) {
       	: "";
 
   	await resend.emails.send({
-    	from: process.env.EMAIL_FROM!,
+    	from: remitente(),
     	to: process.env.EMAIL_ADMIN!,
     	subject: `🌋 Nuevo pedido #${pedido.numero} - ${nombre}`,
     	html: `
@@ -448,6 +448,20 @@ export async function POST(req: Request) {
   	});
 	} catch (e) {
   	console.error("[EMAIL ADMIN ERROR]", e);
+  	// El aviso a la casilla del negocio moría solo en el log, igual que el
+  	// del cliente antes: si falla, nadie se entera del pedido salvo mirando
+  	// el panel. Queda anotado en el pedido, que es donde sí se mira.
+  	try {
+    	const detalle = e instanceof Error ? e.message : String(e);
+    	await sb
+      	.from("pedidos")
+      	.update({
+        	admin_notas: `⚠️ No se pudo enviar el aviso de pedido nuevo a la casilla del negocio: ${detalle}`,
+      	})
+      	.eq("id", pedido.id);
+  	} catch {
+    	// si tampoco se puede anotar, ya quedó en el log del servidor
+  	}
 	}
 
 	// =========================
@@ -526,7 +540,7 @@ export async function POST(req: Request) {
       	`;
 
   	await resend.emails.send({
-    	from: process.env.EMAIL_FROM!,
+    	from: remitente(),
     	to: email,
     	replyTo: CONTACTO_EMAIL,
     	subject: `🌋 Pedido #${pedido.numero} recibido - Volcán Proxies`,

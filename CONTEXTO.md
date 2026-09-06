@@ -533,6 +533,16 @@ hay botón de reenviar en vez de dejarlo en un callejón.
 
 ## 7. Trampas conocidas
 
+**`EMAIL_FROM` no tiene que estar vacío, y el código ya no confía en que no
+lo esté.** En septiembre de 2026 apareció **en blanco en Production**: los
+cuatro envíos hacían `process.env.EMAIL_FROM!`, y ese `!` es una promesa al
+compilador que nadie le hace cumplir a Vercel. Resend recibía un remitente
+vacío y devolvía un error suyo que no nombra la variable. Ahora todos pasan
+por `remitente()` en `lib/emailPedido.ts`, que falla diciendo cuál variable
+falta — y también rechaza `@resend.dev`, para que la trampa de abajo no pueda
+repetirse en silencio. **Cambiar una variable en Vercel no basta: hay que
+volver a desplegar** para que el entorno la tome.
+
 **`EMAIL_FROM` debe ser de un dominio verificado en Resend.** Estuvo meses en
 `onboarding@resend.dev`, que solo permite enviar a la casilla del dueño de la
 cuenta. Resultado: **ningún cliente recibió jamás un correo** — ni confirmación

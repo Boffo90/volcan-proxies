@@ -158,12 +158,44 @@ export function construirHtmlConfirmacion(pedido: PedidoConfirmacion): string {
 	`;
 }
 
+/**
+ * El remitente, o un error que dice cuál es el problema.
+ *
+ * Se usaba `process.env.EMAIL_FROM!` en los cuatro envíos, y el `!` es una
+ * promesa al compilador que nadie le hizo cumplir a Vercel: con la variable
+ * vacía en producción, Resend recibía un remitente en blanco y devolvía un
+ * error suyo que no menciona la variable. El resultado es un pedido con una
+ * nota críptica y ningún correo, que es exactamente la forma que ya tuvo esto
+ * de pasar desapercibido meses.
+ *
+ * Dos cosas que este error tiene que decir y el de Resend no: cuál variable
+ * falta, y que el dominio debe estar verificado.
+ */
+export function remitente(): string {
+  const from = (process.env.EMAIL_FROM ?? "").trim();
+  if (!from) {
+	throw new Error(
+  	"Falta EMAIL_FROM en el entorno. Tiene que ser una dirección de un " +
+    	"dominio verificado en Resend, por ejemplo " +
+    	'"Volcán Proxies <no-reply@volcanproxies.cl>".'
+	);
+  }
+  if (from.includes("@resend.dev")) {
+	throw new Error(
+  	"EMAIL_FROM apunta a @resend.dev, que solo entrega a la casilla dueña " +
+    	"de la cuenta de Resend: ningún cliente recibiría el correo. Usa una " +
+    	"dirección del dominio verificado."
+	);
+  }
+  return from;
+}
+
 /** Email al cliente avisando que su pago quedó confirmado. */
 export async function enviarEmailConfirmacion(pedido: PedidoConfirmacion) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
-	from: process.env.EMAIL_FROM!,
+	from: remitente(),
 	to: pedido.cliente_email,
 	// Si el cliente responde este correo, que llegue a la casilla de contacto
 	// y no a una dirección de envío que nadie lee.
