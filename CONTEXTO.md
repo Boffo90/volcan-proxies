@@ -675,6 +675,46 @@ https://claude.ai/code/artifact/91c5b420-5d80-4d0b-bf90-191b7e357612
 
 ---
 
+## 8b. El plazo que se promete
+
+Estuvo escrito a mano **en seis partes** —portada (dos veces), checkout, FAQ,
+nosotros y el correo de confirmación— diciendo siempre "48 hrs". Cuando la cola
+creció, el sitio siguió prometiendo lo mismo. Las dos que más pesan no se ven
+navegando: la del **checkout**, que se lee justo antes de pagar, y la del
+**correo**, que le queda por escrito al cliente.
+
+Hoy vive en `config.plazos` y se edita en `/admin/plazos`, igual que los
+precios. Tres estados:
+
+| Estado | Qué pasa |
+|---|---|
+| `normal` | Sin aviso. La promesa dice "en máximo X". |
+| `alta` | Barra de aviso en todo el sitio. La promesa pasa a "en aproximadamente X". |
+| `pausado` | Además, el checkout se bloquea y `/api/pedido` responde 409. |
+
+**El cambio de "máximo" a "aproximadamente" es automático**, en `promesa()`. Es
+el resguardo real: subir el número sin cambiar esa palabra dejaría un "máximo 2
+semanas" comprometiendo más de lo que se puede cumplir.
+
+**El plazo se guarda en el pedido** (`pedidos.plazo_prometido`), no se lee el
+vigente. Si mañana la cola crece y el plazo sube, el que ya compró no ve otro
+número, y queda registro de qué se le prometió a cada uno. La columna es
+opcional: si la migración no se ha corrido, el insert reintenta sin ella y el
+plazo queda anotado en `notas`, igual que el idioma.
+
+**El panel estima la cola con datos que ya existían** pero que nadie había
+juntado: los pedidos pendientes de la base y los tiempos por acabado del modelo
+de costos. Devuelve pedidos, cartas y **horas de trabajo**. Lo único que no
+puede deducir es **cuántas horas al día trabaja Seba**: ese número lo pone él y,
+en cero, el panel no estima nada y lo dice. Es la misma regla de siempre — los
+costos se calculan, los tiempos se preguntan.
+
+Ojo con el nombre: `components/EstadoCola.tsx` ya existía y es otra cosa —
+le muestra al cliente cuántos pedidos hay antes del suyo, desde `/api/cola`.
+El tipo de este módulo se llama `EstadoPlazo` para no confundirlos.
+
+---
+
 ## 9. Panel de administración
 
 `/admin` — tablero por estado. Botones: Precios, Customs, Fórmulas, Stock,

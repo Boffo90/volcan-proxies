@@ -29,6 +29,8 @@ import {
   SHIPPING_COST,
 } from "@/lib/pricing";
 import { usePrecios } from "@/hooks/usePrecios";
+import { usePlazos } from "@/hooks/usePlazos";
+import { aceptaPedidos, promesa } from "@/lib/plazos";
 import { REGIONES } from "@/lib/envio";
 import EstadoCola from "@/components/EstadoCola";
 
@@ -50,6 +52,7 @@ type DeliveryType = "retiro" | "envio";
 export default function CheckoutPage() {
   const router = useRouter();
   const { precios } = usePrecios();
+  const { plazos } = usePlazos();
 
   const [items, setItems] = useState<CartItem[]>([]);
   const [form, setForm] = useState<FormData>({
@@ -347,7 +350,7 @@ export default function CheckoutPage() {
             	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
               	🚚 Envío único de{" "}
               	<b className="text-white">{formatCLP(SHIPPING_COST)}</b> a
-              	todo Chile. Despachamos en máximo 48 hrs vía Starken,
+              	todo Chile. Despachamos {promesa(plazos)} vía Starken,
               	Chilexpress o Blue Express (elegimos el más rápido según tu
               	región).
             	</div>
@@ -605,6 +608,16 @@ export default function CheckoutPage() {
               	</div>
             	)}
 
+          	{!aceptaPedidos(plazos) && (
+            	<div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">
+              	<b>Estamos con los pedidos pausados.</b>{" "}
+              	{plazos.reapertura
+                	? `Volvemos a tomar pedidos ${plazos.reapertura}.`
+                	: "Volvemos a tomarlos pronto."}{" "}
+              	Tu carrito queda guardado.
+            	</div>
+          	)}
+
           	<div className="flex justify-between items-center mb-4 border-t border-white/10 pt-3">
             	<span className="font-semibold">Total</span>
             	<span className="text-2xl font-display font-bold text-lava">
@@ -614,11 +627,19 @@ export default function CheckoutPage() {
 
           	<button
             	type="submit"
-            	disabled={loading || !cumpleMinimo || !aceptaTerminos || hayBloqueados}
+            	disabled={
+              	loading ||
+              	!cumpleMinimo ||
+              	!aceptaTerminos ||
+              	hayBloqueados ||
+              	!aceptaPedidos(plazos)
+            	}
             	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
           	>
             	{loading ? <Loader2 className="animate-spin" size={18} /> : null}
-            	{hayBloqueados
+            	{!aceptaPedidos(plazos)
+              	? "Pedidos pausados por ahora"
+              	: hayBloqueados
               	? "Hay acabados no disponibles en tu carrito"
               	: !cumpleMinimo
               	? `Faltan ${faltan} carta${faltan !== 1 ? "s" : ""}`

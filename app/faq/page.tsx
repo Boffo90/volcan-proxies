@@ -6,11 +6,14 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/animation/Reveal";
 import { usePrecios } from "@/hooks/usePrecios";
+import { usePlazos } from "@/hooks/usePlazos";
+import { promesa } from "@/lib/plazos";
 import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(0);
   const { precios } = usePrecios();
+  const { plazos } = usePlazos();
 
   const FAQS = [
 	{
@@ -40,7 +43,7 @@ export default function FAQPage() {
 	},
 	{
   	q: "¿Cuánto tarda mi pedido?",
-  	a: "Una vez confirmado el pago, dejamos tu pedido despachado en máximo 48 horas vía Starken, Chilexpress o Blue Express. El tiempo de envío depende del courier y tu región: en Santiago/regiones cercanas suele tardar 3-5 días hábiles, en regiones extremas hasta 7-10 días. Te enviamos el número de seguimiento por email para que puedas tracear tu pedido.",
+  	a: `Una vez confirmado el pago, dejamos tu pedido despachado ${promesa(plazos)} vía Starken, Chilexpress o Blue Express. El tiempo de envío depende del courier y tu región: en Santiago/regiones cercanas suele tardar 3-5 días hábiles, en regiones extremas hasta 7-10 días. Te enviamos el número de seguimiento por email para que puedas tracear tu pedido.`,
 	},
 	{
   	q: "¿Qué métodos de pago aceptan?",

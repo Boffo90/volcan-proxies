@@ -15,6 +15,8 @@ import {
 import { getPreciosServer } from "@/lib/pricing-server";
 import { buscarPedidosAgrupables } from "@/lib/envio";
 import { CONTACTO_EMAIL, remitente } from "@/lib/emailPedido";
+import { getPlazosServer } from "@/lib/plazos-server";
+import { aceptaPedidos, promesa } from "@/lib/plazos";
 
 type PedidoItem = {
   id: string;
@@ -181,6 +183,22 @@ export async function POST(req: Request) {
 	const regionFinal =
   	deliveryType === "retiro" ? "Araucanía" : region || "";
 
+	// El plazo se lee ANTES de crear el pedido y se guarda con él. El correo
+	// repite el que estaba vigente al comprar, no el de hoy: si mañana la cola
+	// crece y Seba sube el plazo, el cliente que ya compró no ve otro número, y
+	// queda registro de qué se le prometió a cada uno.
+	const plazos = await getPlazosServer();
+	const plazoPrometido = promesa(plazos);
+
+	// Con los pedidos pausados el checkout ya no deja apretar el botón, pero el
+	// servidor no puede confiar en eso: la petición se puede repetir a mano.
+	if (!aceptaPedidos(plazos)) {
+  	return NextResponse.json(
+    	{ error: "No estamos tomando pedidos nuevos por ahora." },
+    	{ status: 409 }
+  	);
+	}
+
 	const pedidoBase = {
   	cliente_nombre: nombre,
   	cliente_rut: rut,
@@ -202,7 +220,12 @@ export async function POST(req: Request) {
 
 	let { data: pedido, error } = await sb
   	.from("pedidos")
-  	.insert({ ...pedidoBase, user_id: user?.id ?? null, idioma: idiomaFinal })
+  	.insert({
+    	...pedidoBase,
+    	user_id: user?.id ?? null,
+    	idioma: idiomaFinal,
+    	plazo_prometido: plazoPrometido,
+  	})
   	.select()
   	.single();
 
@@ -221,7 +244,9 @@ export async function POST(req: Request) {
     	.from("pedidos")
     	.insert({
       	...pedidoBase,
-      	notas: `[Idioma: ${idiomaFinal}] ${notas || ""}`.trim(),
+      	notas: `[Idioma: ${idiomaFinal}] [Plazo: ${plazoPrometido}] ${
+        	notas || ""
+      	}`.trim(),
     	})
     	.select()
     	.single());
@@ -533,7 +558,7 @@ export async function POST(req: Request) {
               	: ""
           	}
           	<p style="margin:12px 0 0;color:#666;font-size:13px;">
-            	Dejamos tu pedido despachado en máximo 48 hrs desde la
+            	Dejamos tu pedido despachado ${plazoPrometido} desde la
             	confirmación del pago vía Starken, Chilexpress o Blue Express.
           	</p>
         	</div>

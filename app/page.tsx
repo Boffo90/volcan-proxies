@@ -22,11 +22,16 @@ import Embers from "@/components/animation/Embers";
 import { IDIOMA_BASE, JUEGO_DEFAULT, type CartaCatalogo } from "@/lib/catalogo";
 import { aleatorias } from "@/lib/catalogo/cliente";
 import { usePrecios } from "@/hooks/usePrecios";
+import { usePlazos } from "@/hooks/usePlazos";
+import { promesa, plazoCorto } from "@/lib/plazos";
 import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 
 export default function Home() {
   const router = useRouter();
   const { precios } = usePrecios();
+  // El plazo ya no se escribe acá: lo publica Seba desde /admin/plazos y lo
+  // leen también el checkout, la FAQ, nosotros y el correo de confirmación.
+  const { plazos } = usePlazos();
 
   // Los acabados que se venden hoy. La portada los nombraba a mano y quedó
   // ofreciendo dos que están pausados; que salgan de los precios.
@@ -52,7 +57,7 @@ export default function Home() {
 	},
 	{
   	icon: Truck,
-  	title: "Despacho 48 hrs",
+  	title: `Despacho en ${plazoCorto(plazos)}`,
   	desc: "Envío vía Starken, Chilexpress o Blue Express.",
 	},
 	{
@@ -75,7 +80,7 @@ export default function Home() {
 	},
 	{
   	icon: Printer,
-  	title: "Imprimimos en 48 hrs",
+  	title: `Imprimimos ${promesa(plazos)}`,
   	desc: "Impresión fotográfica y acabado a mano, carta por carta.",
 	},
 	{

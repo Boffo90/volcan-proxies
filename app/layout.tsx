@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Syne } from "next/font/google";
 import "./globals.css";
 import AuthListener from "@/components/AuthListener";
+import AvisoPlazo from "@/components/AvisoPlazo";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -99,6 +100,7 @@ export default function RootLayout({
     <html lang="es" className={montserrat.variable + " " + syne.variable}>
       <body className={montserrat.className}>
         <AuthListener />
+        <AvisoPlazo />
         {children}
       </body>
     </html>

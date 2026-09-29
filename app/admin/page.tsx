@@ -12,6 +12,8 @@ import {
   Package,
   Archive,
   BookOpen,
+  Stethoscope,
+  Clock,
 } from "lucide-react";
 
 type Pedido = {
@@ -119,6 +121,20 @@ export default function AdminDashboard() {
         	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
       	>
         	<Package size={14} /> Stock
+      	</button>
+      	<button
+        	onClick={() => router.push("/admin/plazos")}
+        	title="El plazo que promete el sitio y tu cola de trabajo"
+        	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
+      	>
+        	<Clock size={14} /> Plazos
+      	</button>
+      	<button
+        	onClick={() => router.push("/admin/diagnostico")}
+        	title="Si la configuración está bien puesta: correos, base, pagos"
+        	className="text-sm bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg flex items-center gap-2"
+      	>
+        	<Stethoscope size={14} /> Diagnóstico
       	</button>
       	<button
         	onClick={() => setVerArchivados((v) => !v)}

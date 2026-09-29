@@ -93,9 +93,9 @@ export default function NosotrosPage() {
           	.
         	</li>
         	<li>
-          	<b className="text-[#FF4D1A]">3.</b> Pagas por transferencia y en{" "}
-          	<b>48 horas</b> dejamos tu pedido despachado vía
-          	Starken/Chilexpress.
+          	<b className="text-[#FF4D1A]">3.</b> Pagas por transferencia y
+          	dejamos tu pedido despachado vía Starken/Chilexpress. El plazo
+          	vigente lo indicamos en el checkout antes de que pagues.
         	</li>
         	<li>
           	<b className="text-[#FF4D1A]">4.</b> Te enviamos el número de
