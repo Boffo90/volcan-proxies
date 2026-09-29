@@ -82,6 +82,10 @@ export function horasDeItems(items: ItemCola[]): number {
  * 2 semanas" comprometiendo más de lo que se puede cumplir.
  */
 export function promesa(p: Plazos): string {
+  // Un rango ya dice por sí solo que es una estimación: no necesita
+  // "aproximadamente" delante, que queda redundante, ni "máximo", que sería
+  // comprometerse con el extremo malo del rango ("máximo 1 a 2 semanas").
+  if (/\s(a|y)\s/.test(p.plazo)) return `en ${p.plazo}`;
   return p.estado === "normal"
 	? `en máximo ${p.plazo}`
 	: `en aproximadamente ${p.plazo}`;
@@ -90,6 +94,42 @@ export function promesa(p: Plazos): string {
 /** Para títulos cortos, donde no cabe una frase. */
 export function plazoCorto(p: Plazos): string {
   return p.plazo;
+}
+
+/**
+ * Opciones de un clic, para no tener que redactar el plazo cada vez.
+ *
+ * Todas son rangos salvo la primera: un rango se cumple más fácil que un
+ * número exacto y no obliga a prometer el mejor caso.
+ */
+export const PLAZOS_RAPIDOS = [
+  "48 horas",
+  "3 a 5 días hábiles",
+  "1 semana",
+  "1 a 2 semanas",
+  "2 a 3 semanas",
+  "3 a 4 semanas",
+];
+
+/**
+ * Qué plazo publicar, a partir de los días que tarda la cola de hoy.
+ *
+ * El número de días es real —sale de los pedidos pendientes y de los tiempos
+ * por acabado—, pero publicarlo pelado sería prometer el mejor caso: el pedido
+ * nuevo se pone **al final** de esa cola y además tiene que producirse él
+ * mismo, y en el intertanto entran otros. Por eso la sugerencia siempre es un
+ * rango que empieza en la cola actual y termina más allá, y por eso se redondea
+ * hacia arriba y nunca hacia abajo.
+ *
+ * Cinco días hábiles se cuentan como una semana.
+ */
+export function sugerenciaPlazo(diasHabiles: number | null): string | null {
+  if (diasHabiles === null || diasHabiles < 0) return null;
+  if (diasHabiles <= 2) return "48 horas";
+  if (diasHabiles <= 4) return "3 a 5 días hábiles";
+  if (diasHabiles <= 7) return "1 a 2 semanas";
+  if (diasHabiles <= 12) return "2 a 3 semanas";
+  return "3 a 4 semanas";
 }
 
 /** Si se pueden tomar pedidos nuevos. */

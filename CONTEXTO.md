@@ -696,6 +696,17 @@ precios. Tres estados:
 el resguardo real: subir el número sin cambiar esa palabra dejaría un "máximo 2
 semanas" comprometiendo más de lo que se puede cumplir.
 
+**El panel sugiere el plazo, no lo hace escribir.** Hay botones de un clic
+("1 a 2 semanas", "2 a 3 semanas"…) y, sobre ellos, una recomendación calculada
+desde la cola. La sugerencia **siempre es un rango y siempre redondea hacia
+arriba**: los días de cola son reales, pero publicarlos pelados sería prometer
+el mejor caso, porque el pedido nuevo entra al final de esa fila y todavía hay
+que producirlo.
+
+Con un rango, `promesa()` no antepone nada: "en 1 a 2 semanas". Anteponerle
+"aproximadamente" queda redundante, y "máximo" sería comprometerse con el
+extremo malo del rango. El rango manda sobre el estado.
+
 **El plazo se guarda en el pedido** (`pedidos.plazo_prometido`), no se lee el
 vigente. Si mañana la cola crece y el plazo sube, el que ya compró no ve otro
 número, y queda registro de qué se le prometió a cada uno. La columna es

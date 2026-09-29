@@ -6,6 +6,8 @@ import { Loader2, ArrowLeft, Save, Clock, AlertTriangle } from "lucide-react";
 import {
   ESTADOS,
   PLAZOS_DEFAULT,
+  PLAZOS_RAPIDOS,
+  sugerenciaPlazo,
   normalizePlazos,
   promesa,
   type EstadoPlazo,
@@ -97,6 +99,8 @@ export default function AdminPlazosPage() {
 	}
   };
 
+  const sugerido = cola ? sugerenciaPlazo(cola.diasHabiles) : null;
+
   if (loading) {
 	return (
   	<main className="min-h-screen bg-[#0b0d11] text-white flex justify-center py-32">
@@ -155,15 +159,42 @@ export default function AdminPlazosPage() {
               	días sale esta cola.
             	</p>
           	) : (
-            	<p className="text-sm text-gray-300">
-              	A {plazos.horasPorDia} h al día, esta cola sale en{" "}
-              	<b className="text-[#FF4D1A]">
-                	{cola.diasHabiles} día{cola.diasHabiles === 1 ? "" : "s"} de
-                	trabajo
-              	</b>
-              	. Eso es lo que tardaría el último pedido de la fila, sin contar
-              	el despacho del courier.
-            	</p>
+            	<>
+              	<p className="text-sm text-gray-300 mb-3">
+                	A {plazos.horasPorDia} h al día, esta cola sale en{" "}
+                	<b className="text-[#FF4D1A]">
+                  	{cola.diasHabiles} día{cola.diasHabiles === 1 ? "" : "s"} de
+                  	trabajo
+                	</b>
+                	. Eso es solo vaciar la fila: un pedido nuevo entra al final y
+                	además hay que producirlo.
+              	</p>
+              	{sugerido && (
+                	<div className="flex flex-wrap items-center gap-3 rounded-lg border border-[#FF4D1A]/30 bg-[#FF4D1A]/10 p-3">
+                  	<span className="text-sm">
+                    	Con esa cola, yo publicaría{" "}
+                    	<b className="text-[#FF4D1A]">{sugerido}</b>.
+                  	</span>
+                  	{plazos.plazo === sugerido ? (
+                    	<span className="text-xs text-green-400">
+                      	Es lo que tienes puesto.
+                    	</span>
+                  	) : (
+                    	<button
+                      	onClick={() => {
+                        	set("plazo", sugerido);
+                        	if (plazos.estado === "normal" && sugerido !== "48 horas") {
+                          	set("estado", "alta");
+                        	}
+                      	}}
+                      	className="text-xs font-semibold bg-[#FF4D1A] hover:bg-[#e64418] px-3 py-1.5 rounded-lg"
+                    	>
+                      	Usar esta
+                    	</button>
+                  	)}
+                	</div>
+              	)}
+            	</>
           	)}
         	</>
       	)}
@@ -202,7 +233,23 @@ export default function AdminPlazosPage() {
           	placeholder="48 horas"
           	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
         	/>
-        	<p className="text-xs text-gray-500 mt-1">
+        	<div className="flex flex-wrap gap-2 mt-2">
+          	{PLAZOS_RAPIDOS.map((op) => (
+            	<button
+              	key={op}
+              	onClick={() => set("plazo", op)}
+              	className={
+                	"px-3 py-1 rounded-lg text-xs font-semibold border transition " +
+                	(plazos.plazo === op
+                  	? "bg-white/10 border-white/40 text-white"
+                  	: "border-white/10 text-gray-400 hover:border-white/30")
+              	}
+            	>
+              	{op}
+            	</button>
+          	))}
+        	</div>
+        	<p className="text-xs text-gray-500 mt-2">
           	Va a leerse: &quot;Despachamos {promesa(plazos)}&quot;.
         	</p>
       	</div>
@@ -286,7 +333,8 @@ export default function AdminPlazosPage() {
       	<div className="p-4 text-sm text-gray-300">
         	En el correo al cliente:{" "}
         	<i>
-          	&quot;Dejamos tu pedido despachado {promesa(plazos)} desde la
+          	&quot;Dejamos tu pedido despachado {promesa(plazos)}{" "}
+          	desde la
           	confirmación del pago.&quot;
         	</i>
       	</div>
