@@ -16,7 +16,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
-import { catalogo, parseUid, type JuegoId } from "@/lib/catalogo";
+import { catalogo, parseUid, type CartaCatalogo, type JuegoId } from "@/lib/catalogo";
 import { FINISH_INFO, type Finish } from "@/lib/pricing";
 
 type PedidoItem = {
@@ -78,8 +78,11 @@ const A_LA_VEZ = 8;
  *
  * Lo que no se pueda resolver se queda fuera del mapa a propósito: quien llama
  * lo reporta en `sinResolver` y el panel lo muestra.
+ *
+ * Guarda la carta entera y no solo la imagen: de las de Magic también sale la
+ * impresión exacta (set, número, idioma) que usa el lote de Card Conjurer.
  */
-async function resolverImagenes(uids: string[], destino: Map<string, string>) {
+async function resolverImagenes(uids: string[], destino: Map<string, CartaCatalogo>) {
   const porJuego = new Map<JuegoId, string[]>();
   for (const uid of uids) {
     const { juego } = parseUid(uid);
@@ -106,7 +109,7 @@ async function resolverImagenes(uids: string[], destino: Map<string, string>) {
         // consulta, y las que no existan simplemente no vuelven.
         for (const c of cartas) {
           const uid = uidPorNativo.get(c.nativoId);
-          if (uid) destino.set(uid, c.imagenes.print);
+          if (uid) destino.set(uid, c);
         }
         continue;
       }
@@ -116,7 +119,7 @@ async function resolverImagenes(uids: string[], destino: Map<string, string>) {
           delJuego.slice(i, i + A_LA_VEZ).map(async (uid) => {
             try {
               const carta = await cat.porId(parseUid(uid).nativoId);
-              if (carta) destino.set(uid, carta.imagenes.print);
+              if (carta) destino.set(uid, carta);
             } catch {
               // Una carta que falla no bota al resto.
             }
@@ -164,7 +167,7 @@ export async function GET(
     	.map((it) => it.id)
 	),
   ];
-  const impresion = new Map<string, string>();
+  const impresion = new Map<string, CartaCatalogo>();
   await resolverImagenes(uids, impresion);
 
   const cartas = [];
@@ -178,9 +181,10 @@ export async function GET(
 	const drive = it.mpcfillId
   	? `https://drive.google.com/uc?id=${it.mpcfillId}&export=download`
   	: "";
-	const imagen = impresion.get(it.id) || drive || it.image || "";
+	const resuelta = impresion.get(it.id);
+	const imagen = resuelta?.imagenes.print || drive || it.image || "";
 	if (!imagen) continue;
-	if (!it.isCustom && !drive && !impresion.has(it.id)) {
+	if (!it.isCustom && !drive && !resuelta) {
   	sinResolver.push(it.name);
 	}
 
@@ -194,6 +198,20 @@ export async function GET(
   	game: it.mpcfillId ? "mpc" : JUEGO_CARDWRIGHT[juego],
   	...(it.dorsoUrl ? { back: absoluta(it.dorsoUrl, origen) } : {}),
   	note: etiquetaAcabado(it.finish),
+  	// La impresión exacta de Scryfall, para que el lote de Card Conjurer la
+  	// rehaga limpia. Cardwright ignora este campo, así que la lista le sirve
+  	// igual que antes.
+  	...(juego === "mtg" && resuelta && !it.mpcfillId
+    	? {
+        	print: {
+          	source: "scryfall",
+          	id: resuelta.nativoId,
+          	set: resuelta.set,
+          	number: resuelta.collector_number,
+          	lang: resuelta.idioma,
+        	},
+      	}
+    	: {}),
 	});
   }
 
