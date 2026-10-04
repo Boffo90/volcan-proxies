@@ -726,6 +726,32 @@ El tipo de este módulo se llama `EstadoPlazo` para no confundirlos.
 
 ---
 
+## 8c. Cuando algo revienta
+
+El proyecto **no tenía ningún error boundary**. Un error de JavaScript en
+producción dejaba al visitante mirando una pantalla prácticamente vacía, sin
+explicación y sin salida — llegó reportado como *"en el carrito completo sale
+todo negra la pantalla"*. El 404 por defecto de Next hacía lo mismo. El error
+estaba ahí antes; lo que faltaba era que se viera.
+
+Hoy hay tres: `app/error.tsx`, `app/global-error.tsx` y `app/not-found.tsx`.
+Dos cosas que hacen y que no son decoración:
+
+- **Dan salida.** Si lo que provoca el error está guardado en el navegador
+  —el carrito vive en `localStorage`—, recargar lo repite para siempre. Por eso
+  en `/carrito` y `/checkout` la pantalla ofrece vaciarlo.
+- **Muestran el `digest`.** En producción Next reemplaza el mensaje real por
+  ese código. Sin pedírselo al cliente, diagnosticar es adivinar.
+
+`global-error.tsx` reemplaza al layout entero, así que trae su propio `<html>`
+y `<body>` y no puede usar nada del sitio: ni la fuente, ni las clases. Todo va
+en estilos en línea a propósito.
+
+Para probarlos hay que hacer estallar algo **en el navegador**, no al
+renderizar: una página que lanza durante el prerender rompe el build.
+
+---
+
 ## 9. Panel de administración
 
 `/admin` — tablero por estado. Botones: Precios, Customs, Fórmulas, Stock,
