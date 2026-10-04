@@ -350,11 +350,25 @@ type PromoAplicada = { etiqueta: string; veces: number };
 * como dos Commander 100 más un Mazo 60, y el resultado nunca puede salir más
 * caro que pagarlas todas sueltas, porque esa opción siempre compite.
 */
+/**
+ * Una cantidad con la que se puede hacer aritmética, venga como venga.
+ *
+ * El total se recalcula en el servidor con los items que manda el navegador,
+ * así que acá no se puede suponer que `quantity` sea un número: basta un "4"
+ * en texto para que la suma concatene y `new Array(cantidad + 1)` reciba
+ * "041". Reventaba el carrito del cliente y también `/api/pedido`.
+ */
+export function cantidadDe(v: unknown): number {
+  const n = Math.floor(Number(v));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
 function repartirEnPromos(
   cantidad: number,
   unitario: number,
   promos: Array<{ cantidad: number; precio: number; etiqueta: string }>
 ): { total: number; aplicadas: PromoAplicada[] } {
+  cantidad = cantidadDe(cantidad);
   if (cantidad <= 0) return { total: 0, aplicadas: [] };
 
   // Solo sirven las promos que realmente convienen frente al precio suelto.
@@ -399,6 +413,10 @@ export function calculateTotalWith(
   precios: Precios,
   items: CartCalcItem[]
 ): { total: number; applied: string; recargos: Recargos } {
+  // Antes de cualquier recorrido: una línea que no es un objeto no se puede
+  // filtrar por propiedades, y basta una para tumbar el cálculo entero.
+  items = items.filter((i) => i && typeof i === "object");
+
   let total = 0;
   const aplicadas: PromoAplicada[] = [];
 
@@ -413,7 +431,7 @@ export function calculateTotalWith(
   for (const f of FINISHES) {
 	const cantidad = items
   	.filter((i) => i.finish === f)
-  	.reduce((s, i) => s + i.quantity, 0);
+  	.reduce((s, i) => s + cantidadDe(i.quantity), 0);
 	if (cantidad <= 0) continue;
 
 	const r = repartirEnPromos(cantidad, precioUnitario(precios, f), [
@@ -445,7 +463,7 @@ export function calculateTotalWith(
   // el extra por carta cubre la segunda pasada por la impresora. Las MDFC no
   // entran acá: su reverso ya viene con la carta y va sin costo.
   const conDorso = items.filter((i) => i.dorsoUrl);
-  const dorsoCartas = conDorso.reduce((s, i) => s + i.quantity, 0);
+  const dorsoCartas = conDorso.reduce((s, i) => s + cantidadDe(i.quantity), 0);
   const dorsoDisenos = new Set(conDorso.map((i) => i.dorsoUrl!)).size;
   const dorsoTotal =
 	dorsoDisenos * precios.dorso_diseno + dorsoCartas * precios.dorso_carta;

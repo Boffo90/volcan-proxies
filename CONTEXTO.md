@@ -750,6 +750,30 @@ en estilos en línea a propósito.
 Para probarlos hay que hacer estallar algo **en el navegador**, no al
 renderizar: una página que lanza durante el prerender rompe el build.
 
+### Lo que de verdad tumbaba el carrito
+
+El carrito vive en `localStorage`, o sea en un lugar que sobrevive meses,
+cambios de versión y ediciones a mano, y **se leía sin mirarlo**. Una línea con
+`quantity` en texto —`"4"` en vez de `4`— hacía que la suma concatenara, y de
+ahí `new Array(cantidad + 1)` en `repartirEnPromos` recibía `"041"`. El carrito
+reventaba entero, y recargar no servía porque volvía a leer el mismo carrito
+roto: el cliente quedaba encerrado.
+
+Lo mismo tumbaba `/api/pedido`, porque **el servidor recalcula el total con los
+items que manda el navegador**. Ahí no se puede suponer que `quantity` sea un
+número.
+
+Hoy `getCart()` sanea al leer y `calculateTotalWith` convierte con `cantidadDe`
+antes de operar. Probado con doce formas de carrito corrupto —cantidad en
+texto, ausente, negativa, NaN, enorme, items nulos, el carrito que no es un
+array— y las doce cargan.
+
+**Un acabado desconocido era peor que un error**: no reventaba, pero ninguna
+promo contaba esa línea, así que la carta aparecía en el carrito y se producía
+**sin cobrarse**. Al leer se cae al acabado más barato, que el cliente ve y
+puede cambiar. En el servidor no hace falta: `/api/pedido` rechaza con 400
+cualquier acabado que no esté en `FINISHES`.
+
 ---
 
 ## 9. Panel de administración

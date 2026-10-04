@@ -1,4 +1,4 @@
-import type { Finish } from "./pricing";
+import { FINISHES, type Finish } from "./pricing";
 import { parseUid, type JuegoId } from "./catalogo/tipos";
 import { IDIOMA_BASE, type IdiomaId } from "./catalogo/idiomas";
 
@@ -53,10 +53,45 @@ function mismaLinea(a: CartItem, b: CartItem): boolean {
 
 const KEY = "cart";
 
+/**
+ * Deja una línea del carrito en un estado con el que se pueda trabajar, o la
+ * descarta.
+ *
+ * El carrito vive en `localStorage`, o sea en un lugar que sobrevive meses,
+ * cambios de versión y ediciones a mano. Una línea con `quantity` en texto
+ * ("4" en vez de 4) hacía que la suma concatenara en vez de sumar, y de ahí
+ * `new Array(cantidad + 1)` recibía "041": el carrito entero reventaba y el
+ * cliente veía una pantalla negra, sin forma de salir porque recargar volvía a
+ * leer el mismo carrito roto.
+ *
+ * Un acabado desconocido no reventaba, que era peor: la línea aparecía en el
+ * carrito pero ninguna promo la contaba, así que esa carta se producía sin
+ * cobrarse. Por eso se cae al más barato en vez de descartarla — el cliente la
+ * ve, la puede cambiar, y nunca se le cobra de más.
+ */
+function sanear(raw: unknown): CartItem | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  if (typeof o.id !== "string" || !o.id) return null;
+
+  const n = Math.floor(Number(o.quantity));
+  const quantity = Number.isFinite(n) && n > 0 ? Math.min(n, 9999) : 1;
+
+  const finish = FINISHES.includes(o.finish as Finish)
+	? (o.finish as Finish)
+	: FINISHES[0];
+
+  return { ...(o as unknown as CartItem), quantity, finish };
+}
+
 export function getCart(): CartItem[] {
   if (typeof window === "undefined") return [];
   try {
-	return JSON.parse(localStorage.getItem(KEY) || "[]");
+	const crudo = JSON.parse(localStorage.getItem(KEY) || "[]");
+	if (!Array.isArray(crudo)) return [];
+	return crudo
+  	.map(sanear)
+  	.filter((i): i is CartItem => i !== null);
   } catch {
 	return [];
   }
