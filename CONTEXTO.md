@@ -155,6 +155,24 @@ código:
 La misma carta con dos acabados son dos líneas del carrito, no una: `mismaLinea`
 en `lib/cart.ts` compara carta, acabado y dorso.
 
+### Los tokens hay que pedirlos
+
+**Scryfall esconde los tokens por defecto.** Sin `include_extras=true` no
+existen para la búsqueda, y por eso el catálogo no encontraba ninguno: buscar
+"Sculpture Treasure" devolvía cero. Un cliente lo reportó y tuvo que mandarnos
+20 artes por correo para que se los montáramos a mano.
+
+Ese parámetro trae además **cartas de arte** (`layout` `art_series` y
+`front_card`, con `type_line` "Card // Card"), que no son imprimibles. Se
+excluyen en la propia consulta y no al recibir, para que el "N cartas
+encontradas" no cuente cosas que después no aparecen.
+
+Va también en `/cards/autocomplete`, que tiene el mismo problema: sin el
+parámetro, escribir el nombre de un token en la barra no sugiere nada.
+
+**La vitrina de la portada pide la búsqueda sin tokens** (`searchCards(q, n,
+false)`): son novedades, y un token suelto ahí no le dice nada a nadie.
+
 ### De dónde salen las cartas
 
 | Juego | Fuente | Llave | Imagen para imprimir |

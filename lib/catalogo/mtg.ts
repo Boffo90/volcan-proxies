@@ -205,14 +205,16 @@ export const MTG: Catalogo = {
     // empezó a cortarnos y la grilla salía vacía. Una página al azar de la
     // búsqueda trae 175 de una vez y deja margen de sobra para filtrar.
     const q = `lang:${idioma}`;
-    const primera = await searchCards(q, 1);
+    // Sin tokens: la vitrina de la portada muestra novedades, y un token
+    // suelto ahí no le dice nada a nadie.
+    const primera = await searchCards(q, 1, false);
     const total = primera?.total_cards ?? 0;
     if (!total) return [];
 
     const porPagina = Math.max(1, primera?.data?.length ?? 175);
     const paginas = Math.ceil(total / porPagina);
     const page = 1 + Math.floor(Math.random() * paginas);
-    const res = page === 1 ? primera : await searchCards(q, page);
+    const res = page === 1 ? primera : await searchCards(q, page, false);
 
     const cartas = aCartas(res?.data);
     for (let i = cartas.length - 1; i > 0; i--) {

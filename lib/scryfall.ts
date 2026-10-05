@@ -92,9 +92,26 @@ type SearchResponse = {
   data: ScryfallCard[];
 };
 
+/**
+ * Las capas que Scryfall suma con `include_extras` y que no son cartas.
+ *
+ * Son las cartas de arte: su `type_line` es "Card // Card" y no hay nada que
+ * imprimir ahí. Se excluyen en la propia consulta y no al recibir, para que el
+ * "N cartas encontradas" que se le muestra al cliente no cuente cosas que
+ * después no aparecen.
+ */
+const CAPAS_NO_JUGABLES = "-layout:art_series -layout:front_card";
+
+/**
+ * @param conTokens Scryfall **esconde los tokens por defecto**: sin
+ * `include_extras` no existen, y por eso el catálogo no encontraba ninguno —
+ * un cliente tuvo que mandarnos 20 artes por correo. Se pide todo salvo en la
+ * vitrina de la portada, donde un token entre las novedades no viene al caso.
+ */
 export async function searchCards(
   query: string,
-  page: number = 1
+  page: number = 1,
+  conTokens: boolean = true
 ): Promise<SearchResponse | null> {
   if (!query.trim()) return null;
 
@@ -112,8 +129,10 @@ export async function searchCards(
   }
 
   const url = `${BASE}/cards/search?q=${encodeURIComponent(
-	finalQuery
-  )}&page=${page}&unique=cards&order=name`;
+	conTokens ? `${finalQuery} ${CAPAS_NO_JUGABLES}` : finalQuery
+  )}&page=${page}&unique=cards&order=name${
+	conTokens ? "&include_extras=true" : ""
+  }`;
 
   try {
 	const res = await fetch(url, { headers, signal: corte(), next: { revalidate: 3600 } });
@@ -230,7 +249,9 @@ export async function autocomplete(q: string): Promise<string[]> {
   if (!q.trim() || q.length < 2) return [];
   try {
 	const res = await fetch(
-  	`${BASE}/cards/autocomplete?q=${encodeURIComponent(q)}`,
+  	// Mismo motivo que en la búsqueda: sin esto, escribir "Sculpture
+  	// Treasure" en la barra no sugiere nada aunque la carta exista.
+  	`${BASE}/cards/autocomplete?q=${encodeURIComponent(q)}&include_extras=true`,
   	{ headers, signal: corte() }
 	);
 	if (!res.ok) return [];
