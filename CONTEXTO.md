@@ -522,19 +522,26 @@ funcione, y las dos viven en el panel de Supabase, no en el código:
   Si el destino no está en la lista, Supabase manda a la Site URL y el enlace
   muere sin explicación.
 
-**El email se limpia antes de mandarlo.** Un cliente vio
-"Unable to validate email address: invalid format" con un correo que a la vista
-estaba perfecto. Eran **caracteres invisibles** —ancho cero, BOM— que mete el
-autocompletado del teléfono al pegar, y que sobreviven a todo: el saneo de
-`<input type="email">` solo quita espacios ASCII y `.trim()` no toca los de
-ancho cero porque no son espacios. Como no se ven, el cliente borra, reescribe,
-vuelve a pegar lo mismo y nunca sale. Lo limpia `normalizarEmail`, usada en
-registro, login y recuperar.
+**El email se limpia antes de mandarlo**, pero eso fue blindaje, no el
+arreglo. Se llegó ahí siguiendo un "Unable to validate email address: invalid
+format" del log de Auth y suponiendo que eran caracteres invisibles pegados por
+el teléfono. **La suposición era falsa**: `<input type="email">` rechaza por su
+cuenta los de ancho cero, antes y después del `@`, así que nunca llegan a
+Supabase desde el formulario. Y las dos pistas ni siquiera eran del mismo
+intento — la captura del cliente era de las 9:57 y ese log de las 04:17 UTC.
+`normalizarEmail` se queda porque no cuesta nada y cubre lo pegado con espacios,
+pero no arregló lo que se creyó que arreglaba.
 
-Comprobado contra el Supabase real, con un dominio inexistente para no crear
-nada: el mismo correo con un carácter invisible da **400 invalid format**, y ya
-limpio da **500 Error sending confirmation email**. Son dos fallas apiladas, y
-la segunda es de configuración.
+**La causa real del registro roto era el SMTP**, y costó tres diagnósticos
+llegar: primero `535` (usuario y contraseña del SMTP), después `550` (el
+remitente era una dirección @gmail, y Resend solo envía desde el dominio
+verificado), y en medio un `{}` en pantalla que no decía nada porque el error
+venía sin mensaje. Se cerró poniendo `no-reply@volcanproxies.cl` como *Sender
+email*.
+
+**La lección, que ya está escrita más arriba para los tiempos y vale igual
+acá:** una línea de log que calza con la teoría no es la confirmación de la
+teoría. Había que mirar la hora.
 
 **Los errores de Auth se traducen, no se muestran crudos.** Un cliente intentó
 registrarse y la pantalla le mostró **`{}`**: el error venía sin mensaje y la
