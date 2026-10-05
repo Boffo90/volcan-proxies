@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Loader2, LogIn, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { traducirErrorAuth } from "@/lib/authErrores";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -59,17 +60,9 @@ export default function LoginPage() {
 	const { error } = await sb.auth.signInWithPassword({ email, password });
 	setLoading(false);
 	if (error) {
-  	// "Email not confirmed" llegaba crudo y en inglés, que es justo el caso
-  	// en que el usuario necesita saber qué hacer.
-  	const noConfirmado = /not confirmed/i.test(error.message);
-  	setSinConfirmar(noConfirmado);
-  	setError(
-    	noConfirmado
-      	? "Tu cuenta todavía no está confirmada. Busca el correo que te mandamos, o pide uno nuevo acá abajo."
-      	: error.message === "Invalid login credentials"
-      	? "Email o contraseña incorrectos"
-      	: error.message
-  	);
+  	const t = traducirErrorAuth(error);
+  	setSinConfirmar(!!t.sinConfirmar);
+  	setError(t.mensaje);
   	return;
 	}
 	router.push("/mi-cuenta");

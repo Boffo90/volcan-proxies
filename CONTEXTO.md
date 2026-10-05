@@ -522,6 +522,15 @@ funcione, y las dos viven en el panel de Supabase, no en el código:
   Si el destino no está en la lista, Supabase manda a la Site URL y el enlace
   muere sin explicación.
 
+**Los errores de Auth se traducen, no se muestran crudos.** Un cliente intentó
+registrarse y la pantalla le mostró **`{}`**: el error venía sin mensaje y la
+página pintaba `error.message` tal cual. Un error que no dice nada es peor que
+ninguno — el cliente no sabe si fue culpa suya, y nosotros no sabemos qué pasó.
+Hoy todo pasa por `traducirErrorAuth` en `lib/authErrores.ts`, que siempre
+devuelve algo accionable y manda el detalle técnico a la consola. El caso sin
+mensaje se trata como problema nuestro y ofrece la salida que de verdad existe:
+**comprar sin cuenta**, que el sitio permite.
+
 **Lo del mismo navegador no es un detalle de copy.** El flujo es PKCE: el
 verificador queda en una cookie del navegador donde se hizo el registro. Si
 el cliente abre el correo en el teléfono habiéndose registrado en el

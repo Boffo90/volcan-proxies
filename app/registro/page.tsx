@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, UserPlus, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { traducirErrorAuth } from "@/lib/authErrores";
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -50,11 +51,7 @@ export default function RegistroPage() {
 	});
 	setLoading(false);
 	if (error) {
-  	setError(
-    	/already registered|already exists/i.test(error.message)
-      	? "Ya hay una cuenta con ese email. Inicia sesión o recupera tu contraseña."
-      	: error.message
-  	);
+  	setError(traducirErrorAuth(error).mensaje);
   	return;
 	}
 	if (data.session) {
