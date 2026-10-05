@@ -12,6 +12,29 @@
  * quién escribirle. El detalle técnico va a la consola, no a la cara.
  */
 
+/**
+ * Deja el email como Supabase lo espera.
+ *
+ * Un cliente vio "Unable to validate email address: invalid format" con un
+ * correo que a la vista estaba perfecto. La causa son caracteres invisibles:
+ * el autocompletado del teléfono los mete al pegar, y **sobreviven a todo** —
+ * el saneo de `<input type="email">` solo quita espacios ASCII, y `.trim()`
+ * no toca los de ancho cero porque no son espacios.
+ *
+ * Como no se ven, el cliente no tiene forma de corregirlo: borra, reescribe,
+ * y vuelve a pegar lo mismo. Por eso se limpia acá y no se le pide a él.
+ */
+export function normalizarEmail(v: string): string {
+  return (
+	v
+  	// Ancho cero, juntadores y marca de orden de bytes. Van como escapes y
+  	// no como los caracteres: en el archivo serian invisibles.
+  	.replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+  	// `trim` si se lleva el espacio duro (U+00A0), que es el otro habitual.
+  	.trim()
+  );
+}
+
 export type ErrorAuth = {
   /** Lo que se le muestra al cliente. */
   mensaje: string;

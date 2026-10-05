@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Loader2, KeyRound, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
+import { normalizarEmail } from "@/lib/authErrores";
 
 export default function RecuperarPage() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ export default function RecuperarPage() {
 	e.preventDefault();
 	setLoading(true);
 	const sb = supabaseBrowser();
-	await sb.auth.resetPasswordForEmail(email, {
+	await sb.auth.resetPasswordForEmail(normalizarEmail(email), {
   	redirectTo: `${window.location.origin}/auth/callback?next=/actualizar-password`,
 	});
 	setLoading(false);

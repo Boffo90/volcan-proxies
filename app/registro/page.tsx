@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, UserPlus, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { traducirErrorAuth } from "@/lib/authErrores";
+import { normalizarEmail, traducirErrorAuth } from "@/lib/authErrores";
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function RegistroPage() {
 	const sb = supabaseBrowser();
 	await sb.auth.resend({
   	type: "signup",
-  	email,
+  	email: normalizarEmail(email),
   	options: {
     	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,
   	},
@@ -39,11 +39,15 @@ export default function RegistroPage() {
 	}
 	setLoading(true);
 	setError("");
+	// El campo puede traer caracteres invisibles pegados por el
+	// autocompletado del teléfono. Supabase los rechaza por formato y el
+	// cliente no tiene cómo verlos para corregirlos.
+	const limpio = normalizarEmail(email);
 	const sb = supabaseBrowser();
 	// Sin `emailRedirectTo` el enlace del correo cae en la Site URL del
 	// proyecto, que no canjea el código. Tiene que apuntar al callback.
 	const { data, error } = await sb.auth.signUp({
-  	email,
+  	email: limpio,
   	password,
   	options: {
     	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,

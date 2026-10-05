@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Loader2, LogIn, Flame } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { supabaseBrowser } from "@/lib/supabaseBrowser";
-import { traducirErrorAuth } from "@/lib/authErrores";
+import { normalizarEmail, traducirErrorAuth } from "@/lib/authErrores";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function LoginPage() {
 	const sb = supabaseBrowser();
 	await sb.auth.resend({
   	type: "signup",
-  	email,
+  	email: normalizarEmail(email),
   	options: {
     	emailRedirectTo: `${window.location.origin}/auth/callback?next=/mi-cuenta`,
   	},
@@ -57,7 +57,10 @@ export default function LoginPage() {
 	setLoading(true);
 	setError("");
 	const sb = supabaseBrowser();
-	const { error } = await sb.auth.signInWithPassword({ email, password });
+	const { error } = await sb.auth.signInWithPassword({
+  	email: normalizarEmail(email),
+  	password,
+	});
 	setLoading(false);
 	if (error) {
   	const t = traducirErrorAuth(error);

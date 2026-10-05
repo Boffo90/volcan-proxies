@@ -522,6 +522,20 @@ funcione, y las dos viven en el panel de Supabase, no en el código:
   Si el destino no está en la lista, Supabase manda a la Site URL y el enlace
   muere sin explicación.
 
+**El email se limpia antes de mandarlo.** Un cliente vio
+"Unable to validate email address: invalid format" con un correo que a la vista
+estaba perfecto. Eran **caracteres invisibles** —ancho cero, BOM— que mete el
+autocompletado del teléfono al pegar, y que sobreviven a todo: el saneo de
+`<input type="email">` solo quita espacios ASCII y `.trim()` no toca los de
+ancho cero porque no son espacios. Como no se ven, el cliente borra, reescribe,
+vuelve a pegar lo mismo y nunca sale. Lo limpia `normalizarEmail`, usada en
+registro, login y recuperar.
+
+Comprobado contra el Supabase real, con un dominio inexistente para no crear
+nada: el mismo correo con un carácter invisible da **400 invalid format**, y ya
+limpio da **500 Error sending confirmation email**. Son dos fallas apiladas, y
+la segunda es de configuración.
+
 **Los errores de Auth se traducen, no se muestran crudos.** Un cliente intentó
 registrarse y la pantalla le mostró **`{}`**: el error venía sin mensaje y la
 página pintaba `error.message` tal cual. Un error que no dice nada es peor que
