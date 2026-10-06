@@ -57,7 +57,8 @@ export async function POST(req: Request) {
   	amount: pedido.total,
   	email: pedido.cliente_email,
   	urlConfirmation: siteUrl + "/api/flow/confirm",
-  	urlReturn: siteUrl + "/gracias?pedido=" + pedido.numero + "&metodo=flow",
+  	// Ver app/api/flow/retorno: Flow vuelve con POST y /gracias solo acepta GET.
+  	urlReturn: siteUrl + "/api/flow/retorno?pedido=" + pedido.numero,
 	});
 
 	// El token nuevo reemplaza al anterior: es el que vale de aquí en adelante.

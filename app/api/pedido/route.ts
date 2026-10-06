@@ -282,8 +282,11 @@ export async function POST(req: Request) {
       	amount: total,
       	email,
       	urlConfirmation: siteUrl + "/api/flow/confirm",
+      	// Flow devuelve con POST, y /gracias es una página (solo GET).
+      	// Esta ruta recibe el POST y redirige con 303 para que el navegador
+      	// rehaga la petición como GET.
       	urlReturn:
-        	siteUrl + "/gracias?pedido=" + pedido.numero + "&metodo=flow",
+        	siteUrl + "/api/flow/retorno?pedido=" + pedido.numero,
     	});
 
     	paymentUrl = flowPayment.url + "?token=" + flowPayment.token;

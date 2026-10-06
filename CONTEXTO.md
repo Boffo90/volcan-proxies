@@ -493,6 +493,24 @@ La dirección se compara normalizada (`normalizarDireccion`), sin tildes ni
 mayúsculas, pero **completa**. Direcciones parecidas no agrupan: son dos
 entregas y el courier cobra las dos.
 
+### Flow devuelve al cliente con POST
+
+La `urlReturn` apuntaba directo a `/gracias`, que es una **página** de Next y
+solo responde GET. Flow vuelve con **POST**, así que el cliente que pagaba veía
+un **HTTP 405** en pantalla. El pago entraba igual —el webhook de confirmación
+es otra ruta y funcionaba—, pero lo que el cliente veía era un error.
+
+**El costo no fue cosmético.** Al menos uno creyó que el pago había fallado y
+volvió a pagar nueve minutos después: dos pedidos cobrados ($65.190), una
+devolución por transferencia, y de paso dos pedidos que no eran idénticos
+porque en el segundo intento corrigió cosas. Antes de encontrar esto se
+atribuyó a que "la página se quedó pegada".
+
+Hoy la `urlReturn` apunta a `app/api/flow/retorno`, que acepta el POST y
+redirige con **303**. El código importa: con 307 o 308 el navegador conservaría
+el método y volvería al mismo 405. Son dos sitios los que arman esa URL —el
+pedido nuevo y el reintento de pago—, y los dos tienen que apuntar ahí.
+
 ### Reintento de pago
 
 Cuando falla un pago en Flow, el cliente puede reintentar desde
