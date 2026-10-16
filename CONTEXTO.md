@@ -331,6 +331,12 @@ ese problema ya no existe — el laminado en frío del Premium es otro proceso y
 no curva. El adhesivo del refuerzo es el mismo papel en la Reforzada y en el
 Premium.
 
+**El grosor ya no lo da el refuerzo en los dos.** Medido a mano por Seba: la
+Reforzada queda *apenas* más gruesa que la Premium, y las dos pasan por carta
+real. La Básica es la única claramente más delgada — lleva el mismo papel que
+la Premium, sin el laminado. Lo que la Premium compra no es cuerpo sino
+protección y textura, y la copia del sitio tiene que decir eso y no otra cosa.
+
 **No se especifica si el refuerzo es mate o glossy**, ni al cliente ni en las
 fórmulas: va por dentro y Seba usa lo que tenga a mano.
 

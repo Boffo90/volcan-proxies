@@ -253,10 +253,11 @@ export default function AcabadosPage() {
         	</table>
       	</div>
       	<p className="text-sm text-gray-300 mt-4">
-        	<b className="text-white">Sobre el grosor:</b> los acabados con
-        	refuerzo por detrás quedan prácticamente iguales a una carta real, así
-        	que se barajan sin notarse dentro del mazo. La Básica 300g es la única
-        	que queda más delgada, porque va sin refuerzo.
+        	<b className="text-white">Sobre el grosor:</b> la Reforzada y la
+        	Premium quedan prácticamente iguales a una carta real —la Reforzada
+        	apenas más gruesa— y se barajan sin notarse dentro del mazo. La
+        	Básica 300g es la única que queda más delgada: lleva el mismo papel
+        	que la Premium, pero sin el laminado encima.
       	</p>
       	{(() => {
         	// Solo los pausados vuelven; los descontinuados no se mencionan.
