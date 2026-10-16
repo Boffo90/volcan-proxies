@@ -676,25 +676,32 @@ separadas — `CARTAS_POR_HOJA` y `MIN_CARDS` — aunque hoy valgan lo mismo:
 estaban unidas y el panel de stock calculaba las hojas dividiendo por el
 mínimo de compra, así que mover uno habría movido el otro en silencio.
 
-Insumos con flete a Pucón (+18% estimado, ajustable):
+**Los insumos salen de boletas, no de precios de lista.** Lo que importa es lo
+que se pagó puesto en Pucón, envío incluido; el +18% de flete que se estimaba
+antes quedó obsoleto y se equivocaba feo en un caso.
 
-| Insumo | Costo | Por hoja con flete |
+| Insumo | Compra real | Por hoja |
 |---|---|---|
-| Papel 300g doble faz | $3.900 / 50 | $92,0 |
-| Papel 200g semibrillante doble faz | $4.700 / 50 | $110,9 |
-| Adhesivo mate 130g | $5.990 / 50 | $141,4 |
-| Laminado en frío | $8.990 / 50 | $212,2 |
-| Tinta Epson T544 | $8.490 / ~300 | $33,4 |
-| Papel 260g semibrillante | $5.790 / 50 | sin uso desde octubre de 2026 |
-| Pouch termolaminar | $12.970 / 100 | sin uso: ninguna lleva laminado en caliente |
+| Papel 300g doble faz | $12.309 / 100 hojas | **$123,1** |
+| Papel 200g semibrillante doble faz | $23.960 / 200 hojas | **$119,8** |
+| Laminado en frío matte | $34.975 / 150 hojas | **$233,2** |
+| Adhesivo mate | pendiente | $141,4 *(estimado)* |
+| Tinta Epson T544 | $8.490 / ~300 | $33,4 *(estimado)* |
+| Papel 260g semibrillante | — | sin uso desde octubre de 2026 |
+| Pouch termolaminar | — | sin uso: ninguna lleva laminado en caliente |
+
+**El 300g costaba 34% más de lo anotado** ($123,1 contra los $92,0 que daba el
+precio de lista más flete), y lo usan dos de los tres acabados. Los otros dos
+se desviaban menos: 200g +8%, laminado +10%. La moraleja es la de siempre acá:
+el número que vale es el de la boleta.
 
 Y lo que cuesta cada acabado (recetas de octubre de 2026):
 
 | Acabado | Receta | Material/hoja | Material/carta |
 |---|---|---|---|
-| Básica | 300g + tinta | $125,4 | **$15,7** |
-| Reforzada | 200g + adhesivo + tinta | $285,7 | **$35,7** |
-| Premium | 300g + frío + tinta | $337,6 | **$42,2** |
+| Básica | 300g + tinta | $156,5 | **$19,6** |
+| Reforzada | 200g + adhesivo + tinta | $294,6 | **$36,8** |
+| Premium | 300g + frío + tinta | $389,7 | **$48,7** |
 
 **El Premium dejó de llevar refuerzo.** Hoy es el mismo papel de la Básica con
 el film encima, sin el adhesivo por detrás. Eso le bajó el material de $62,2 a
@@ -712,19 +719,19 @@ punta a punta, no solo impresión):
 
 | Acabado | Tiempo | Margen | **Por hora** |
 |---|---|---|---|
-| Básica $130 | 0,5 h | $8.769 | $17.539 |
-| Reforzada $250 | 1,0 h | $16.186 | $16.186 |
-| **Premium $400** | 1,5 h | $27.611 | **$18.407** |
+| Básica $130 | 0,5 h | $8.366 | $16.731 |
+| Reforzada $250 | 1,0 h | $16.070 | $16.070 |
+| **Premium $400** | 1,5 h | $26.934 | **$17.956** |
 
 **El orden se dio vuelta en octubre de 2026.** Con las recetas viejas el
 Premium rendía $16.952 por hora y quedaba al medio; al perder el refuerzo pasó
-a ser **el que mejor paga el tiempo**, y la Reforzada quedó última. La brecha
-entre el mejor y el peor subió de 11% a 14%.
+a ser **el que mejor paga el tiempo**, y la Reforzada quedó última.
 
-Sigue sin haber nada urgente que ajustar —14% no es una distorsión grave— pero
-ya no es cierto que dé lo mismo cuál se venda: **si hay un acabado que conviene
-empujar, hoy es el Premium.** Y si alguna vez hay que bajarle el precio a algo
-para mover volumen, ese es el que más margen tiene para aguantarlo.
+La brecha entre el mejor y el peor es de 12%, parecida a la de antes, así que
+no hay nada urgente que ajustar. Pero ya no es cierto que dé lo mismo cuál se
+venda: **si hay un acabado que conviene empujar, hoy es el Premium.** Y si
+alguna vez hay que bajar un precio para mover volumen, ese es el que más
+margen tiene para aguantarlo.
 
 ### Tres cosas que este modelo aprendió a la mala
 
