@@ -685,22 +685,25 @@ antes quedó obsoleto y se equivocaba feo en un caso.
 | Papel 300g doble faz | $12.309 / 100 hojas | **$123,1** |
 | Papel 200g semibrillante doble faz | $23.960 / 200 hojas | **$119,8** |
 | Laminado en frío matte | $34.975 / 150 hojas | **$233,2** |
-| Adhesivo mate | pendiente | $141,4 *(estimado)* |
+| Adhesivo mate | $5.390 / 50 hojas | **$107,8** |
 | Tinta Epson T544 | $8.490 / ~300 | $33,4 *(estimado)* |
 | Papel 260g semibrillante | — | sin uso desde octubre de 2026 |
 | Pouch termolaminar | — | sin uso: ninguna lleva laminado en caliente |
 
-**El 300g costaba 34% más de lo anotado** ($123,1 contra los $92,0 que daba el
-precio de lista más flete), y lo usan dos de los tres acabados. Los otros dos
-se desviaban menos: 200g +8%, laminado +10%. La moraleja es la de siempre acá:
-el número que vale es el de la boleta.
+Los estimados se equivocaron **en las dos direcciones**: el 300g costaba 34%
+*más* de lo anotado ($123,1 contra $92,0) y el adhesivo 24% *menos* ($107,8
+contra $141,4). O sea el error no era un sesgo parejo que se pudiera corregir
+con un factor; era ruido. La moraleja es la de siempre acá: el número que vale
+es el de la boleta.
+
+El 300g es el que más pesa porque lo usan dos de los tres acabados.
 
 Y lo que cuesta cada acabado (recetas de octubre de 2026):
 
 | Acabado | Receta | Material/hoja | Material/carta |
 |---|---|---|---|
 | Básica | 300g + tinta | $156,5 | **$19,6** |
-| Reforzada | 200g + adhesivo + tinta | $294,6 | **$36,8** |
+| Reforzada | 200g + adhesivo + tinta | $261,0 | **$32,6** |
 | Premium | 300g + frío + tinta | $389,7 | **$48,7** |
 
 **El Premium dejó de llevar refuerzo.** Hoy es el mismo papel de la Básica con
@@ -720,15 +723,15 @@ punta a punta, no solo impresión):
 | Acabado | Tiempo | Margen | **Por hora** |
 |---|---|---|---|
 | Básica $130 | 0,5 h | $8.366 | $16.731 |
-| Reforzada $250 | 1,0 h | $16.070 | $16.070 |
+| Reforzada $250 | 1,0 h | $16.507 | $16.507 |
 | **Premium $400** | 1,5 h | $26.934 | **$17.956** |
 
 **El orden se dio vuelta en octubre de 2026.** Con las recetas viejas el
 Premium rendía $16.952 por hora y quedaba al medio; al perder el refuerzo pasó
 a ser **el que mejor paga el tiempo**, y la Reforzada quedó última.
 
-La brecha entre el mejor y el peor es de 12%, parecida a la de antes, así que
-no hay nada urgente que ajustar. Pero ya no es cierto que dé lo mismo cuál se
+La brecha entre el mejor y el peor es de **8,8%**, la más estrecha que ha
+tenido la escalera, así que no hay nada que ajustar. Pero ya no es cierto que dé lo mismo cuál se
 venda: **si hay un acabado que conviene empujar, hoy es el Premium.** Y si
 alguna vez hay que bajar un precio para mover volumen, ese es el que más
 margen tiene para aguantarlo.
