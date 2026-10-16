@@ -4,6 +4,7 @@ export const MATERIALES = [
   "papel200",
   "papel260",
   "papel300",
+  "papel300Glossy",
   "papelAdhesivo",
   "pouchMatte",
   "pouchGlossy",
@@ -31,9 +32,14 @@ export const MATERIAL_INFO: Record<MaterialKey, MaterialInfo> = {
 	ayuda: "Sin uso: ningún acabado actual lo lleva. Queda para controlar lo que sobró.",
   },
   papel300: {
-	label: "Papel 300g doble faz",
+	label: "Papel semibrillo 300g doble faz",
 	unidad: "hojas",
-	ayuda: "La Básica entera, y el frente del Premium.",
+	ayuda: "Solo para la Básica. Acá el frente se ve, así que va semibrillo. Viene en resmas de 50.",
+  },
+  papel300Glossy: {
+	label: "Papel 300g doble faz glossy",
+	unidad: "hojas",
+	ayuda: "Solo para el Premium. El laminado en frío le tapa el brillo, así que conviene el glossy, que sale más barato. Viene en resmas de 100.",
   },
   papelAdhesivo: {
 	label: "Papel adhesivo mate 130g",
@@ -69,6 +75,8 @@ export const STOCK_DEFAULT: Stock = {
   papel200: { cantidad: 0, minimo: 50 },
   papel260: { cantidad: 0, minimo: 50 },
   papel300: { cantidad: 0, minimo: 50 },
+  // Viene en resmas de 100, así que el mínimo va más alto.
+  papel300Glossy: { cantidad: 0, minimo: 100 },
   papelAdhesivo: { cantidad: 0, minimo: 50 },
   pouchMatte: { cantidad: 0, minimo: 100 },
   pouchGlossy: { cantidad: 0, minimo: 100 },
@@ -110,9 +118,11 @@ export const RECETA: Record<Finish, Partial<Record<MaterialKey, number>>> = {
   // es 200g semibrillante con una hoja de adhesivo por detrás. Renombrarla no
   // se puede, porque los pedidos guardan la clave.
   reforzada300: { papel200: 1, papelAdhesivo: 1, tinta: 1 },
-  // Ya no lleva refuerzo: es el mismo 300g de la Básica con el film encima.
-  // Eso lo abarató bastante — ver el modelo de costos en CONTEXTO.md.
-  premiumFrio: { papel300: 1, filmFrio: 1, tinta: 1 },
+  // Ya no lleva refuerzo: es 300g con el film encima. Pero NO es el mismo
+  // 300g de la Básica: acá va el glossy, que sale más barato y cuyo brillo
+  // queda tapado por el laminado. Son dos materiales distintos a propósito,
+  // para que el stock avise cuando falta uno teniendo del otro.
+  premiumFrio: { papel300Glossy: 1, filmFrio: 1, tinta: 1 },
   glossy: { papel200: 1, pouchGlossy: 1, tinta: 1 },
   matte: { papel200: 1, pouchMatte: 1, tinta: 1 },
   premium: { papel200: 1, pouchMatte: 0.5, filmFrio: 1, tinta: 1 },

@@ -682,7 +682,8 @@ antes quedó obsoleto y se equivocaba feo en un caso.
 
 | Insumo | Compra real | Por hoja |
 |---|---|---|
-| Papel 300g doble faz | $12.309 / 100 hojas | **$123,1** |
+| Papel semibrillo 300g (Papeles Lee) | $4.500 / 50 hojas | **$90,0** *(sin envío)* |
+| Papel 300g glossy (Imprink) | $12.309 / 100 hojas | **$123,1** |
 | Papel 200g semibrillante doble faz | $23.960 / 200 hojas | **$119,8** |
 | Laminado en frío matte | $34.975 / 150 hojas | **$233,2** |
 | Adhesivo mate | $5.390 / 50 hojas | **$107,8** |
@@ -702,9 +703,22 @@ Y lo que cuesta cada acabado (recetas de octubre de 2026):
 
 | Acabado | Receta | Material/hoja | Material/carta |
 |---|---|---|---|
-| Básica | 300g + tinta | $156,5 | **$19,6** |
+| Básica | 300g semibrillo + tinta | $123,4 | **$15,4** |
 | Reforzada | 200g + adhesivo + tinta | $261,0 | **$32,6** |
-| Premium | 300g + frío + tinta | $389,7 | **$48,7** |
+| Premium | 300g glossy + frío + tinta | $389,7 | **$48,7** |
+
+**Son dos papeles de 300g distintos y por eso son dos materiales distintos en
+`lib/stock.ts`.** La Básica lleva semibrillo, porque ahí el frente se ve. El
+Premium lleva glossy, porque el laminado en frío le tapa el brillo y entonces
+el acabado del papel da lo mismo. Con una sola clave, el panel no podría avisar
+que falta uno teniendo del otro.
+
+**Ojo con el precio del glossy.** Se eligió creyendo que era mejor precio, y
+por hoja sale **más caro**: $123,1 contra $90,0. La comparación no es limpia
+—el del glossy incluye envío y el otro no—, pero para que el glossy ganara, el
+envío de Papeles Lee tendría que pasar de **$1.650 por resma de 50**. Vale la
+pena comprobarlo antes de darlo por bueno; lo que sí tiene a favor es que viene
+en resmas de 100, o sea menos compras.
 
 **El Premium dejó de llevar refuerzo.** Hoy es el mismo papel de la Básica con
 el film encima, sin el adhesivo por detrás. Eso le bajó el material de $62,2 a
@@ -722,7 +736,7 @@ punta a punta, no solo impresión):
 
 | Acabado | Tiempo | Margen | **Por hora** |
 |---|---|---|---|
-| Básica $130 | 0,5 h | $8.366 | $16.731 |
+| Básica $130 | 0,5 h | $8.796 | $17.592 |
 | Reforzada $250 | 1,0 h | $16.507 | $16.507 |
 | **Premium $400** | 1,5 h | $26.934 | **$17.956** |
 
