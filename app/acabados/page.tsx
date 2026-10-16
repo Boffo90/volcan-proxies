@@ -52,8 +52,8 @@ const DETALLE: Record<Finish, Detalle> = {
   },
   reforzada300: {
 	proceso: [
-  	"Impresión sobre papel fotográfico de 260g, en alta calidad.",
-  	"Se refuerza con un segundo papel por detrás, que es lo que le da el cuerpo.",
+  	"Impresión sobre papel semibrillante de 200g doble faz, en alta calidad.",
+  	"Se refuerza con un papel adhesivo por detrás, que es lo que le da el cuerpo.",
 	],
 	sensacion:
   	"El refuerzo del dorso le da firmeza y snap muy parecidos a los de una carta real, y el frente conserva el semibrillo del papel, que ya se parece bastante al de una carta.",
@@ -66,12 +66,11 @@ const DETALLE: Record<Finish, Detalle> = {
   },
   premiumFrio: {
 	proceso: [
-  	"Impresión sobre papel fotográfico de 200g, en la máxima calidad que da la impresora.",
-  	"Se refuerza con un papel adhesivo por detrás, que es lo que le da el cuerpo.",
+  	"Impresión sobre papel de 300g doble faz, en la máxima calidad que da la impresora.",
   	"Laminado en frío por delante, que le da la textura y la protección.",
 	],
 	sensacion:
-  	"Es la que mejor se siente de todas: el refuerzo le da el cuerpo de una carta real y el laminado en frío le suma una textura pareja que protege el frente del roce.",
+  	"El laminado en frío le da una textura pareja que no tiene ningún otro acabado, y protege el frente del roce y las huellas.",
 	idealPara:
   	"El mazo que va a durar años, o cuando quieres el mejor acabado posible sin discutir el precio.",
 	grosor: "Como carta real",

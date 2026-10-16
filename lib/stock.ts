@@ -21,24 +21,24 @@ export type MaterialInfo = {
 
 export const MATERIAL_INFO: Record<MaterialKey, MaterialInfo> = {
   papel200: {
-	label: "Papel fotográfico 200g",
+	label: "Papel semibrillante 200g doble faz",
 	unidad: "hojas",
-	ayuda: "Para Glossy, Matte y Matte Premium.",
+	ayuda: "El frente de la Reforzada. También lo usaban los acabados pausados.",
   },
   papel260: {
 	label: "Papel semibrillante 260g",
 	unidad: "hojas",
-	ayuda: "El frente de la Reforzada y del Premium.",
+	ayuda: "Sin uso: ningún acabado actual lo lleva. Queda para controlar lo que sobró.",
   },
   papel300: {
 	label: "Papel 300g doble faz",
 	unidad: "hojas",
-	ayuda: "Solo para la Básica.",
+	ayuda: "La Básica entera, y el frente del Premium.",
   },
   papelAdhesivo: {
 	label: "Papel adhesivo mate 130g",
 	unidad: "hojas",
-	ayuda: "El refuerzo de la Reforzada y del Premium: va pegado por detrás en las dos. Es el mismo papel, den 130 o 135 gramos.",
+	ayuda: "El refuerzo de la Reforzada, pegado por detrás. Da lo mismo si viene en 130 o 135 gramos.",
   },
   pouchMatte: {
 	label: "Pouch termolaminar matte",
@@ -106,11 +106,13 @@ export function normalizeStock(raw: unknown): Stock {
 */
 export const RECETA: Record<Finish, Partial<Record<MaterialKey, number>>> = {
   base300: { papel300: 1, tinta: 1 },
-  // La clave dice "300" por historia; el acabado hoy es 260g más una hoja de
-  // refuerzo por detrás, y ya no lleva pouch. La receta anterior contaba
-  // papel de 300g y láminas de pouch que no se usan.
-  reforzada300: { papel260: 1, papelAdhesivo: 1, tinta: 1 },
-  premiumFrio: { papel200: 1, papelAdhesivo: 1, filmFrio: 1, tinta: 1 },
+  // La clave dice "300" por historia y el acabado ya no lleva ese papel: hoy
+  // es 200g semibrillante con una hoja de adhesivo por detrás. Renombrarla no
+  // se puede, porque los pedidos guardan la clave.
+  reforzada300: { papel200: 1, papelAdhesivo: 1, tinta: 1 },
+  // Ya no lleva refuerzo: es el mismo 300g de la Básica con el film encima.
+  // Eso lo abarató bastante — ver el modelo de costos en CONTEXTO.md.
+  premiumFrio: { papel300: 1, filmFrio: 1, tinta: 1 },
   glossy: { papel200: 1, pouchGlossy: 1, tinta: 1 },
   matte: { papel200: 1, pouchMatte: 1, tinta: 1 },
   premium: { papel200: 1, pouchMatte: 0.5, filmFrio: 1, tinta: 1 },

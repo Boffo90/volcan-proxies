@@ -680,21 +680,26 @@ Insumos con flete a Pucón (+18% estimado, ajustable):
 
 | Insumo | Costo | Por hoja con flete |
 |---|---|---|
-| Papel 300g semibrillante | $3.900 / 50 | $92,0 |
-| Papel 260g semibrillante | $5.790 / 50 | $136,6 |
-| Papel 200g semibrillo | $4.700 / 50 | $110,9 |
+| Papel 300g doble faz | $3.900 / 50 | $92,0 |
+| Papel 200g semibrillante doble faz | $4.700 / 50 | $110,9 |
 | Adhesivo mate 130g | $5.990 / 50 | $141,4 |
 | Laminado en frío | $8.990 / 50 | $212,2 |
 | Tinta Epson T544 | $8.490 / ~300 | $33,4 |
+| Papel 260g semibrillante | $5.790 / 50 | sin uso desde octubre de 2026 |
 | Pouch termolaminar | $12.970 / 100 | sin uso: ninguna lleva laminado en caliente |
 
-Y lo que cuesta cada acabado:
+Y lo que cuesta cada acabado (recetas de octubre de 2026):
 
 | Acabado | Receta | Material/hoja | Material/carta |
 |---|---|---|---|
 | Básica | 300g + tinta | $125,4 | **$15,7** |
-| Reforzada | 260g + adhesivo + tinta | $311,4 | **$38,9** |
-| Premium | 200g + adhesivo + frío + tinta | $497,8 | **$62,2** |
+| Reforzada | 200g + adhesivo + tinta | $285,7 | **$35,7** |
+| Premium | 300g + frío + tinta | $337,6 | **$42,2** |
+
+**El Premium dejó de llevar refuerzo.** Hoy es el mismo papel de la Básica con
+el film encima, sin el adhesivo por detrás. Eso le bajó el material de $62,2 a
+**$42,2 por carta**, un 32% menos, y es el cambio que da vuelta la tabla de
+abajo. La Reforzada también bajó, de $38,9 a $35,7, porque pasó de 260g a 200g.
 
 ### La métrica es la ganancia por hora, no el margen por carta
 
@@ -708,13 +713,18 @@ punta a punta, no solo impresión):
 | Acabado | Tiempo | Margen | **Por hora** |
 |---|---|---|---|
 | Básica $130 | 0,5 h | $8.769 | $17.539 |
-| Reforzada $250 | 1,0 h | $15.852 | $15.852 |
-| Premium $400 | 1,5 h | $25.428 | $16.952 |
+| Reforzada $250 | 1,0 h | $16.186 | $16.186 |
+| **Premium $400** | 1,5 h | $27.611 | **$18.407** |
 
-**Entre el mejor y el peor hay 11%.** La escalera está bien calibrada: los tres
-pagan el tiempo casi igual, así que el cliente elige por lo que quiere y no hay
-un acabado que convenga empujar. Revisado en septiembre de 2026; **no hay nada
-que ajustar**, ni en los precios ni en las promos.
+**El orden se dio vuelta en octubre de 2026.** Con las recetas viejas el
+Premium rendía $16.952 por hora y quedaba al medio; al perder el refuerzo pasó
+a ser **el que mejor paga el tiempo**, y la Reforzada quedó última. La brecha
+entre el mejor y el peor subió de 11% a 14%.
+
+Sigue sin haber nada urgente que ajustar —14% no es una distorsión grave— pero
+ya no es cierto que dé lo mismo cuál se venda: **si hay un acabado que conviene
+empujar, hoy es el Premium.** Y si alguna vez hay que bajarle el precio a algo
+para mover volumen, ese es el que más margen tiene para aguantarlo.
 
 ### Tres cosas que este modelo aprendió a la mala
 

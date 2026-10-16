@@ -36,13 +36,13 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
 	contra: "Más delgada que una carta real y sin protección al uso.",
   },
   // La clave dice "300" por historia: cuando se creó el acabado era papel de
-  // 300g laminado. Hoy es 260g reforzado con un segundo papel, pero la clave
+  // 300g laminado. Hoy es 200g reforzado con un adhesivo por detrás, pero la clave
   // NO se puede renombrar: es la que guardan todos los pedidos hechos hasta
   // ahora. Lo que ve el cliente es el `label`.
   reforzada300: {
 	label: "Reforzada",
 	corto: "Reforzada",
-	desc: "Papel de 260g reforzado con un segundo papel por detrás, impreso en alta calidad.",
+	desc: "Papel semibrillante de 200g reforzado con un papel adhesivo por detrás, impreso en alta calidad.",
 	pro: "Rigidez de carta real y mejor impresión que la Básica.",
 	contra: "Cuesta casi el doble que la Básica.",
   },
@@ -52,7 +52,7 @@ export const FINISH_INFO: Record<Finish, FinishInfo> = {
   premiumFrio: {
 	label: "Premium",
 	corto: "Premium",
-	desc: "Papel de 200g con un adhesivo por detrás y laminado en frío por delante, impreso en la máxima calidad.",
+	desc: "Papel de 300g doble faz con laminado en frío por delante, impreso en la máxima calidad.",
 	pro: "La mejor textura y la más duradera de todas.",
 	contra: "La más cara y la que más demora en producirse.",
   },
