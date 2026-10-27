@@ -164,21 +164,46 @@ export const MTG: Catalogo = {
   idiomas: ["en", "es", "pt", "ja", "de", "fr", "it"],
 
   async buscar(q: string, idioma: IdiomaId): Promise<ResultadoBusqueda> {
-    // Con `lang:` Scryfall además busca por el nombre traducido: "Relámpago"
-    // encuentra 39 cartas en español, que en inglés no encontraría ninguna.
-    const res = await searchCards(`${q} lang:${idioma}`);
-    // Una carta que no salió en ese idioma no existe para esa búsqueda. Antes
-    // de devolver vacío se reintenta en inglés, que es lo que se imprime
-    // cuando no hay versión traducida.
-    if (!res?.data?.length && idioma !== IDIOMA_BASE) {
-      const enIngles = await searchCards(`${q} lang:${IDIOMA_BASE}`);
+    // Buscamos SIEMPRE en inglés (base) para traer TODO el universo de cartas.
+    // Así el cliente ve todas las cartas disponibles, no solo las que Scryfall
+    // tiene en el idioma pedido. Las que falten en ese idioma se marcan para
+    // hacer custom y se imprimirán en el idioma solicitado.
+    const res = await searchCards(`${q} lang:${IDIOMA_BASE}`);
+    const cartas = (res?.data ?? []).filter(imprimible);
+
+    // Si el cliente pidió inglés, devolvemos directo sin overhead.
+    if (idioma === IDIOMA_BASE) {
       return {
-        cartas: aCartas(enIngles?.data),
-        total: enIngles?.total_cards ?? 0,
+        cartas: aCartas(cartas),
+        total: res?.total_cards ?? 0,
       };
     }
+
+    // Para cada carta, intentamos conseguir la versión en el idioma pedido.
+    // Si existe y es imprimible, la usamos. Si no, marcamos needsCustomLanguage
+    // y forzamos idioma = idiomaSolicitado para que el carrito/pedido lo lleve.
+    const conIdioma = await Promise.all(
+      cartas.map(async (c) => {
+        const traducida = await getPrintingInLanguage(
+          c.set,
+          c.collector_number,
+          idioma
+        );
+        const tieneEnIdioma = traducida && imprimible(traducida);
+
+        const carta = aCarta(tieneEnIdioma ? traducida : c);
+        if (!tieneEnIdioma) {
+          carta.needsCustomLanguage = true;
+          carta.idiomaSolicitado = idioma;
+          // Forzamos el idioma al solicitado para que el carrito/pedido lo lleve
+          carta.idioma = idioma;
+        }
+        return carta;
+      })
+    );
+
     return {
-      cartas: aCartas(res?.data),
+      cartas: conIdioma,
       total: res?.total_cards ?? 0,
     };
   },

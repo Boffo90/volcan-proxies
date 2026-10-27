@@ -51,11 +51,15 @@ function TarjetaCarta({
   const [qty, setQty] = useState(1);
   const [agregada, setAgregada] = useState(false);
 
+  // Si la carta necesita custom language, el idioma que va al carrito/pedido
+  // es el solicitado por el cliente, no el de la fuente.
+  const idiomaParaCarrito = card.idiomaSolicitado ?? card.idioma;
+
   const agregar = () => {
     addToCart({
       id: card.uid,
       juego: card.juego,
-      idioma: card.idioma,
+      idioma: idiomaParaCarrito,
       name: card.name,
       set: card.set,
       set_name: card.set_name,
@@ -88,6 +92,13 @@ function TarjetaCarta({
             alt={card.name}
             className="w-full h-full object-cover"
           />
+          {card.needsCustomLanguage && (
+            <div className="absolute top-2 right-2 z-10">
+              <span className="bg-[#FF4F1A]/95 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-lg">
+                Custom {etiquetaDeIdioma(card.idiomaSolicitado ?? card.idioma).toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
         <div className="px-3 pt-3">
           <p className="font-semibold text-sm truncate">{card.name}</p>

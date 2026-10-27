@@ -70,13 +70,21 @@ export type CartaCatalogo = {
   rarity?: string;
   artist?: string;
   /**
-   * El idioma en que llegó esta carta.
+   * El idioma en que llegó esta carta de la fuente original.
    *
    * No es el que se pidió: es el que la fuente entregó. Si se buscaba en
    * español y solo existe en inglés, acá dice "en", y así el cliente ve la
    * carta que va a recibir en vez de una promesa.
    */
   idioma: IdiomaId;
+  /**
+   * Si true, la carta no existe en el idioma solicitado en la fuente original
+   * y se hará custom. El cliente ve la versión base (inglés) pero el pedido
+   * irá en el idioma solicitado.
+   */
+  needsCustomLanguage?: boolean;
+  /** El idioma que el cliente seleccionó (puede diferir de `idioma` real). */
+  idiomaSolicitado?: IdiomaId;
   /**
    * La ilustración es más ancha que alta.
    *
