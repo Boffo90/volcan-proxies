@@ -118,19 +118,19 @@ export default function SeguimientoPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-3xl mx-auto">
     	{loading ? (
       	<div className="flex justify-center py-20">
-        	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+        	<Loader2 className="animate-spin text-flame-ink" size={32} />
       	</div>
     	) : notFound ? (
       	<div className="text-center py-20">
-        	<Package className="mx-auto text-gray-500 mb-4" size={48} />
+        	<Package className="mx-auto text-ink-faint mb-4" size={48} />
         	<h1 className="text-2xl font-bold mb-2">Pedido no encontrado</h1>
-        	<p className="text-gray-400">
+        	<p className="text-ink-muted">
           	Verifica el número o escríbenos a volcanproxies@gmail.com
         	</p>
       	</div>
@@ -141,7 +141,7 @@ export default function SeguimientoPage() {
             	Pedido{" "}
             	<span className="text-lava">#{pedido.numero}</span>
           	</h1>
-          	<p className="text-sm text-gray-400">
+          	<p className="text-sm text-ink-muted">
             	Realizado el{" "}
             	{new Date(pedido.created_at).toLocaleDateString("es-CL", {
               	day: "numeric",
@@ -152,18 +152,18 @@ export default function SeguimientoPage() {
         	</Reveal>
 
         	{sinPagar && (
-          	<div className="bg-yellow-500/10 border border-yellow-500/40 p-5 rounded-xl mb-8">
-            	<h3 className="font-bold mb-1 flex items-center gap-2 text-yellow-300">
+          	<div className="bg-yellow-500/10 border border-amber-700/35 p-5 rounded-xl mb-8">
+            	<h3 className="font-bold mb-1 flex items-center gap-2 text-amber-700">
               	<CreditCard size={18} /> Este pedido está sin pagar
             	</h3>
-            	<p className="text-sm text-yellow-100/80 mb-4">
+            	<p className="text-sm text-amber-700 mb-4">
               	Lo tenemos guardado completo. Empieza a producirse en cuanto
               	recibamos el pago.
             	</p>
             	<button
               	onClick={reintentarPago}
               	disabled={pagando}
-              	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50"
+              	className="btn-flame px-6 py-3 rounded-lg font-semibold inline-flex items-center gap-2 transition-all"
             	>
               	{pagando ? (
                 	<Loader2 className="animate-spin" size={18} />
@@ -172,7 +172,7 @@ export default function SeguimientoPage() {
               	)}
               	Pagar ahora
             	</button>
-            	<p className="text-xs text-yellow-200/60 mt-3">
+            	<p className="text-xs text-amber-700 mt-3">
               	¿Prefieres transferencia? Escríbenos a volcanproxies@gmail.com
               	indicando tu pedido #{pedido.numero}.
             	</p>
@@ -180,28 +180,28 @@ export default function SeguimientoPage() {
         	)}
 
         	{pedido.tracking_numero && (
-          	<div className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-5 rounded-xl mb-8">
+          	<div className="bg-gradient-to-r from-flame-tint to-transparent border border-flame/50 p-5 rounded-xl mb-8">
             	<h3 className="font-bold mb-2 flex items-center gap-2">
-              	<Truck size={18} className="text-[#FF4D1A]" /> Tu paquete está
+              	<Truck size={18} className="text-flame-ink" /> Tu paquete está
               	en camino
             	</h3>
             	<p className="text-sm mb-1">
-              	<span className="text-gray-400">Courier: </span>
+              	<span className="text-ink-muted">Courier: </span>
               	<b>
                 	{COURIER_NAMES[pedido.tracking_courier || ""] ||
                   	pedido.tracking_courier}
               	</b>
             	</p>
             	<p className="text-sm mb-3">
-              	<span className="text-gray-400">N° seguimiento: </span>
-              	<b className="text-[#FF4D1A]">{pedido.tracking_numero}</b>
+              	<span className="text-ink-muted">N° seguimiento: </span>
+              	<b className="text-flame-ink">{pedido.tracking_numero}</b>
             	</p>
             	{(pedido.tracking_courier === "starken" ||
               	pedido.tracking_courier === "chilexpress" ||
               	pedido.tracking_courier === "bluexpress") && (
               	<button
                 	onClick={openTracking}
-                	className="inline-block bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-4 py-2 rounded-lg text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+                	className="inline-block btn-flame px-4 py-2 rounded-lg text-sm font-semibold transition-all"
               	>
                 	Rastrear en{" "}
                 	{COURIER_NAMES[pedido.tracking_courier]} →
@@ -226,10 +226,10 @@ export default function SeguimientoPage() {
                     	className={
                       	"w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition " +
                       	(isCurrent
-                        	? "bg-[#FF4D1A] text-white"
+                        	? "bg-flame text-white"
                         	: isDone
-                        	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
-                        	: "bg-white/5 text-gray-500")
+                        	? "bg-flame-tint text-flame-ink"
+                        	: "bg-ink/5 text-ink-faint")
                     	}
                   	>
                     	<Icon size={18} />
@@ -239,15 +239,15 @@ export default function SeguimientoPage() {
                       	className={
                         	"font-semibold " +
                         	(isCurrent
-                          	? "text-[#FF4D1A]"
+                          	? "text-flame-ink"
                           	: isDone
-                          	? "text-white"
-                          	: "text-gray-500")
+                          	? "text-ink"
+                          	: "text-ink-faint")
                       	}
                     	>
                       	{step.label}
                       	{isCurrent && (
-                        	<span className="ml-2 text-xs bg-[#FF4D1A]/20 px-2 py-0.5 rounded-full">
+                        	<span className="ml-2 text-xs bg-flame-tint px-2 py-0.5 rounded-full">
                           	En proceso
                         	</span>
                       	)}
@@ -255,7 +255,7 @@ export default function SeguimientoPage() {
                   	</div>
                   	{isDone && !isCurrent && (
                     	<CheckCircle2
-                      	className="text-[#FF4D1A]"
+                      	className="text-flame-ink"
                       	size={18}
                     	/>
                   	)}
@@ -266,7 +266,7 @@ export default function SeguimientoPage() {
         	</div>
 
         	<div className="glass-card p-5 rounded-xl mb-6">
-          	<p className="text-sm text-gray-400 mb-1">Total del pedido</p>
+          	<p className="text-sm text-ink-muted mb-1">Total del pedido</p>
           	<p className="text-2xl font-display font-bold text-lava">
             	{formatCLP(pedido.total)}
           	</p>
@@ -281,13 +281,13 @@ export default function SeguimientoPage() {
               	{pedido.historial.map((h, idx) => (
                 	<div
                   	key={idx}
-                  	className="text-sm flex flex-wrap items-center gap-2 text-gray-300"
+                  	className="text-sm flex flex-wrap items-center gap-2 text-ink-soft"
                 	>
-                  	<span className="text-xs text-gray-500">
+                  	<span className="text-xs text-ink-faint">
                     	{new Date(h.at).toLocaleString("es-CL")}
                   	</span>
                   	<span className="capitalize">{h.from}</span>
-                  	<span className="text-[#FF4D1A]">→</span>
+                  	<span className="text-flame-ink">→</span>
                   	<span className="capitalize">{h.to}</span>
                 	</div>
               	))}

@@ -22,10 +22,10 @@ export default function AvisoPlazo() {
   return (
 	<div
   	className={
-    	"w-full px-4 py-2.5 text-center text-sm " +
+    	"w-full px-4 py-2 text-center text-xs sm:text-sm " +
     	(pausado
-      	? "bg-red-500/15 text-red-200 border-b border-red-500/25"
-      	: "bg-[#FF4D1A]/15 text-[#ffc4a6] border-b border-[#FF4D1A]/25")
+      	? "bg-red-500/15 text-red-700 border-b border-red-700/35"
+      	: "bg-flame-tint text-flame-ink border-b border-flame/50")
   	}
 	>
   	<span className="inline-flex items-center gap-2 flex-wrap justify-center">
@@ -40,7 +40,9 @@ export default function AvisoPlazo() {
         	<b>Estamos con alta demanda.</b> Despachamos {promesa(plazos)}.
       	</span>
     	)}
-    	{plazos.aviso ? <span className="opacity-90">{plazos.aviso}</span> : null}
+    	{plazos.aviso ? (
+      	<span className="opacity-90 hidden sm:inline">{plazos.aviso}</span>
+    	) : null}
   	</span>
 	</div>
   );

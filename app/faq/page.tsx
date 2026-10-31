@@ -108,16 +108,16 @@ export default function FAQPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-3xl mx-auto">
     	<Reveal className="text-center mb-12">
-      	<HelpCircle className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={48} />
+      	<HelpCircle className="mx-auto text-flame-ink mb-4 drop-" size={48} />
       	<h1 className="font-display font-extrabold text-4xl md:text-5xl mb-3">
         	Preguntas <span className="text-lava">frecuentes</span>
       	</h1>
-      	<p className="text-gray-400">
+      	<p className="text-ink-muted">
         	Todo lo que necesitas saber antes de tu primer pedido.
       	</p>
     	</Reveal>
@@ -132,19 +132,19 @@ export default function FAQPage() {
           	>
             	<button
               	onClick={() => setOpen(isOpen ? null : idx)}
-              	className="w-full px-5 py-4 flex items-center justify-between gap-4 hover:bg-white/5 transition text-left"
+              	className="w-full px-5 py-4 flex items-center justify-between gap-4 hover:bg-ink/5 transition text-left"
             	>
               	<span className="font-semibold">{faq.q}</span>
               	<ChevronDown
                 	className={
-                  	"text-[#FF4D1A] flex-shrink-0 transition-transform " +
+                  	"text-flame-ink flex-shrink-0 transition-transform " +
                   	(isOpen ? "rotate-180" : "")
                 	}
                 	size={20}
               	/>
             	</button>
             	{isOpen && (
-              	<div className="px-5 pb-5 text-gray-300 text-sm leading-relaxed border-t border-white/5 pt-4">
+              	<div className="px-5 pb-5 text-ink-soft text-sm leading-relaxed border-t border-line pt-4">
                 	{faq.a}
               	</div>
             	)}
@@ -153,21 +153,21 @@ export default function FAQPage() {
       	})}
     	</Reveal>
 
-    	<Reveal className="bg-gradient-to-r from-[#FF4D1A]/20 to-transparent border border-[#FF4D1A]/30 p-6 rounded-xl mt-10 text-center">
+    	<Reveal className="bg-gradient-to-r from-flame-tint to-transparent border border-flame/50 p-6 rounded-xl mt-10 text-center">
       	<h3 className="font-display font-bold mb-2">¿No encontraste tu respuesta?</h3>
-      	<p className="text-sm text-gray-300 mb-4">
+      	<p className="text-sm text-ink-soft mb-4">
         	Escríbenos directamente, respondemos rápido.
       	</p>
       	<div className="flex flex-wrap gap-3 justify-center">
         	<button
           	onClick={openMail}
-          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2 rounded-lg text-sm font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+          	className="btn-flame px-5 py-2 rounded-lg text-sm font-semibold transition-all"
         	>
           	📧 volcanproxies@gmail.com
         	</button>
         	<button
           	onClick={openInstagram}
-          	className="border border-white/20 hover:bg-white/5 px-5 py-2 rounded-lg text-sm font-semibold transition"
+          	className="border border-line hover:bg-ink/5 px-5 py-2 rounded-lg text-sm font-semibold transition"
         	>
           	📱 @volcanproxies
         	</button>

@@ -26,8 +26,8 @@ export default function EstadoCola() {
   if (pedidos === null) return null;
 
   return (
-	<div className="flex items-start gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-gray-300">
-  	<Clock size={14} className="text-[#FF4D1A] flex-shrink-0 mt-0.5" />
+	<div className="flex items-start gap-2 rounded-lg border border-line bg-ink/5 px-3 py-2 text-xs text-ink-soft">
+  	<Clock size={14} className="text-flame-ink flex-shrink-0 mt-0.5" />
   	<span>
     	{pedidos === 0
       	? "No hay pedidos en producción: el tuyo parte primero."

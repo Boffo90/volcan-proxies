@@ -49,15 +49,15 @@ export default function Error({
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white flex items-center justify-center px-6 py-20">
+	<main className="min-h-screen bg-surface text-ink-soft flex items-center justify-center px-6 py-20">
   	<div className="glass-card rounded-2xl p-8 max-w-md w-full text-center">
-    	<AlertTriangle className="mx-auto text-[#FF4D1A] mb-4" size={40} />
+    	<AlertTriangle className="mx-auto text-flame-ink mb-4" size={40} />
 
     	<h1 className="font-display font-extrabold text-2xl mb-3">
       	Se nos cayó algo
     	</h1>
 
-    	<p className="text-gray-300 mb-6 text-sm leading-relaxed">
+    	<p className="text-ink-soft mb-6 text-sm leading-relaxed">
       	Esta página no cargó bien. No es culpa tuya y tu pedido no se perdió:
       	lo que tengas en el carrito sigue guardado.
     	</p>
@@ -65,38 +65,38 @@ export default function Error({
     	<div className="flex flex-col gap-2 mb-6">
       	<button
         	onClick={reset}
-        	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2"
+        	className="w-full btn-flame py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2"
       	>
         	<RotateCw size={16} /> Reintentar
       	</button>
 
       	<Link
         	href="/"
-        	className="w-full border border-white/15 hover:border-white/40 py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm"
+        	className="w-full border border-line hover:border-line py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 text-sm"
       	>
         	<Home size={16} /> Volver al inicio
       	</Link>
 
       	{enCarrito &&
         	(vaciado ? (
-          	<p className="text-xs text-green-400 pt-1">
+          	<p className="text-xs text-green-700 pt-1">
             	Carrito vaciado. Prueba a recargar la página.
           	</p>
         	) : (
           	<button
             	onClick={vaciarCarrito}
-            	className="w-full text-xs text-gray-400 hover:text-red-400 py-2 flex items-center justify-center gap-2"
+            	className="w-full text-xs text-ink-muted hover:text-red-700 py-2 flex items-center justify-center gap-2"
           	>
             	<Trash2 size={14} /> Si el error se repite, vacía el carrito
           	</button>
         	))}
     	</div>
 
-    	<p className="text-xs text-gray-500 leading-relaxed">
+    	<p className="text-xs text-ink-faint leading-relaxed">
       	Si te sigue pasando, escríbenos a{" "}
       	<a
         	href="mailto:volcanproxies@gmail.com"
-        	className="text-[#FF4D1A] hover:underline"
+        	className="text-flame-ink hover:underline"
       	>
         	volcanproxies@gmail.com
       	</a>
@@ -105,7 +105,7 @@ export default function Error({
           	{" "}
           	y pásanos este código:
           	<br />
-          	<code className="inline-block mt-1 px-2 py-1 rounded bg-white/5 text-gray-300 font-mono text-[11px]">
+          	<code className="inline-block mt-1 px-2 py-1 rounded bg-ink/5 text-ink-soft font-mono text-[11px]">
             	{error.digest}
           	</code>
         	</>

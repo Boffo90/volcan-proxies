@@ -1,46 +1,102 @@
 @import "tailwindcss";
 
-:root {
-  --color-bg: #0b0d11;
-  --color-bg-secondary: #1a1f26;
-  --color-accent: #ff4f1a;
-  --color-accent-deep: #c92a1f;
-  --color-accent-glow: #ff8a3d;
-  --color-gray: #e6e6e6;
-  --color-white: #ffffff;
-  --font-display: var(--font-syne);
-  --glass-blur: 16px;
-  --glass-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-}
+/* ──────────────────────────────────────────────────────────────────────────
+   Volcán Proxies — "mesa de juego"
 
-/* backdrop-filter es caro en GPUs de gama media/baja, sobre todo cuando hay
-   muchas glass-card a la vez (grids de catálogo) o detrás de elementos sticky
-   que repintan en cada scroll. En mobile bajamos el blur vía variable CSS
-   (declarar backdrop-filter dentro de un @media hace que el compilador de
-   Tailwind v4 (Lightning CSS) omita el prefijo estándar en algunos casos). */
-@media (max-width: 767px) {
-  :root {
-	--glass-blur: 4px;
-	--glass-bg: linear-gradient(160deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
-  }
+   El sitio es claro: cartón tibio de mantel, cartas blancas encima, tinta
+   café-negra y acentos de color de maná. El naranjo de marca es uno de los
+   acentos, no el único.
+
+   Todo color vive acá como variable semántica (superficie / tinta / línea /
+   acento) y se expone a Tailwind en @theme inline, así que las páginas usan
+   bg-surface, text-ink-muted, border-line y no hexadecimales sueltos. Cambiar
+   la paleta entera es cambiar este bloque.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+
+  /* Superficies — de la mesa hacia arriba */
+  --surface: #f2eee3;        /* el mantel */
+  --surface-2: #fffcf5;      /* la carta puesta encima */
+  --surface-3: #e7e0d0;      /* banda de sección, un tono más hundido */
+  --surface-ink: #16130e;    /* bloque oscuro, para contraste puntual */
+
+  /* Tinta — la rampa de texto, toda sobre --surface cumple AA */
+  --ink: #16130e;
+  --ink-soft: #3a352c;
+  --ink-muted: #5f5849;
+  --ink-faint: #6f6758;
+  --ink-invert: #fffcf5;
+
+  /* Líneas: la fina para dividir, la marcada para el borde de sticker */
+  --line: #d8d0bd;
+  --line-strong: #16130e;
+
+  /* Brasa: el naranjo de marca.
+     --flame rellena, --flame-ink escribe. El naranjo vivo sobre cartón
+     llega a 3.4:1 y no pasa AA en texto chico, así que íconos y texto van
+     siempre con --flame-ink (4.8:1). */
+  --flame: #e8471c;
+  --flame-ink: #c03a10;
+  --flame-deep: #96270a;
+  --flame-tint: #ffe2d6;
+
+  /* Maná: los otros acentos, para que el naranjo deje de cargar todo solo */
+  --mana-w: #e8cf8a;
+  --mana-u: #2b7fd4;
+  --mana-b: #4a4458;
+  --mana-r: #e8471c;
+  --mana-g: #2f8f54;
+
+  --font-display: var(--font-bricolage);
+
+  /* Sombra dura, sin desenfoque: el lenguaje de sticker/bloque que reemplaza
+     al vidrio esmerilado. Es además mucho más barata de pintar que un blur. */
+  --lift: 4px 4px 0 var(--ink);
+  --lift-sm: 3px 3px 0 var(--ink);
+  --lift-lg: 6px 6px 0 var(--ink);
 }
 
 @theme inline {
-  --color-volcan-bg: var(--color-bg);
-  --color-volcan-secondary: var(--color-bg-secondary);
-  --color-volcan-accent: var(--color-accent);
-  --color-volcan-gray: var(--color-gray);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-ink: var(--surface-ink);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-invert: var(--ink-invert);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-flame: var(--flame);
+  --color-flame-ink: var(--flame-ink);
+  --color-flame-deep: var(--flame-deep);
+  --color-flame-tint: var(--flame-tint);
+
+  --color-mana-w: var(--mana-w);
+  --color-mana-u: var(--mana-u);
+  --color-mana-b: var(--mana-b);
+  --color-mana-r: var(--mana-r);
+  --color-mana-g: var(--mana-g);
+
   --font-family-display: var(--font-display), sans-serif;
 }
 
 body {
-  background: var(--color-bg);
-  color: var(--color-white);
-  font-family: 'Montserrat', sans-serif;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
   position: relative;
 }
 
-/* Malla de gradientes "lava/obsidiana" fija detrás de todo el sitio */
+/* El fondo es un mantel de juego: cuadrícula tenue más tres lavados de color
+   de maná en las esquinas, para que el cartón no quede muerto. Fijo, sin
+   repintar en scroll. */
 body::before {
   content: "";
   position: fixed;
@@ -48,10 +104,12 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-	radial-gradient(60rem 40rem at 85% -10%, rgba(255, 79, 26, 0.16), transparent 60%),
-	radial-gradient(50rem 35rem at -10% 25%, rgba(201, 42, 31, 0.12), transparent 55%),
-	radial-gradient(40rem 30rem at 50% 110%, rgba(255, 138, 61, 0.08), transparent 60%),
-	var(--color-bg);
+	radial-gradient(50rem 32rem at 88% -8%, rgba(232, 71, 28, 0.13), transparent 62%),
+	radial-gradient(44rem 30rem at -8% 18%, rgba(43, 127, 212, 0.09), transparent 58%),
+	radial-gradient(38rem 26rem at 42% 108%, rgba(47, 143, 84, 0.08), transparent 60%),
+	linear-gradient(rgba(22, 19, 14, 0.07) 1px, transparent 1px) 0 0 / 34px 34px,
+	linear-gradient(90deg, rgba(22, 19, 14, 0.07) 1px, transparent 1px) 0 0 / 34px 34px,
+	var(--surface);
 }
 
 html {
@@ -59,52 +117,142 @@ html {
 }
 
 ::selection {
-  background: var(--color-accent);
-  color: var(--color-white);
+  background: var(--flame);
+  color: var(--ink-invert);
 }
 
-/* Scrollbar con acento de marca (soportado en navegadores WebKit/Chromium) */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-bg);
+  background: var(--surface-3);
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-deep));
+  background: var(--ink);
+  border: 3px solid var(--surface-3);
   border-radius: 999px;
 }
 
 .font-display {
   font-family: var(--font-display), sans-serif;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
-/* Texto con degradé lava, para titulares destacados */
+/* Titular con degradé de brasa. Arranca en el naranjo vivo y cierra en el
+   profundo, así el trazo completo se lee sobre cartón. */
 .text-lava {
-  background: linear-gradient(100deg, var(--color-accent-glow), var(--color-accent) 45%, var(--color-accent-deep));
+  background: linear-gradient(100deg, var(--flame) 0%, var(--flame-deep) 92%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Tarjeta con efecto vidrio esmerilado, reemplaza el bg plano bg-[#1E242B].
-   Usa background-image (no el shorthand background:) porque esta regla vive
-   fuera de las cascade layers de Tailwind y el shorthand pisaría el
-   background-size/position de utilidades como bg-cover/bg-center. */
-.glass-card {
-  background-image: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+@layer components {
+  /* ── Primitivas de superficie ──────────────────────────────────────────────
+     .glass-card conserva el nombre porque la usan 25 archivos, pero ya no es
+     vidrio: es un panel sólido con filete. Sin backdrop-filter, que era el
+     costo de GPU que obligaba a bajar el blur en mobile.
+     .block-card es la versión con borde marcado y sombra dura — el bloque de
+     color del nuevo lenguaje. Se reserva para lo que debe saltar. */
+  .glass-card {
+    background-color: var(--surface-2);
+    border: 2px solid var(--line);
+    box-shadow: 3px 3px 0 rgba(22, 19, 14, 0.07);
+  }
 
-/* Resplandor cálido al hacer hover, para cards y botones destacados */
-.glow-hover {
-  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
-}
-.glow-hover:hover {
-  box-shadow: 0 0 0 1px rgba(255, 79, 26, 0.4), 0 20px 60px -15px rgba(255, 79, 26, 0.35);
-  border-color: rgba(255, 79, 26, 0.5);
+  .block-card {
+    background-color: var(--surface-2);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: var(--lift);
+  }
+
+  /* Bloque oscuro: el contrapunto. Sobre él la tinta se invierte. */
+  .block-ink {
+    background-color: var(--surface-ink);
+    color: var(--ink-invert);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+  }
+
+  /* Insignia tipo sticker: relleno plano, borde marcado y una pizca de giro. */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    box-shadow: var(--lift-sm);
+    background-color: var(--surface-2);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* Se despega al pasar el mouse en vez de prender un resplandor: el gesto que
+     corresponde a un sticker sobre la mesa. */
+  .glow-hover {
+    transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+  	box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  .glow-hover:hover {
+    transform: translate(-2px, -2px);
+    border-color: var(--ink);
+    box-shadow: var(--lift-lg);
+  }
+
+  /* Botón primario. El relleno es más profundo que --flame porque encima va
+     texto blanco y así llega a 4.5:1. */
+  .btn-flame {
+    background-color: #d93c12;
+    color: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: var(--lift);
+    font-weight: 700;
+    transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+  	box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+  .btn-flame:hover {
+    background-color: var(--flame);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--lift-lg);
+  }
+  .btn-flame:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  /* Botón secundario: mismo gesto, sin relleno. */
+  .btn-ghost {
+    background-color: var(--surface-2);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: var(--lift);
+    font-weight: 700;
+    transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+  	box-shadow 0.18s ease, background-color 0.18s ease;
+  }
+  .btn-ghost:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--lift-lg);
+  }
+  .btn-ghost:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  /* Deshabilitado: el naranjo apagado quedaba salmon y seguia pareciendo
+     clickeable. Un boton apagado no es un boton translucido, es otro color. */
+  .btn-flame:disabled,
+  .btn-ghost:disabled {
+    background-color: var(--surface-3);
+    color: var(--ink-faint);
+    border-color: var(--ink-faint);
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -115,5 +263,10 @@ html {
 	animation-iteration-count: 1 !important;
 	transition-duration: 0.01ms !important;
 	scroll-behavior: auto !important;
+  }
+  .glow-hover:hover,
+  .btn-flame:hover,
+  .btn-ghost:hover {
+	transform: none;
   }
 }

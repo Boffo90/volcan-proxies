@@ -48,16 +48,16 @@ export default function PromosPage() {
   );
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<section className="px-6 py-16 max-w-6xl mx-auto">
     	<Reveal className="text-center mb-12">
-      	<Sparkles className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]" size={40} />
+      	<Sparkles className="mx-auto text-flame-ink mb-4 drop-" size={40} />
       	<h1 className="font-display font-extrabold text-4xl md:text-5xl mb-4">
         	Promos para <span className="text-lava">armar mazo</span>
       	</h1>
-      	<p className="text-gray-400 max-w-2xl mx-auto">
+      	<p className="text-ink-muted max-w-2xl mx-auto">
         	Mientras más cartas, mejor precio. Estas promos aplican
         	automáticamente al armar tu pedido en el carrito.
       	</p>
@@ -78,12 +78,12 @@ export default function PromosPage() {
           	className={
             	"p-6 rounded-xl relative transition " +
             	(p.featured
-              	? "bg-gradient-to-b from-[#FF4D1A]/25 to-[#12151b] border border-[#FF4D1A]/60 scale-105 shadow-[0_20px_60px_-15px_rgba(255,79,26,0.5)]"
+              	? "bg-flame-tint border-2 border-ink shadow-[var(--lift-lg)] scale-105"
               	: "glass-card glow-hover")
           	}
         	>
           	{p.featured && (
-            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-br from-[#ff8a3d] to-[#c92a1f] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
+            	<span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-flame border-2 border-ink text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap shadow-lg">
               	⭐ MÁS POPULAR
             	</span>
           	)}
@@ -91,15 +91,15 @@ export default function PromosPage() {
           	<p className="text-3xl font-display font-extrabold text-lava mb-1">
             	{p.price}
           	</p>
-          	<p className="text-xs text-gray-400 mb-4">{p.unitEquiv}</p>
-          	<p className="text-sm text-gray-300 mb-5">{p.desc}</p>
+          	<p className="text-xs text-ink-muted mb-4">{p.unitEquiv}</p>
+          	<p className="text-sm text-ink-soft mb-5">{p.desc}</p>
           	<ul className="space-y-2 mb-6">
             	{p.features.map((f) => (
               	<li
                 	key={f}
-                	className="flex items-center gap-2 text-sm text-gray-300"
+                	className="flex items-center gap-2 text-sm text-ink-soft"
               	>
-                	<Check size={14} className="text-[#FF4D1A] flex-shrink-0" />
+                	<Check size={14} className="text-flame-ink flex-shrink-0" />
                 	{f}
               	</li>
             	))}
@@ -112,36 +112,36 @@ export default function PromosPage() {
       	<h2 className="font-display font-bold text-lg mb-4">
         	💡 Cómo funcionan las promos
       	</h2>
-      	<ul className="space-y-2 text-sm text-gray-300">
+      	<ul className="space-y-2 text-sm text-ink-soft">
         	<li>
-          	<b className="text-white">Aplicación automática:</b> al juntar 60
+          	<b className="text-ink">Aplicación automática:</b> al juntar 60
           	o 100 cartas del mismo acabado, el precio cambia solo. No tienes
           	que elegir la promo ni pedirla.
         	</li>
         	<li>
-          	<b className="text-white">Las promos se suman:</b> si pides 260
+          	<b className="text-ink">Las promos se suman:</b> si pides 260
           	cartas del mismo acabado, se aplican dos Commander 100 y un Mazo
           	60 en el mismo pedido. No necesitas hacer compras separadas.
         	</li>
         	<li>
-          	<b className="text-white">Cada acabado tiene la suya:</b> si
+          	<b className="text-ink">Cada acabado tiene la suya:</b> si
           	llevas 100 Básicas y 100 Reforzadas, cada grupo recibe su promo. Mezclar
           	acabados ya no te hace perderlas.
         	</li>
         	<li>
-          	<b className="text-white">Nunca pagas de más:</b> las cartas que
+          	<b className="text-ink">Nunca pagas de más:</b> las cartas que
           	sobran del tramo se cobran sueltas, así que sumar cartas jamás
           	encarece el pedido.
         	</li>
         	<li>
-          	<b className="text-white">Cartas custom aparte:</b> no suman para
+          	<b className="text-ink">Cartas custom aparte:</b> no suman para
           	la promo porque llevan otro trabajo, pero tampoco la anulan: el
           	resto del pedido la aprovecha igual.
         	</li>
       	</ul>
     	</Reveal>
 
-    	<Reveal className="bg-[#0b0d11]/60 p-6 rounded-xl border border-white/10 mb-8">
+    	<Reveal className="bg-surface-3 p-6 rounded-xl border border-line mb-8">
       	<h2 className="font-display font-bold text-lg mb-4">
         	Precio por carta unitaria
       	</h2>
@@ -151,13 +151,13 @@ export default function PromosPage() {
             	key={f}
             	className="text-center"
           	>
-            	<p className="text-xs text-gray-400 uppercase mb-1">
+            	<p className="text-xs text-ink-muted uppercase mb-1">
               	{FINISH_INFO[f].label}
             	</p>
             	<p className="text-2xl font-display font-bold text-lava">
               	{formatCLP(precios.unitario[f])}
             	</p>
-            	<p className="text-xs text-gray-500 mt-1">
+            	<p className="text-xs text-ink-faint mt-1">
               	por carta
             	</p>
           	</div>
@@ -168,7 +168,7 @@ export default function PromosPage() {
     	<Reveal className="text-center">
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-8 py-4 rounded-lg font-semibold text-lg shadow-[0_10px_30px_-10px_rgba(255,79,26,0.6)] transition-all"
+        	className="btn-flame px-8 py-4 rounded-lg font-semibold text-lg transition-all"
       	>
         	Armar mi pedido →
       	</button>

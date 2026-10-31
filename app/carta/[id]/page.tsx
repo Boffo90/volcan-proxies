@@ -47,7 +47,7 @@ function uidDeLaUrl(raw: string): string {
 function Campo({ campo }: { campo: CampoFicha }) {
   return (
     <p className="mb-2 flex items-center gap-2 flex-wrap">
-      <span className="text-gray-400 text-sm">{campo.label}:</span>
+      <span className="text-ink-muted text-sm">{campo.label}:</span>
       {campo.render === "mana" ? (
         <ManaSymbols text={campo.value} size={20} />
       ) : (
@@ -157,10 +157,10 @@ export default function CartaDetalle() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0b0d11] text-white">
+      <main className="min-h-screen bg-surface text-ink-soft">
         <NavBar />
         <div className="flex items-center justify-center py-32">
-          <Loader2 className="animate-spin text-[#FF4D1A]" size={40} />
+          <Loader2 className="animate-spin text-flame-ink" size={40} />
         </div>
       </main>
     );
@@ -168,7 +168,7 @@ export default function CartaDetalle() {
 
   if (!card) {
     return (
-      <main className="min-h-screen bg-[#0b0d11] text-white">
+      <main className="min-h-screen bg-surface text-ink-soft">
         <NavBar />
         <p className="text-center py-32">Carta no encontrada.</p>
       </main>
@@ -180,13 +180,13 @@ export default function CartaDetalle() {
   const mainImg = mpcSelected ? mpcSelected.thumb : display.imagenes.large;
 
   return (
-    <main className="min-h-screen bg-[#0b0d11] text-white">
+    <main className="min-h-screen bg-surface text-ink-soft">
       <NavBar />
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         <button
           onClick={() => router.push("/catalogo")}
-          className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+          className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
         >
           <ArrowLeft size={16} /> Volver al catálogo
         </button>
@@ -197,7 +197,7 @@ export default function CartaDetalle() {
             role="img"
             aria-label={display.name}
             className={
-              "relative rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat " +
+              "relative rounded-xl overflow-hidden bg-surface-3 ring-1 ring-line bg-center bg-cover bg-no-repeat " +
               (display.apaisada ? "aspect-[7/5]" : "aspect-[5/7]")
             }
             style={{ backgroundImage: `url(${mainImg})` }}
@@ -205,7 +205,7 @@ export default function CartaDetalle() {
 
           <div>
             <h1 className="font-display font-extrabold text-3xl mb-1">{display.name}</h1>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-ink-muted mb-4">
               {display.set_name} · #{display.collector_number} ·{" "}
               {etiquetaDeIdioma(display.idioma)}
               {display.rarity ? (
@@ -238,8 +238,8 @@ export default function CartaDetalle() {
                   className={
                     "flex items-center gap-2 text-sm font-semibold transition " +
                     (rulings.length > 0
-                      ? "text-gray-300 hover:text-white cursor-pointer"
-                      : "text-gray-500 cursor-default")
+                      ? "text-ink-muted hover:text-ink cursor-pointer"
+                      : "text-ink-faint cursor-default")
                   }
                 >
                   {rulings.length > 0 ? (
@@ -259,10 +259,10 @@ export default function CartaDetalle() {
                     {rulings.map((r, idx) => (
                       <div
                         key={idx}
-                        className="border-b border-white/10 pb-2 last:border-0 last:pb-0"
+                        className="border-b border-line pb-2 last:border-0 last:pb-0"
                       >
-                        <p className="text-xs text-gray-500 mb-1">{r.fecha}</p>
-                        <p className="text-gray-300 leading-relaxed">{r.texto}</p>
+                        <p className="text-xs text-ink-faint mb-1">{r.fecha}</p>
+                        <p className="text-ink-soft leading-relaxed">{r.texto}</p>
                       </div>
                     ))}
                   </div>
@@ -271,7 +271,7 @@ export default function CartaDetalle() {
             ) : null}
 
             {display.artist ? (
-              <p className="mb-6 text-sm text-gray-400">
+              <p className="mb-6 text-sm text-ink-muted">
                 Ilustrador: {display.artist}
               </p>
             ) : null}
@@ -288,8 +288,8 @@ export default function CartaDetalle() {
                       "relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition bg-center bg-cover bg-no-repeat " +
                       (p.apaisada ? "aspect-[7/5] " : "aspect-[5/7] ") +
                       (isSel
-                        ? "border-[#FF4D1A]"
-                        : "border-white/10 hover:border-white/30");
+                        ? "border-flame"
+                        : "border-line hover:border-line");
                     return (
                       <button
                         key={p.uid}
@@ -313,22 +313,22 @@ export default function CartaDetalle() {
                 {!mpcSearched && !mpcLoading ? (
                   <button
                     onClick={buscarMpc}
-                    className="w-full glass-card hover:border-[#FF4D1A]/50 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                    className="w-full glass-card hover:border-flame py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                   >
                     ✨ Buscar artes HD en MPCFill
                   </button>
                 ) : null}
                 {mpcLoading ? (
-                  <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
-                    <Loader2 className="animate-spin text-[#FF4D1A]" size={16} />
+                  <div className="flex items-center gap-2 text-sm text-ink-muted py-2">
+                    <Loader2 className="animate-spin text-flame-ink" size={16} />
                     Buscando en MPCFill...
                   </div>
                 ) : null}
                 {mpcError ? (
-                  <p className="text-sm text-red-400 py-2">{mpcError}</p>
+                  <p className="text-sm text-red-700 py-2">{mpcError}</p>
                 ) : null}
                 {mpcSearched && !mpcLoading && mpcCards.length === 0 && !mpcError ? (
-                  <p className="text-sm text-gray-500 py-2">
+                  <p className="text-sm text-ink-faint py-2">
                     No hay versiones de esta carta en MPCFill — el arte de
                     Scryfall se ve excelente igual.
                   </p>
@@ -338,7 +338,7 @@ export default function CartaDetalle() {
                     <p className="text-sm font-semibold mb-1">
                       Artes HD de MPCFill ({mpcCards.length})
                     </p>
-                    <p className="text-xs text-gray-500 mb-2">
+                    <p className="text-xs text-ink-faint mb-2">
                       Réplicas digitales en alta resolución — mayor nitidez de
                       impresión que los escaneos de Scryfall (la diferencia es
                       sutil, pero existe).
@@ -355,8 +355,8 @@ export default function CartaDetalle() {
                             className={
                               "relative flex-shrink-0 w-20 rounded border-2 overflow-hidden transition " +
                               (isSel
-                                ? "border-[#FF4D1A]"
-                                : "border-white/10 hover:border-white/30")
+                                ? "border-flame"
+                                : "border-line hover:border-line")
                             }
                           >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -374,7 +374,7 @@ export default function CartaDetalle() {
                       })}
                     </div>
                     {mpcSelected ? (
-                      <p className="text-xs text-[#FF4D1A] mt-1">
+                      <p className="text-xs text-flame-ink mt-1">
                         Arte HD seleccionado: {mpcSelected.name} (
                         {mpcSelected.dpi} DPI)
                       </p>
@@ -401,11 +401,11 @@ export default function CartaDetalle() {
                 max={20}
                 value={qty}
                 onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-                className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 mb-4"
+                className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 mb-4"
               />
 
               <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-400">Subtotal</span>
+                <span className="text-ink-muted">Subtotal</span>
                 <span className="text-2xl font-display font-bold text-lava">
                   {formatCLP(unitPrice * qty)}
                 </span>
@@ -413,11 +413,11 @@ export default function CartaDetalle() {
 
               <button
                 onClick={addToCart}
-                className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
+                className="w-full btn-flame py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all"
               >
                 <ShoppingCart size={18} /> Agregar al carrito
               </button>
-              <p className="text-xs text-gray-400 text-center mt-2">
+              <p className="text-xs text-ink-muted text-center mt-2">
                 Tip: el carrito en la barra superior se actualiza al instante.
               </p>
             </div>

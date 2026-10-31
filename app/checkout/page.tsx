@@ -213,13 +213,13 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white">
+  	<main className="min-h-screen bg-surface text-ink-soft">
     	<NavBar />
     	<div className="text-center py-32">
-      	<p className="text-gray-400 mb-6">Tu carrito está vacío.</p>
+      	<p className="text-ink-muted mb-6">Tu carrito está vacío.</p>
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+        	className="btn-flame px-6 py-3 rounded-lg font-semibold transition-all"
       	>
         	Ir al catálogo
       	</button>
@@ -229,7 +229,7 @@ export default function CheckoutPage() {
   }
 
   const inputClass =
-	"w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2";
+	"w-full bg-surface-2 border border-line rounded-lg px-3 py-2";
 
   const esRetiro = deliveryType === "retiro";
 
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
   ];
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<div className="max-w-5xl mx-auto px-6 py-10">
@@ -272,13 +272,13 @@ export default function CheckoutPage() {
     	</Reveal>
 
     	{!cumpleMinimo && (
-      	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl mb-6 flex gap-3">
-        	<AlertCircle className="text-yellow-400 flex-shrink-0" size={20} />
+      	<div className="bg-yellow-500/10 border border-amber-700/35 p-4 rounded-xl mb-6 flex gap-3">
+        	<AlertCircle className="text-amber-700 flex-shrink-0" size={20} />
         	<div>
-          	<p className="text-sm font-semibold text-yellow-300">
+          	<p className="text-sm font-semibold text-amber-700">
             	Pedido mínimo: {MIN_CARDS} cartas.
           	</p>
-          	<p className="text-xs text-yellow-200/80 mt-1">
+          	<p className="text-xs text-amber-700 mt-1">
             	Actualmente tienes {totalQty}. Te faltan {faltan} carta
             	{faltan !== 1 ? "s" : ""} para continuar.
           	</p>
@@ -300,17 +300,17 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-start gap-3 text-left " +
                 	(deliveryType === "envio"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
+                  	? "border-flame bg-flame-tint"
+                  	: "border-line")
               	}
             	>
-              	<Truck className="text-[#FF4D1A] flex-shrink-0" />
+              	<Truck className="text-flame-ink flex-shrink-0" />
               	<div>
                 	<p className="font-semibold text-sm">Envío a domicilio</p>
-                	<p className="text-xs text-gray-400 mt-1">
+                	<p className="text-xs text-ink-muted mt-1">
                   	Starken / Chilexpress / Blue Express
                 	</p>
-                	<p className="text-xs text-[#FF4D1A] mt-1 font-semibold">
+                	<p className="text-xs text-flame-ink mt-1 font-semibold">
                   	+ {formatCLP(SHIPPING_COST)}
                 	</p>
               	</div>
@@ -322,17 +322,17 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-start gap-3 text-left " +
                 	(deliveryType === "retiro"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
+                  	? "border-flame bg-flame-tint"
+                  	: "border-line")
               	}
             	>
-              	<MapPin className="text-[#FF4D1A] flex-shrink-0" />
+              	<MapPin className="text-flame-ink flex-shrink-0" />
               	<div>
                 	<p className="font-semibold text-sm">Retiro en Pucón</p>
-                	<p className="text-xs text-gray-400 mt-1">
+                	<p className="text-xs text-ink-muted mt-1">
                   	Coordinamos por email o WhatsApp
                 	</p>
-                	<p className="text-xs text-green-400 mt-1 font-semibold">
+                	<p className="text-xs text-green-700 mt-1 font-semibold">
                   	Sin costo adicional
                 	</p>
               	</div>
@@ -340,16 +340,16 @@ export default function CheckoutPage() {
           	</div>
 
           	{esRetiro && (
-            	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
+            	<div className="bg-surface-2 border border-line rounded-lg p-3 text-xs text-ink-soft">
               	📍 Al confirmar tu pedido, te contactaremos por email para
               	coordinar el retiro en Pucón centro.
             	</div>
           	)}
 
           	{!esRetiro && (
-            	<div className="bg-[#0b0d11] border border-white/10 rounded-lg p-3 text-xs text-gray-300">
+            	<div className="bg-surface-2 border border-line rounded-lg p-3 text-xs text-ink-soft">
               	🚚 Envío único de{" "}
-              	<b className="text-white">{formatCLP(SHIPPING_COST)}</b> a
+              	<b className="text-ink">{formatCLP(SHIPPING_COST)}</b> a
               	todo Chile. Despachamos {promesa(plazos)} vía Starken,
               	Chilexpress o Blue Express (elegimos el más rápido según tu
               	región).
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                   	key={f.k}
                   	className={f.full ? "md:col-span-2" : ""}
                 	>
-                  	<label className="block text-xs text-gray-400 mb-1">
+                  	<label className="block text-xs text-ink-muted mb-1">
                     	{f.label}
                   	</label>
                   	<input
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
 
             	{!esRetiro && (
               	<div>
-                	<label className="block text-xs text-gray-400 mb-1">
+                	<label className="block text-xs text-ink-muted mb-1">
                   	Región *
                 	</label>
                 	<select
@@ -410,13 +410,13 @@ export default function CheckoutPage() {
             	{/* El idioma se elige carta por carta en el catálogo, así que
                 	acá se muestra, no se pregunta. */}
             	<div className="md:col-span-2">
-              	<label className="block text-xs text-gray-400 mb-1">
+              	<label className="block text-xs text-ink-muted mb-1">
                 	Idioma de las cartas
               	</label>
-              	<p className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2">
+              	<p className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2">
                 	{idioma || "—"}
               	</p>
-              	<p className="text-xs text-gray-500 mt-1">
+              	<p className="text-xs text-ink-faint mt-1">
                 	{idiomasEnCarrito.length > 1
                   	? "Tu pedido lleva cartas en más de un idioma, tal como las elegiste."
                   	: "Es el idioma de las cartas que elegiste."}{" "}
@@ -426,13 +426,13 @@ export default function CheckoutPage() {
             	</div>
 
             	<div className="md:col-span-2">
-              	<label className="block text-xs text-gray-400 mb-1">
+              	<label className="block text-xs text-ink-muted mb-1">
                 	Notas (opcional)
               	</label>
               	<textarea
                 	value={form.notas}
                 	onChange={(e) => handleChange("notas", e.target.value)}
-                	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 min-h-[80px]"
+                	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 min-h-[80px]"
                 	placeholder={
                   	esRetiro
                     	? "Ej: prefiero coordinar por WhatsApp"
@@ -456,14 +456,14 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-center gap-3 " +
                 	(metodo === "transferencia"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
+                  	? "border-flame bg-flame-tint"
+                  	: "border-line")
               	}
             	>
-              	<Banknote className="text-[#FF4D1A]" />
+              	<Banknote className="text-flame-ink" />
               	<div className="text-left">
                 	<p className="font-semibold text-sm">Transferencia</p>
-                	<p className="text-xs text-gray-400">MACH / BCI</p>
+                	<p className="text-xs text-ink-muted">MACH / BCI</p>
               	</div>
             	</button>
 
@@ -473,14 +473,14 @@ export default function CheckoutPage() {
               	className={
                 	"p-4 rounded-lg border transition flex items-center gap-3 " +
                 	(metodo === "flow"
-                  	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-                  	: "border-white/10")
+                  	? "border-flame bg-flame-tint"
+                  	: "border-line")
               	}
             	>
-              	<CreditCard className="text-[#FF4D1A]" />
+              	<CreditCard className="text-flame-ink" />
               	<div className="text-left">
                 	<p className="font-semibold text-sm">Flow.cl</p>
-                	<p className="text-xs text-gray-400">
+                	<p className="text-xs text-ink-muted">
                   	Tarjeta / Webpay / medios disponibles
                 	</p>
               	</div>
@@ -499,12 +499,12 @@ export default function CheckoutPage() {
               	type="checkbox"
               	checked={aceptaTerminos}
               	onChange={(e) => setAceptaTerminos(e.target.checked)}
-              	className="mt-1 w-5 h-5 accent-[#FF4D1A] flex-shrink-0"
+              	className="mt-1 w-5 h-5 accent-flame flex-shrink-0"
             	/>
-            	<span className="text-sm text-gray-300 leading-relaxed">
+            	<span className="text-sm text-ink-soft leading-relaxed">
               	Entiendo que{" "}
-              	<b className="text-white">Volcán Proxies</b> son productos{" "}
-              	<b className="text-[#FF4D1A]">artesanales</b> hechos a mano,
+              	<b className="text-ink">Volcán Proxies</b> son productos{" "}
+              	<b className="text-flame-ink">artesanales</b> hechos a mano,
               	con cara de carta real impresa y laminada en calor. Tienen
               	la firmeza de una carta y se ven similares de lejos, pero{" "}
               	<b>no buscan ser indistinguibles de las cartas oficiales</b>{" "}
@@ -517,7 +517,7 @@ export default function CheckoutPage() {
 
       	{/* RESUMEN */}
       	<Reveal delay={0.3}>
-      	<aside className="glass-card p-6 rounded-xl h-fit sticky top-24">
+      	<aside className="block-card p-6 rounded-xl h-fit sticky top-24">
         	<h2 className="font-display font-bold mb-4">Resumen</h2>
 
         	<div className="mb-4">
@@ -533,42 +533,42 @@ export default function CheckoutPage() {
               	<span className="truncate pr-2">
                 	{it.quantity}× {it.name}
               	</span>
-              	<span className="text-gray-400 text-xs">
+              	<span className="text-ink-muted text-xs">
                 	{FINISH_INFO[it.finish]?.label ?? it.finish}
               	</span>
             	</div>
           	))}
         	</div>
 
-        	<div className="border-t border-white/10 pt-4">
+        	<div className="border-t border-line pt-4">
           	<div className="flex justify-between text-sm mb-2">
-            	<span className="text-gray-400">Cartas totales</span>
-            	<span className={cumpleMinimo ? "" : "text-yellow-400"}>
+            	<span className="text-ink-muted">Cartas totales</span>
+            	<span className={cumpleMinimo ? "" : "text-amber-700"}>
               	{totalQty}
             	</span>
           	</div>
 
-          	<p className="text-xs text-[#FF4D1A] mb-3">{applied}</p>
+          	<p className="text-xs text-flame-ink mb-3">{applied}</p>
 
           	<div className="flex justify-between text-sm mb-2">
-            	<span className="text-gray-400">Subtotal cartas</span>
+            	<span className="text-ink-muted">Subtotal cartas</span>
             	<span>{formatCLP(subtotal)}</span>
           	</div>
 
           	<div className="flex justify-between text-sm mb-3">
-            	<span className="text-gray-400">
+            	<span className="text-ink-muted">
               	{esRetiro ? "Retiro en Pucón" : "Envío"}
             	</span>
             	<span
               	className={
-                	esRetiro || shippingCost === 0 ? "text-green-400" : ""
+                	esRetiro || shippingCost === 0 ? "text-green-700" : ""
               	}
             	>
               	{esRetiro ? (
                 	"Gratis"
               	) : shippingCost === 0 ? (
                 	<>
-                  	<s className="text-gray-500 mr-1">
+                  	<s className="text-ink-faint mr-1">
                     	{formatCLP(SHIPPING_COST)}
                   	</s>
                   	Gratis
@@ -580,11 +580,11 @@ export default function CheckoutPage() {
           	</div>
 
           	{!esRetiro && envioAgrupado.agrupable && (
-            	<div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-3">
-              	<p className="text-xs text-green-300 font-semibold">
+            	<div className="bg-green-500/10 border border-green-700/35 rounded-lg p-3 mb-3">
+              	<p className="text-xs text-green-700 font-semibold">
                 	📦 No te cobramos envío
               	</p>
-              	<p className="text-[11px] text-green-200/80 mt-1">
+              	<p className="text-[11px] text-green-700 mt-1">
                 	Va en el mismo paquete que tu pedido{" "}
                 	{envioAgrupado.pedidos.map((n) => "#" + n).join(", ")}, que
                 	todavía no despachamos.
@@ -595,13 +595,13 @@ export default function CheckoutPage() {
           	{!esRetiro &&
             	!envioAgrupado.agrupable &&
             	envioAgrupado.sinPagar.length > 0 && (
-              	<div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-3">
-                	<p className="text-xs text-yellow-300 font-semibold">
+              	<div className="bg-yellow-500/10 border border-amber-700/35 rounded-lg p-3 mb-3">
+                	<p className="text-xs text-amber-700 font-semibold">
                   	Tienes el pedido{" "}
                   	{envioAgrupado.sinPagar.map((n) => "#" + n).join(", ")} sin
                   	pagar a esta dirección
                 	</p>
-                	<p className="text-[11px] text-yellow-200/80 mt-1">
+                	<p className="text-[11px] text-amber-700 mt-1">
                   	Si lo pagas, los despachamos juntos y te devolvemos este
                   	envío. Escríbenos y lo coordinamos.
                 	</p>
@@ -609,7 +609,7 @@ export default function CheckoutPage() {
             	)}
 
           	{!aceptaPedidos(plazos) && (
-            	<div className="mb-4 rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-200">
+            	<div className="mb-4 rounded-lg border border-red-700/35 bg-red-500/10 p-3 text-xs text-red-700">
               	<b>Estamos con los pedidos pausados.</b>{" "}
               	{plazos.reapertura
                 	? `Volvemos a tomar pedidos ${plazos.reapertura}.`
@@ -618,7 +618,7 @@ export default function CheckoutPage() {
             	</div>
           	)}
 
-          	<div className="flex justify-between items-center mb-4 border-t border-white/10 pt-3">
+          	<div className="flex justify-between items-center mb-4 border-t border-line pt-3">
             	<span className="font-semibold">Total</span>
             	<span className="text-2xl font-display font-bold text-lava">
               	{formatCLP(total)}
@@ -634,7 +634,7 @@ export default function CheckoutPage() {
               	hayBloqueados ||
               	!aceptaPedidos(plazos)
             	}
-            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+            	className="w-full btn-flame py-3 rounded-lg font-semibold transition-all disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
           	>
             	{loading ? <Loader2 className="animate-spin" size={18} /> : null}
             	{!aceptaPedidos(plazos)
@@ -650,7 +650,7 @@ export default function CheckoutPage() {
               	: "Confirmar pedido"}
           	</button>
 
-          	<p className="text-xs text-gray-500 text-center mt-4">
+          	<p className="text-xs text-ink-faint text-center mt-4">
             	Flow.cl o transferencia
           	</p>
         	</div>

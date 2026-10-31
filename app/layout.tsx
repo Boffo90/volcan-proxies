@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Montserrat, Syne } from "next/font/google";
+import { Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import AuthListener from "@/components/AuthListener";
 import AvisoPlazo from "@/components/AvisoPlazo";
 
-const montserrat = Montserrat({
+// Las dos son variables, asi que no se declara weight: next/font trae el rango
+// completo y basta una descarga por familia.
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
   display: "swap",
-  variable: "--font-montserrat",
+  variable: "--font-jakarta",
 });
 
-const syne = Syne({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["700", "800"],
   display: "swap",
-  variable: "--font-syne",
+  variable: "--font-bricolage",
 });
 
 export const metadata: Metadata = {
@@ -97,8 +97,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={montserrat.variable + " " + syne.variable}>
-      <body className={montserrat.className}>
+    <html lang="es" className={jakarta.variable + " " + bricolage.variable}>
+      <body>
         <AuthListener />
         <AvisoPlazo />
         {children}

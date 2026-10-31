@@ -54,18 +54,18 @@ export default function FinishButtons({
 
       	const cls =
         	size === "md"
-          	? "py-2 px-2 rounded-lg border transition text-center " +
+          	? "py-2 px-2 rounded-lg border-2 transition text-center " +
             	(!disponible
-              	? "border-white/10 opacity-40 cursor-not-allowed"
+              	? "border-line bg-surface-3 opacity-50 cursor-not-allowed"
               	: sel
-              	? "border-[#FF4D1A] bg-[#FF4D1A]/10 shadow-[0_0_20px_-6px_rgba(255,79,26,0.6)]"
-              	: "border-white/10 hover:border-white/25")
+              	? "border-ink bg-flame-tint shadow-[var(--lift-sm)]"
+              	: "border-line bg-surface-2 hover:border-ink")
           	: "py-1 px-1 text-[10px] rounded transition text-center " +
             	(!disponible
-              	? "bg-white/5 text-gray-500 opacity-50 cursor-not-allowed"
+              	? "bg-surface-3 text-ink-faint opacity-50 cursor-not-allowed"
               	: sel
-              	? "bg-[#FF4D1A]/20 text-[#FF4D1A]"
-              	: "bg-white/5 text-gray-400 hover:text-white");
+              	? "bg-ink text-ink-invert font-bold"
+              	: "bg-ink/5 text-ink-muted hover:bg-ink/10");
 
       	return (
         	<button
@@ -78,7 +78,7 @@ export default function FinishButtons({
         	>
           	<span className={size === "md" ? "font-semibold" : ""}>{label}</span>
           	{size === "md" && disponible ? (
-            	<span className="block text-xs text-gray-300">
+            	<span className="block text-xs text-ink-soft">
               	{formatCLP(precio)}
             	</span>
           	) : null}
@@ -86,7 +86,7 @@ export default function FinishButtons({
             	<span
               	className={
                 	size === "md"
-                  	? "block text-[10px] text-gray-400 font-normal"
+                  	? "block text-[10px] text-ink-muted font-normal"
                   	: "block text-[8px]"
               	}
             	>
@@ -99,17 +99,17 @@ export default function FinishButtons({
   	</div>
 
   	{showInfo && size === "md" && valueDisponible ? (
-    	<div className="mt-3 text-xs text-gray-400 space-y-1">
+    	<div className="mt-3 text-xs text-ink-muted space-y-1">
       	<p>{info.desc}</p>
-      	<p className="text-green-400">✓ {info.pro}</p>
-      	<p className="text-yellow-400">⚠ {info.contra}</p>
+      	<p className="text-green-700">✓ {info.pro}</p>
+      	<p className="text-amber-700">⚠ {info.contra}</p>
     	</div>
   	) : null}
 
   	{size === "md" ? (
     	<Link
       	href="/acabados"
-      	className="inline-block mt-2 text-xs text-[#FF4D1A] hover:underline"
+      	className="inline-block mt-2 text-xs text-flame-ink hover:underline"
     	>
       	¿Cuál elijo? Ver los acabados en detalle →
     	</Link>

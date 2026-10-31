@@ -62,10 +62,10 @@ export default function CustomDetalle() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white">
+  	<main className="min-h-screen bg-surface text-ink-soft">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
-      	<Loader2 className="animate-spin text-[#FF4D1A]" size={40} />
+      	<Loader2 className="animate-spin text-flame-ink" size={40} />
     	</div>
   	</main>
 	);
@@ -73,7 +73,7 @@ export default function CustomDetalle() {
 
   if (!custom) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white">
+  	<main className="min-h-screen bg-surface text-ink-soft">
     	<NavBar />
     	<p className="text-center py-32">Diseño no encontrado.</p>
   	</main>
@@ -103,13 +103,13 @@ export default function CustomDetalle() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<div className="max-w-6xl mx-auto px-6 py-8">
     	<button
       	onClick={() => router.push("/customs")}
-      	className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+      	className="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
     	>
       	<ArrowLeft size={16} /> Volver a la galería
     	</button>
@@ -118,19 +118,19 @@ export default function CustomDetalle() {
       	<div
         	role="img"
         	aria-label={custom.name}
-        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-[#12151b] ring-1 ring-white/10 bg-center bg-cover bg-no-repeat"
+        	className="relative aspect-[5/7] rounded-xl overflow-hidden bg-surface-3 ring-1 ring-line bg-center bg-cover bg-no-repeat"
         	style={{ backgroundImage: `url(${custom.image_url})` }}
       	/>
 
       	<div>
         	<h1 className="font-display font-extrabold text-3xl mb-1">{custom.name}</h1>
         	{custom.tags.length > 0 ? (
-          	<p className="text-sm text-gray-400 mb-4">
+          	<p className="text-sm text-ink-muted mb-4">
             	{custom.tags.join(" · ")}
           	</p>
         	) : null}
         	{custom.description ? (
-          	<p className="mb-6 text-sm text-gray-300 leading-relaxed">
+          	<p className="mb-6 text-sm text-ink-soft leading-relaxed">
             	{custom.description}
           	</p>
         	) : null}
@@ -153,10 +153,10 @@ export default function CustomDetalle() {
             	max={20}
             	value={qty}
             	onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 mb-4"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 mb-4"
           	/>
 
-          	<div className="text-xs text-gray-400 space-y-1 mb-3">
+          	<div className="text-xs text-ink-muted space-y-1 mb-3">
             	<div className="flex justify-between gap-3">
               	<span>
                 	{qty} × {FINISH_INFO[finish].corto}
@@ -170,7 +170,7 @@ export default function CustomDetalle() {
           	</div>
 
           	<div className="flex justify-between items-center mb-4">
-            	<span className="text-gray-400">Subtotal</span>
+            	<span className="text-ink-muted">Subtotal</span>
             	<span className="text-2xl font-display font-bold text-lava">
               	{formatCLP(subtotal)}
             	</span>
@@ -178,7 +178,7 @@ export default function CustomDetalle() {
 
           	<button
             	onClick={handleAddToCart}
-            	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.6)] transition-all"
+            	className="w-full btn-flame py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all"
           	>
             	<ShoppingCart size={18} />
             	{added ? "¡Agregado!" : "Agregar al carrito"}
