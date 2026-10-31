@@ -918,8 +918,9 @@ papel).
 
 `.glass-card` conserva el nombre porque lo usan 25 archivos, pero ya no es
 vidrio: es un panel sólido con filete. **Ya no hay `backdrop-filter` en
-ninguna parte**, que era el costo de GPU que obligaba a bajar el blur en
-mobile. El lenguaje de relieve ahora es sombra dura sin desenfoque
+ninguna parte** —ni en el CSS ni como utilidad `backdrop-blur` en el
+marcado—, que era el costo de GPU que obligaba a bajar el blur en mobile. La
+nav sticky, el drawer del carrito y el footer quedaron con fondo opaco. El lenguaje de relieve ahora es sombra dura sin desenfoque
 (`--lift`, `--lift-sm`, `--lift-lg`), que es mucho más barata de pintar.
 
 Tipografías (`app/layout.tsx`): **Bricolage Grotesque** para titulares

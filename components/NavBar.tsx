@@ -127,7 +127,7 @@ export default function NavBar() {
 
   return (
 	<>
-  	<nav className="bg-surface-2/95 md:bg-surface-2/85 backdrop-blur-sm md:backdrop-blur-xl border-b border-line sticky top-0 z-30">
+  	<nav className="bg-surface-2 border-b border-line sticky top-0 z-30">
     	<div className="flex items-center px-4 md:px-6 py-3 gap-3">
       	<button
         	onClick={() => router.push("/")}
@@ -270,7 +270,7 @@ export default function NavBar() {
     	</div>
 
     	{mobileMenuOpen && (
-      	<div className="lg:hidden border-t border-line bg-surface-2/95 backdrop-blur-xl">
+      	<div className="lg:hidden border-t border-line bg-surface-2">
         	<div className="flex flex-col py-2">
           	{navLinks.map((n) => (
             	<button
