@@ -111,7 +111,7 @@ export default function CustomPage() {
   );
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<div className="max-w-5xl mx-auto px-6 py-10">
@@ -119,7 +119,7 @@ export default function CustomPage() {
       	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-2">
         	Cartas <span className="text-lava">Custom</span>
       	</h1>
-      	<p className="text-gray-400 mb-8">
+      	<p className="text-ink-muted mb-8">
         	Sube tus propias imágenes (JPG o PNG). Recargo de{" "}
         	{formatCLP(precios.custom_surcharge)} por diseño — una sola vez por
         	imagen, aunque pidas varias copias. Las customs cuentan para las
@@ -142,15 +142,15 @@ export default function CustomPage() {
       	className={
         	"border-2 border-dashed rounded-xl p-10 text-center mb-6 transition-colors " +
         	(isDragging
-          	? "border-[#FF4D1A] bg-[#FF4D1A]/10"
-          	: "bg-white/[0.03] backdrop-blur-md border-white/20 hover:border-[#FF4D1A]/50")
+          	? "border-flame bg-flame-tint"
+          	: "bg-surface-2 border-line hover:border-flame")
       	}
     	>
-      	<Upload className="mx-auto text-[#FF4D1A] mb-4" size={40} />
+      	<Upload className="mx-auto text-flame-ink mb-4" size={40} />
       	<p className="font-semibold mb-2">
         	{isDragging ? "Suelta para subir" : "Arrastra tus imágenes aquí o haz click"}
       	</p>
-      	<p className="text-xs text-gray-400 mb-4">
+      	<p className="text-xs text-ink-muted mb-4">
         	Formatos: JPG, PNG · Las imágenes grandes se optimizan solas
       	</p>
       	<input
@@ -164,7 +164,7 @@ export default function CustomPage() {
       	/>
       	<label
         	htmlFor="file-input"
-        	className="inline-flex items-center gap-2 bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2.5 rounded-lg font-semibold cursor-pointer shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+        	className="inline-flex items-center gap-2 btn-flame px-5 py-2.5 rounded-lg font-semibold cursor-pointer transition-all"
       	>
         	{uploading ? (
           	<Loader2 className="animate-spin" size={16} />
@@ -174,7 +174,7 @@ export default function CustomPage() {
         	{uploading ? "Subiendo..." : "Elegir archivos"}
       	</label>
       	{error ? (
-        	<p className="text-sm text-red-400 mt-4">{error}</p>
+        	<p className="text-sm text-red-700 mt-4">{error}</p>
       	) : null}
     	</motion.div>
 
@@ -192,11 +192,11 @@ export default function CustomPage() {
               	<div
                 	role="img"
                 	aria-label={u.cardName}
-                	className="w-full aspect-[5/7] rounded-lg mb-3 bg-[#0b0d11] bg-center bg-contain bg-no-repeat"
+                	className="w-full aspect-[5/7] rounded-lg mb-3 bg-surface-3 bg-center bg-contain bg-no-repeat"
                 	style={{ backgroundImage: `url(${u.url})` }}
               	/>
 
-              	<label className="block text-xs text-gray-400 mb-1">
+              	<label className="block text-xs text-ink-muted mb-1">
                 	Nombre de referencia
               	</label>
               	<input
@@ -205,10 +205,10 @@ export default function CustomPage() {
                   	updateUpload(idx, "cardName", e.target.value)
                 	}
                 	placeholder="Mi token, alter, etc."
-                	className="w-full bg-[#0b0d11] border border-white/10 rounded px-2 py-1.5 text-sm mb-3"
+                	className="w-full bg-surface-2 border border-line rounded px-2 py-1.5 text-sm mb-3"
               	/>
 
-              	<label className="block text-xs text-gray-400 mb-1">
+              	<label className="block text-xs text-ink-muted mb-1">
                 	Acabado
               	</label>
               	<div className="mb-3">
@@ -220,7 +220,7 @@ export default function CustomPage() {
                 	/>
               	</div>
 
-              	<label className="block text-xs text-gray-400 mb-1">
+              	<label className="block text-xs text-ink-muted mb-1">
                 	Cantidad
               	</label>
               	<div className="flex gap-2 items-center">
@@ -236,11 +236,11 @@ export default function CustomPage() {
                       	Math.max(1, Number(e.target.value) || 1)
                     	)
                   	}
-                  	className="flex-1 bg-[#0b0d11] border border-white/10 rounded px-2 py-1.5 text-sm"
+                  	className="flex-1 bg-surface-2 border border-line rounded px-2 py-1.5 text-sm"
                 	/>
                 	<button
                   	onClick={() => removeUpload(idx)}
-                  	className="text-red-400 hover:text-red-300 p-1.5"
+                  	className="text-red-700 hover:text-red-700 p-1.5"
                   	title="Eliminar"
                 	>
                   	<Trash2 size={16} />
@@ -252,7 +252,7 @@ export default function CustomPage() {
 
         	<div className="glass-card p-5 rounded-xl flex flex-wrap items-center justify-between gap-4 sticky bottom-4">
           	<div>
-            	<p className="text-xs text-gray-400">
+            	<p className="text-xs text-ink-muted">
               	Subtotal estimado (con promos)
             	</p>
             	<p className="text-2xl font-display font-bold text-lava">
@@ -261,7 +261,7 @@ export default function CustomPage() {
           	</div>
           	<button
             	onClick={addAllToCart}
-            	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+            	className="btn-flame px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all"
           	>
             	<ShoppingCart size={18} /> Agregar todas al carrito
           	</button>
@@ -269,11 +269,11 @@ export default function CustomPage() {
       	</>
     	)}
 
-    	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg mt-8">
-      	<h3 className="font-semibold text-yellow-300 text-sm mb-2">
+    	<div className="bg-yellow-500/10 border border-amber-700/35 p-4 rounded-lg mt-8">
+      	<h3 className="font-semibold text-amber-700 text-sm mb-2">
         	💡 Tips para mejores resultados
       	</h3>
-      	<ul className="text-sm text-yellow-200/80 space-y-1 list-disc list-inside">
+      	<ul className="text-sm text-amber-700 space-y-1 list-disc list-inside">
         	<li>
           	Usa imágenes de alta resolución (mínimo 750×1050 px para tamaño
           	carta)

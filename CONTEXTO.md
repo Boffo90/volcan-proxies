@@ -4,7 +4,7 @@ Documento de traspaso. Si estás retomando el proyecto en una sesión nueva,
 lee esto antes de tocar código: acá está lo que no se deduce leyendo los
 archivos.
 
-Última actualización: 5 de septiembre de 2026.
+Última actualización: 31 de octubre de 2026.
 
 ---
 
@@ -879,6 +879,62 @@ promo contaba esa línea, así que la carta aparecía en el carrito y se produc�
 **sin cobrarse**. Al leer se cae al acabado más barato, que el cliente ve y
 puede cambiar. En el servidor no hace falta: `/api/pedido` rechaza con 400
 cualquier acabado que no esté en `FINISHES`.
+
+---
+
+## 8d. El diseño: "mesa de juego"
+
+El sitio era oscuro (casi negro con degradés naranjos y tarjetas de vidrio
+esmerilado). Hoy es claro: cartón tibio de mantel, cartas blancas encima,
+tinta café-negra y acentos de color de maná. La idea es que la pantalla se
+lea como una mesa con cartas repartidas, y que el arte de las cartas —que es
+el producto— mande por sobre la interfaz.
+
+**Todo el color vive en `app/globals.css`.** No hay hexadecimales sueltos en
+las páginas: hay variables semánticas expuestas a Tailwind en `@theme inline`,
+y las páginas usan `bg-surface`, `text-ink-muted`, `border-line`,
+`text-flame-ink`. Cambiar la paleta entera es cambiar ese bloque.
+
+Las rampas:
+
+- **Superficie** — `--surface` (el mantel), `--surface-2` (la carta encima),
+  `--surface-3` (banda de sección hundida), `--surface-ink` (bloque oscuro de
+  contraste).
+- **Tinta** — `--ink` > `--ink-soft` > `--ink-muted` > `--ink-faint`. Toda la
+  rampa cumple AA sobre `--surface`.
+- **Brasa** — `--flame` **rellena**, `--flame-ink` **escribe**. El naranjo vivo
+  sobre cartón llega a 3,4:1 y no pasa AA en texto chico, así que íconos y
+  texto van siempre con `--flame-ink`. Si agregas naranjo nuevo, respeta esa
+  división.
+- **Maná** — `--mana-w/u/b/r/g`, para que el naranjo deje de cargar todo solo.
+
+Las primitivas (`.glass-card`, `.block-card`, `.block-ink`, `.badge`,
+`.btn-flame`, `.btn-ghost`, `.glow-hover`) **viven dentro de
+`@layer components`**, y eso es a propósito: así las utilidades de Tailwind les
+ganan y uno puede escribir `<span className="badge bg-mana-w">` y que el fondo
+sea el de la utilidad. Si las sacas de la capa, la primitiva empieza a pisar
+las clases sueltas y aparecen bugs raros (un `badge bg-flame` saliendo color
+papel).
+
+`.glass-card` conserva el nombre porque lo usan 25 archivos, pero ya no es
+vidrio: es un panel sólido con filete. **Ya no hay `backdrop-filter` en
+ninguna parte**, que era el costo de GPU que obligaba a bajar el blur en
+mobile. El lenguaje de relieve ahora es sombra dura sin desenfoque
+(`--lift`, `--lift-sm`, `--lift-lg`), que es mucho más barata de pintar.
+
+Tipografías (`app/layout.tsx`): **Bricolage Grotesque** para titulares
+(`.font-display`) y **Plus Jakarta Sans** para texto. Las dos son variables,
+así que no se declara `weight`: `next/font` trae el rango completo y basta una
+descarga por familia.
+
+Dos cosas que conviene saber antes de tocar:
+
+- **El sitio es solo claro.** `color-scheme: light` en `:root`, no hay toggle
+  ni variante oscura. Si algún día se quiere modo oscuro, el trabajo es
+  redefinir las variables bajo un selector, no tocar las páginas.
+- **El fondo es un `body::before` fijo**: cuadrícula de mantel más tres lavados
+  de color de maná en las esquinas. Es `position: fixed`, así que no repinta en
+  scroll.
 
 ---
 

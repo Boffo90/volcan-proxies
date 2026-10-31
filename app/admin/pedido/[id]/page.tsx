@@ -664,15 +664,15 @@ export default function AdminPedidoDetail() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white flex justify-center py-32">
-    	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
+    	<Loader2 className="animate-spin text-flame-ink" size={32} />
   	</main>
 	);
   }
 
   if (!pedido) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white flex justify-center py-32">
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
     	<p>Pedido no encontrado</p>
   	</main>
 	);
@@ -681,11 +681,11 @@ export default function AdminPedidoDetail() {
   const esRetiro = pedido.delivery_type === "retiro";
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<div className="max-w-5xl mx-auto px-6 py-6">
     	<button
       	onClick={() => router.push("/admin")}
-      	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+      	className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
     	>
       	<ArrowLeft size={16} /> Volver al panel
     	</button>
@@ -693,18 +693,18 @@ export default function AdminPedidoDetail() {
     	<div className="flex items-start justify-between mb-6 flex-wrap gap-4">
       	<div>
         	<h1 className="text-3xl font-bold">
-          	Pedido <span className="text-[#FF4D1A]">#{pedido.numero}</span>
+          	Pedido <span className="text-flame-ink">#{pedido.numero}</span>
         	</h1>
-        	<p className="text-sm text-gray-400 mt-1">
+        	<p className="text-sm text-ink-muted mt-1">
           	{new Date(pedido.created_at).toLocaleString("es-CL")}
         	</p>
         	<div className="mt-2 flex items-center gap-2">
           	{esRetiro ? (
-            	<span className="inline-flex items-center gap-1 bg-green-500/10 text-green-400 text-xs px-2 py-1 rounded border border-green-500/20">
+            	<span className="inline-flex items-center gap-1 bg-green-500/10 text-green-700 text-xs px-2 py-1 rounded border border-green-700/35">
               	<MapPin size={12} /> Retiro en Pucón
             	</span>
           	) : (
-            	<span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-400 text-xs px-2 py-1 rounded border border-blue-500/20">
+            	<span className="inline-flex items-center gap-1 bg-blue-500/10 text-blue-700 text-xs px-2 py-1 rounded border border-blue-700/35">
               	<Truck size={12} /> Envío a domicilio
             	</span>
           	)}
@@ -712,9 +712,9 @@ export default function AdminPedidoDetail() {
       	</div>
 
       	<div className="flex items-center gap-3 flex-wrap">
-        	<div className="bg-[#1E242B] px-4 py-2 rounded-lg border border-white/10">
-          	<p className="text-xs text-gray-400">Estado actual</p>
-          	<p className="text-xl font-bold capitalize text-[#FF4D1A]">
+        	<div className="bg-surface-2 px-4 py-2 rounded-lg border border-line">
+          	<p className="text-xs text-ink-muted">Estado actual</p>
+          	<p className="text-xl font-bold capitalize text-flame-ink">
             	{pedido.estado}
           	</p>
         	</div>
@@ -722,7 +722,7 @@ export default function AdminPedidoDetail() {
         	<button
           	onClick={toggleArchivado}
           	disabled={saving}
-          	className="bg-white/5 hover:bg-white/10 text-gray-300 border border-white/15 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+          	className="bg-ink/5 hover:bg-ink/10 text-ink-soft border border-line px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
         	>
           	{saving ? (
             	<Loader2 className="animate-spin" size={16} />
@@ -737,7 +737,7 @@ export default function AdminPedidoDetail() {
         	<button
           	onClick={deletePedido}
           	disabled={deleting}
-          	className="bg-red-500/10 hover:bg-red-500/20 text-red-300 border border-red-500/30 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+          	className="bg-red-500/10 hover:bg-red-500/20 text-red-700 border border-red-700/35 px-4 py-3 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
         	>
           	{deleting ? (
             	<Loader2 className="animate-spin" size={16} />
@@ -750,11 +750,11 @@ export default function AdminPedidoDetail() {
     	</div>
 
     	{pedido.archivado_at && (
-      	<div className="bg-white/5 border border-white/20 p-4 rounded-xl mb-6 flex items-center gap-3">
-        	<Archive size={18} className="text-gray-400 flex-shrink-0" />
+      	<div className="bg-ink/5 border border-line p-4 rounded-xl mb-6 flex items-center gap-3">
+        	<Archive size={18} className="text-ink-muted flex-shrink-0" />
         	<div>
           	<p className="font-bold text-sm">Pedido archivado</p>
-          	<p className="text-xs text-gray-400">
+          	<p className="text-xs text-ink-muted">
             	Archivado el{" "}
             	{new Date(pedido.archivado_at).toLocaleString("es-CL")}. No
             	aparece en el panel ni reserva material. Desarchívalo si vuelve a
@@ -765,13 +765,13 @@ export default function AdminPedidoDetail() {
     	)}
 
     	{agrupables.length > 0 && (
-      	<div className="bg-[#FF4D1A]/10 border-2 border-[#FF4D1A]/60 p-5 rounded-xl mb-6">
+      	<div className="bg-flame-tint border-2 border-flame p-5 rounded-xl mb-6">
         	<h2 className="font-bold mb-1 flex items-center gap-2">
-          	<Package size={18} className="text-[#FF4D1A]" />
+          	<Package size={18} className="text-flame-ink" />
           	Despachar junto con{" "}
           	{agrupables.map((p) => "#" + p.numero).join(", ")}
         	</h2>
-        	<p className="text-sm text-gray-300 mb-3">
+        	<p className="text-sm text-ink-soft mb-3">
           	Mismo cliente, misma dirección y ninguno despachado todavía. El
           	envío se cobró una sola vez, así que mandarlos por separado sale de
           	tu bolsillo.
@@ -781,10 +781,10 @@ export default function AdminPedidoDetail() {
             	<button
               	key={p.id}
               	onClick={() => router.push("/admin/pedido/" + p.id)}
-              	className="bg-[#0F1115] hover:bg-white/5 border border-white/10 hover:border-[#FF4D1A] px-3 py-2 rounded-lg text-sm"
+              	className="bg-surface-2 hover:bg-ink/5 border border-line hover:border-flame px-3 py-2 rounded-lg text-sm"
             	>
               	Ver #{p.numero}{" "}
-              	<span className="text-gray-400">
+              	<span className="text-ink-muted">
                 	· {p.estado} · {formatCLP(p.total)}
               	</span>
             	</button>
@@ -798,21 +798,21 @@ export default function AdminPedidoDetail() {
         	className={
           	"p-5 rounded-xl mb-6 border " +
           	(flowEstado?.error || !flowEstado
-            	? "bg-[#1E242B] border-white/10"
+            	? "bg-surface-2 border-line"
             	: flowEstado.pagado
-            	? "bg-green-500/10 border-green-500/30"
-            	: "bg-red-500/15 border-red-500/50")
+            	? "bg-green-500/10 border-green-700/35"
+            	: "bg-red-500/15 border-red-700/35")
         	}
       	>
         	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
           	<h2 className="font-bold flex items-center gap-2">
-            	<CreditCard size={18} className="text-[#FF4D1A]" />
+            	<CreditCard size={18} className="text-flame-ink" />
             	Pago en Flow (verificado en vivo)
           	</h2>
           	<button
             	onClick={verificarFlow}
             	disabled={verificandoFlow}
-            	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10 disabled:opacity-50"
+            	className="bg-surface-2 hover:bg-ink/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-line disabled:opacity-50"
           	>
             	{verificandoFlow ? (
               	<Loader2 className="animate-spin" size={14} />
@@ -824,14 +824,14 @@ export default function AdminPedidoDetail() {
         	</div>
 
         	{verificandoFlow && !flowEstado ? (
-          	<p className="text-sm text-gray-400">Consultando a Flow…</p>
+          	<p className="text-sm text-ink-muted">Consultando a Flow…</p>
         	) : flowEstado?.error ? (
-          	<p className="text-sm text-yellow-300">
+          	<p className="text-sm text-amber-700">
             	⚠️ No se pudo verificar con Flow: {flowEstado.error}. No asumas
             	que está pagado sin comprobarlo.
           	</p>
         	) : flowEstado?.aplica === false ? (
-          	<p className="text-sm text-gray-400">
+          	<p className="text-sm text-ink-muted">
             	Este pedido no tiene un pago de Flow asociado.
           	</p>
         	) : flowEstado ? (
@@ -839,14 +839,14 @@ export default function AdminPedidoDetail() {
             	<p
               	className={
                 	"text-2xl font-bold " +
-                	(flowEstado.pagado ? "text-green-300" : "text-red-300")
+                	(flowEstado.pagado ? "text-green-700" : "text-red-700")
               	}
             	>
               	{flowEstado.pagado ? "✓ PAGADO" : "✗ NO PAGADO"} —{" "}
               	{flowEstado.etiqueta}
             	</p>
             	{flowEstado.pagado && (
-              	<p className="text-sm text-green-200/80 mt-1">
+              	<p className="text-sm text-green-700 mt-1">
                 	Flow confirma el pago
                 	{flowEstado.monto
                   	? " por " + formatCLP(flowEstado.monto)
@@ -856,12 +856,12 @@ export default function AdminPedidoDetail() {
             	)}
             	{!flowEstado.pagado &&
               	ESTADOS_QUE_ASUMEN_PAGO.includes(pedido.estado) && (
-                	<div className="mt-3 bg-red-500/20 border border-red-500/40 rounded-lg p-3">
-                  	<p className="font-bold text-red-200 text-sm">
+                	<div className="mt-3 bg-red-500/20 border border-red-700/35 rounded-lg p-3">
+                  	<p className="font-bold text-red-700 text-sm">
                     	🚨 OJO: el pedido está en &quot;{pedido.estado}&quot;
                     	pero Flow NO tiene el pago confirmado.
                   	</p>
-                  	<p className="text-xs text-red-200/80 mt-1">
+                  	<p className="text-xs text-red-700 mt-1">
                     	No lo produzcas ni lo despaches hasta comprobar el pago.
                     	Si el cliente pagó por transferencia (pasa cuando Flow le
                     	falla), cámbialo a <b>Transferencia</b> en el recuadro{" "}
@@ -871,33 +871,33 @@ export default function AdminPedidoDetail() {
               	)}
           	</>
         	) : (
-          	<p className="text-sm text-gray-400">Sin verificar.</p>
+          	<p className="text-sm text-ink-muted">Sin verificar.</p>
         	)}
       	</div>
     	)}
 
     	{pedido.confirmacion_enviada_at ? (
-      	<div className="bg-green-500/10 border border-green-500/30 p-5 rounded-xl mb-6">
-        	<h2 className="font-bold mb-1 flex items-center gap-2 text-green-300">
+      	<div className="bg-green-500/10 border border-green-700/35 p-5 rounded-xl mb-6">
+        	<h2 className="font-bold mb-1 flex items-center gap-2 text-green-700">
           	<CheckCircle2 size={18} /> Cliente avisado
         	</h2>
-        	<p className="text-sm text-green-200/80">
+        	<p className="text-sm text-green-700">
           	Se le confirmó el pago por email el{" "}
           	{new Date(pedido.confirmacion_enviada_at).toLocaleString("es-CL")}.
         	</p>
       	</div>
     	) : (
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mb-6">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-flame/50 mb-6">
         	<h2 className="font-bold mb-1 flex items-center gap-2">
-          	<Mail size={18} className="text-[#FF4D1A]" /> Confirmar pago
+          	<Mail size={18} className="text-flame-ink" /> Confirmar pago
         	</h2>
-        	<p className="text-xs text-gray-400 mb-4">
+        	<p className="text-xs text-ink-muted mb-4">
           	Marca el pedido como <b>pagado</b> y le envía un email al cliente
           	avisándole que su pedido quedó confirmado. Se envía una sola vez.
           	{pedido.metodo_pago === "flow" && (
             	<>
               	{" "}
-              	<span className="text-gray-500">
+              	<span className="text-ink-faint">
                 	(Los pagos por Flow se confirman y avisan solos.)
               	</span>
             	</>
@@ -906,7 +906,7 @@ export default function AdminPedidoDetail() {
         	<button
           	onClick={confirmarPago}
           	disabled={confirmando}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+          	className="btn-flame px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
         	>
           	{confirmando ? (
             	<Loader2 className="animate-spin" size={14} />
@@ -918,7 +918,7 @@ export default function AdminPedidoDetail() {
       	</div>
     	)}
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
+    	<div className="bg-surface-2 p-5 rounded-xl border border-line mb-6">
       	<h2 className="font-bold mb-3">Avanzar pedido</h2>
       	<div className="flex flex-wrap gap-2">
         	{ESTADOS.map((e) => {
@@ -931,8 +931,8 @@ export default function AdminPedidoDetail() {
               	className={
                 	"px-3 py-2 rounded-lg text-sm capitalize transition " +
                 	(isCurrent
-                  	? "bg-[#FF4D1A] text-white"
-                  	: "bg-[#0F1115] border border-white/10 hover:border-[#FF4D1A]")
+                  	? "bg-flame text-white"
+                  	: "bg-surface-2 border border-line hover:border-flame")
               	}
             	>
               	{e}
@@ -943,18 +943,18 @@ export default function AdminPedidoDetail() {
     	</div>
 
     	{!esRetiro && (
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-6">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-line mb-6">
         	<h2 className="font-bold mb-3 flex items-center gap-2">
-          	<Truck size={18} className="text-[#FF4D1A]" /> Tracking de envío
+          	<Truck size={18} className="text-flame-ink" /> Tracking de envío
         	</h2>
-        	<p className="text-xs text-gray-400 mb-4">
+        	<p className="text-xs text-ink-muted mb-4">
           	Al guardar, se enviará automáticamente un email al cliente con el
           	número de seguimiento.
         	</p>
 
         	<div className="grid md:grid-cols-2 gap-3 mb-3">
           	<div>
-            	<label className="block text-xs text-gray-400 mb-1">
+            	<label className="block text-xs text-ink-muted mb-1">
               	Courier
             	</label>
             	<select
@@ -962,7 +962,7 @@ export default function AdminPedidoDetail() {
               	onChange={(e) =>
                 	setTrackingCourier(e.target.value as CourierKey)
               	}
-              	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+              	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2"
             	>
               	<option value="">Elige courier</option>
               	<option value="starken">Starken</option>
@@ -972,14 +972,14 @@ export default function AdminPedidoDetail() {
           	</div>
 
           	<div>
-            	<label className="block text-xs text-gray-400 mb-1">
+            	<label className="block text-xs text-ink-muted mb-1">
               	N° seguimiento
             	</label>
             	<input
               	value={trackingNum}
               	onChange={(e) => setTrackingNum(e.target.value)}
               	placeholder="Ej: 1234567890"
-              	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2"
+              	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2"
             	/>
           	</div>
         	</div>
@@ -987,7 +987,7 @@ export default function AdminPedidoDetail() {
         	<button
           	onClick={saveTracking}
           	disabled={saving}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+          	className="btn-flame px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
         	>
           	{saving ? (
             	<Loader2 className="animate-spin" size={14} />
@@ -998,7 +998,7 @@ export default function AdminPedidoDetail() {
         	</button>
 
         	{pedido.tracking_numero && (
-          	<p className="mt-3 text-xs text-green-400">
+          	<p className="mt-3 text-xs text-green-700">
             	✓ Tracking guardado: {pedido.tracking_courier} ·{" "}
             	{pedido.tracking_numero}
           	</p>
@@ -1007,11 +1007,11 @@ export default function AdminPedidoDetail() {
     	)}
 
     	{esRetiro && (
-      	<div className="bg-green-500/10 border border-green-500/30 p-5 rounded-xl mb-6">
-        	<h2 className="font-bold mb-2 flex items-center gap-2 text-green-300">
+      	<div className="bg-green-500/10 border border-green-700/35 p-5 rounded-xl mb-6">
+        	<h2 className="font-bold mb-2 flex items-center gap-2 text-green-700">
           	<MapPin size={18} /> Retiro en Pucón
         	</h2>
-        	<p className="text-sm text-green-200/80">
+        	<p className="text-sm text-green-700">
           	Este pedido es de retiro presencial. Coordina con el cliente por
           	email o WhatsApp. No requiere tracking de courier.
         	</p>
@@ -1019,7 +1019,7 @@ export default function AdminPedidoDetail() {
     	)}
 
     	<div className="grid lg:grid-cols-2 gap-6">
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-line">
         	<div className="flex justify-between items-center gap-2 mb-3">
           	<h2 className="font-bold">Cliente</h2>
           	{!editandoEnvio && !esRetiro && (
@@ -1031,7 +1031,7 @@ export default function AdminPedidoDetail() {
                   	? "Ya tiene tracking: el paquete salió con la dirección actual"
                   	: "Corregir los datos de despacho"
               	}
-              	className="text-xs bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              	className="text-xs bg-surface-2 hover:bg-ink/5 px-3 py-1.5 rounded-lg border border-line flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             	>
               	<Pencil size={13} /> Editar envío
             	</button>
@@ -1043,7 +1043,7 @@ export default function AdminPedidoDetail() {
             	<div>
               	<label
                 	htmlFor="env-nombre"
-                	className="block text-xs text-gray-400 mb-1"
+                	className="block text-xs text-ink-muted mb-1"
               	>
                 	Nombre de quien recibe
               	</label>
@@ -1056,13 +1056,13 @@ export default function AdminPedidoDetail() {
                     	cliente_nombre: e.target.value,
                   	})
                 	}
-                	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+                	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
               	/>
             	</div>
             	<div>
               	<label
                 	htmlFor="env-tel"
-                	className="block text-xs text-gray-400 mb-1"
+                	className="block text-xs text-ink-muted mb-1"
               	>
                 	Teléfono
               	</label>
@@ -1075,13 +1075,13 @@ export default function AdminPedidoDetail() {
                     	cliente_telefono: e.target.value,
                   	})
                 	}
-                	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+                	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
               	/>
             	</div>
             	<div>
               	<label
                 	htmlFor="env-dir"
-                	className="block text-xs text-gray-400 mb-1"
+                	className="block text-xs text-ink-muted mb-1"
               	>
                 	Dirección *
               	</label>
@@ -1091,14 +1091,14 @@ export default function AdminPedidoDetail() {
                 	onChange={(e) =>
                   	setEnvioForm({ ...envioForm, direccion: e.target.value })
                 	}
-                	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+                	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
               	/>
             	</div>
             	<div className="grid grid-cols-2 gap-3">
               	<div>
                 	<label
                   	htmlFor="env-com"
-                  	className="block text-xs text-gray-400 mb-1"
+                  	className="block text-xs text-ink-muted mb-1"
                 	>
                   	Comuna *
                 	</label>
@@ -1108,13 +1108,13 @@ export default function AdminPedidoDetail() {
                   	onChange={(e) =>
                     	setEnvioForm({ ...envioForm, comuna: e.target.value })
                   	}
-                  	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
                 	/>
               	</div>
               	<div>
                 	<label
                   	htmlFor="env-reg"
-                  	className="block text-xs text-gray-400 mb-1"
+                  	className="block text-xs text-ink-muted mb-1"
                 	>
                   	Región *
                 	</label>
@@ -1124,7 +1124,7 @@ export default function AdminPedidoDetail() {
                   	onChange={(e) =>
                     	setEnvioForm({ ...envioForm, region: e.target.value })
                   	}
-                  	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+                  	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
                 	>
                   	{REGIONES.map((r) => (
                     	<option key={r} value={r}>
@@ -1135,7 +1135,7 @@ export default function AdminPedidoDetail() {
               	</div>
             	</div>
 
-            	<p className="text-[11px] text-gray-500">
+            	<p className="text-[11px] text-ink-faint">
               	El cambio queda anotado en las notas internas, con fecha y la
               	dirección anterior.
             	</p>
@@ -1144,7 +1144,7 @@ export default function AdminPedidoDetail() {
               	<button
                 	onClick={guardarEnvio}
                 	disabled={saving}
-                	className="bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+                	className="btn-flame px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
               	>
                 	{saving ? (
                   	<Loader2 className="animate-spin" size={14} />
@@ -1155,7 +1155,7 @@ export default function AdminPedidoDetail() {
               	</button>
               	<button
                 	onClick={() => setEditandoEnvio(false)}
-                	className="bg-[#0F1115] hover:bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-sm"
+                	className="bg-surface-2 hover:bg-ink/5 border border-line px-4 py-2 rounded-lg text-sm"
               	>
                 	Cancelar
               	</button>
@@ -1167,17 +1167,17 @@ export default function AdminPedidoDetail() {
               	<b>{pedido.cliente_nombre}</b>{" "}
               	{pedido.cliente_rut ? `(${pedido.cliente_rut})` : ""}
             	</p>
-            	<p className="text-sm text-gray-300 mb-1">
+            	<p className="text-sm text-ink-soft mb-1">
               	📧 {pedido.cliente_email}
             	</p>
-            	<p className="text-sm text-gray-300 mb-3">
+            	<p className="text-sm text-ink-soft mb-3">
               	📱 {pedido.cliente_telefono || "-"}
             	</p>
-            	<p className="text-sm text-gray-300">
+            	<p className="text-sm text-ink-soft">
               	📍 {pedido.direccion}, {pedido.comuna}, {pedido.region}
             	</p>
             	{pedido.notas ? (
-              	<p className="text-sm text-gray-400 mt-3 italic">
+              	<p className="text-sm text-ink-muted mt-3 italic">
                 	Notas cliente: {pedido.notas}
               	</p>
             	) : null}
@@ -1185,9 +1185,9 @@ export default function AdminPedidoDetail() {
         	)}
       	</div>
 
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-line">
         	<h2 className="font-bold mb-3">Pago</h2>
-        	<p className="text-sm text-gray-400">Método</p>
+        	<p className="text-sm text-ink-muted">Método</p>
         	<div className="flex gap-2 mb-3">
           	{[
             	{ key: "flow", label: "Flow.cl" },
@@ -1202,8 +1202,8 @@ export default function AdminPedidoDetail() {
                 	className={
                   	"px-3 py-1.5 rounded-lg text-sm transition " +
                   	(activo
-                    	? "bg-[#FF4D1A] text-white"
-                    	: "bg-[#0F1115] border border-white/10 hover:border-[#FF4D1A]")
+                    	? "bg-flame text-white"
+                    	: "bg-surface-2 border border-line hover:border-flame")
                 	}
               	>
                 	{m.label}
@@ -1211,26 +1211,26 @@ export default function AdminPedidoDetail() {
             	);
           	})}
         	</div>
-        	<p className="text-sm text-gray-400">Idioma de las cartas</p>
+        	<p className="text-sm text-ink-muted">Idioma de las cartas</p>
         	<p className="mb-3">{pedido.idioma || "Inglés"}</p>
-        	<p className="text-sm text-gray-400">Promo aplicada</p>
+        	<p className="text-sm text-ink-muted">Promo aplicada</p>
         	<p className="mb-3">{pedido.promo_aplicada || "-"}</p>
         	{pedido.subtotal !== undefined && (
           	<>
-            	<p className="text-sm text-gray-400">Subtotal cartas</p>
+            	<p className="text-sm text-ink-muted">Subtotal cartas</p>
             	<p className="mb-2 text-sm">{formatCLP(pedido.subtotal)}</p>
           	</>
         	)}
         	{pedido.shipping_cost !== undefined && pedido.shipping_cost > 0 && (
           	<>
-            	<p className="text-sm text-gray-400">Envío</p>
+            	<p className="text-sm text-ink-muted">Envío</p>
             	<p className="mb-2 text-sm">
               	{formatCLP(pedido.shipping_cost)}
             	</p>
           	</>
         	)}
-        	<p className="text-sm text-gray-400">Total</p>
-        	<p className="text-2xl font-bold text-[#FF4D1A]">
+        	<p className="text-sm text-ink-muted">Total</p>
+        	<p className="text-2xl font-bold text-flame-ink">
           	{formatCLP(pedido.total)}
         	</p>
       	</div>
@@ -1238,13 +1238,13 @@ export default function AdminPedidoDetail() {
 
     	<div className="mt-6">
       	<h2 className="font-bold text-lg mb-1">Importar a Cardwright</h2>
-      	<p className="text-xs text-gray-400 mb-4">
+      	<p className="text-xs text-ink-muted mb-4">
         	La lista de cartas trae el pedido entero de una vez. Los bloques de
         	abajo siguen sirviendo si prefieres importar por fuente.
       	</p>
 
       	{/* El pedido completo, en un archivo → botón "Card list…" */}
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-green-400/30 mb-4">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-green-700/35 mb-4">
         	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
           	<h3 className="font-bold flex items-center gap-2">
             	📦 Lista de cartas ({sumQty(allItems)} cartas)
@@ -1252,20 +1252,20 @@ export default function AdminPedidoDetail() {
           	<button
             	onClick={descargarLista}
             	disabled={generandoLista}
-            	className="bg-[#0F1115] hover:bg-white/5 disabled:opacity-50 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+            	className="bg-surface-2 hover:bg-ink/5 disabled:opacity-50 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-line"
           	>
             	<Download size={14} />
             	{generandoLista ? "Generando…" : "Descargar .json"}
           	</button>
         	</div>
-        	<p className="text-xs text-gray-400">
+        	<p className="text-xs text-ink-muted">
           	Todo el pedido en un archivo: cada carta con su imagen de
           	impresión, su acabado y el dorso personalizado si lo lleva. En
           	Cardwright: <b>Import → botón &quot;Card list…&quot;</b>. Sirve para
           	cualquier juego, y el tamaño de carta se cambia solo.
         	</p>
         	{tamanos.length > 1 ? (
-          	<p className="text-xs text-yellow-300 mt-2">
+          	<p className="text-xs text-amber-700 mt-2">
             	Este pedido mezcla {tamanos.length} tamaños de carta (
             	{tamanos.join(" y ")}). Son dos tandas: importa la lista, deja
             	en la cola solo las de un tamaño, imprime, y repite con las
@@ -1273,13 +1273,13 @@ export default function AdminPedidoDetail() {
           	</p>
         	) : null}
         	{avisoLista ? (
-          	<p className="text-xs text-yellow-300 mt-2">{avisoLista}</p>
+          	<p className="text-xs text-amber-700 mt-2">{avisoLista}</p>
         	) : null}
       	</div>
 
       	{/* MPCFill: arte HD exacto por Drive id → botón "MPC XML…" */}
       	{mpcItems.length > 0 && (
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-[#FF4D1A]/30 mb-4">
+        	<div className="bg-surface-2 p-5 rounded-xl border border-flame/50 mb-4">
           	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
             	<h3 className="font-bold flex items-center gap-2">
               	🎨 MPCFill ({sumQty(mpcItems)} cartas)
@@ -1287,25 +1287,25 @@ export default function AdminPedidoDetail() {
             	<div className="flex gap-2">
               	<button
                 	onClick={copyXml}
-                	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+                	className="bg-surface-2 hover:bg-ink/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-line"
               	>
                 	{copiedXml ? <Check size={14} /> : <Copy size={14} />}
                 	{copiedXml ? "Copiado!" : "Copiar XML"}
               	</button>
               	<button
                 	onClick={downloadXml}
-                	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+                	className="bg-surface-2 hover:bg-ink/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-line"
               	>
                 	<Download size={14} /> Descargar .xml
               	</button>
             	</div>
           	</div>
-          	<p className="text-xs text-gray-400 mb-3">
+          	<p className="text-xs text-ink-muted mb-3">
             	En Cardwright: <b>Import → botón &quot;MPC XML…&quot;</b> → elige
             	este archivo (o descarga el .xml). Trae el arte HD{" "}
             	<b>exacto</b> que eligió el cliente.
           	</p>
-          	<pre className="bg-[#0F1115] text-[#8fd3ff] p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-72 overflow-auto">
+          	<pre className="bg-surface-2 text-mana-u p-4 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-72 overflow-auto">
 {mpcXml}
           	</pre>
         	</div>
@@ -1313,25 +1313,25 @@ export default function AdminPedidoDetail() {
 
       	{/* Scryfall / Gatherer: printing exacto por set+número → "Resolve & add" */}
       	{scryfallItems.length > 0 && (
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mb-4">
+        	<div className="bg-surface-2 p-5 rounded-xl border border-line mb-4">
           	<div className="flex justify-between items-center gap-2 flex-wrap mb-1">
             	<h3 className="font-bold flex items-center gap-2">
               	🃏 Scryfall / Gatherer ({sumQty(scryfallItems)} cartas)
             	</h3>
             	<button
               	onClick={copyDeck}
-              	className="bg-[#0F1115] hover:bg-white/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-white/10"
+              	className="bg-surface-2 hover:bg-ink/5 px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-line"
             	>
               	{copiedDeck ? <Check size={14} /> : <Copy size={14} />}
               	{copiedDeck ? "Copiado!" : "Copiar lista"}
             	</button>
           	</div>
-          	<p className="text-xs text-gray-400 mb-3">
+          	<p className="text-xs text-ink-muted mb-3">
             	En Cardwright: <b>Import → pega en &quot;Resolve &amp; add&quot;</b>
             	. Resuelve el printing exacto por set + número y lo sube a 1200 DPI.
             	(En Cardwright eliges Scryfall o Gatherer como fuente de la imagen.)
           	</p>
-          	<pre className="bg-[#0F1115] text-[#FF4D1A] p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-auto">
+          	<pre className="bg-surface-2 text-flame-ink p-4 rounded-lg text-sm font-mono whitespace-pre-wrap max-h-96 overflow-auto">
 {scryfallDeck}
           	</pre>
         	</div>
@@ -1339,17 +1339,17 @@ export default function AdminPedidoDetail() {
 
       	{/* Otros juegos: Cardwright los busca pero no los importa por lista */}
       	{otrosJuegos.length > 0 && (
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-blue-400/30 mb-4">
+        	<div className="bg-surface-2 p-5 rounded-xl border border-blue-700/35 mb-4">
           	<h3 className="font-bold flex items-center gap-2 mb-2">
             	🎴 Otros juegos ({sumQty(otrosJuegos)} cartas)
           	</h3>
-          	<p className="text-xs text-blue-200/80 mb-3">
+          	<p className="text-xs text-blue-700 mb-3">
             	Cardwright tiene el buscador de estos juegos, pero <b>no importa
             	listas</b>: búscalas por nombre en su pestaña y elige el arte que
             	dice el número. Ojo con el <b>tamaño de carta</b>, que no es el de
             	Magic — mira la receta en <b>Fórmulas</b>.
           	</p>
-          	<ul className="text-xs text-gray-300 space-y-1">
+          	<ul className="text-xs text-ink-soft space-y-1">
             	{otrosJuegos.map((it, i) => (
               	<li key={i}>
                 	• {it.quantity}× {it.name} — arte {it.collector_number} ·{" "}
@@ -1362,16 +1362,16 @@ export default function AdminPedidoDetail() {
 
       	{/* Custom: imagen propia del cliente, se cargan a mano */}
       	{customItems.length > 0 && (
-        	<div className="bg-[#1E242B] p-5 rounded-xl border border-yellow-500/30 mb-4">
+        	<div className="bg-surface-2 p-5 rounded-xl border border-amber-700/35 mb-4">
           	<h3 className="font-bold flex items-center gap-2 mb-2">
             	🖼️ Custom ({sumQty(customItems)} cartas)
           	</h3>
-          	<p className="text-xs text-yellow-200/80 mb-3">
+          	<p className="text-xs text-amber-700 mb-3">
             	Imágenes propias del cliente — no salen de Scryfall ni MPCFill.
             	Cárgalas a mano en Cardwright (arrástralas o usa &quot;Add
             	cards…&quot;); las miniaturas están abajo en <b>Cartas</b>.
           	</p>
-          	<ul className="text-xs text-gray-300 space-y-1">
+          	<ul className="text-xs text-ink-soft space-y-1">
             	{customItems.map((it, i) => (
               	<li key={i}>
                 	• {it.quantity}× {it.name} [{it.finish}]
@@ -1382,14 +1382,14 @@ export default function AdminPedidoDetail() {
       	)}
     	</div>
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
+    	<div className="bg-surface-2 p-5 rounded-xl border border-line mt-6">
       	<h2 className="font-bold mb-3">
         	Cartas ({pedido.items.length} items)
       	</h2>
 
       	{dorsosDelPedido.length > 0 ? (
-        	<div className="bg-[#FF4D1A]/10 border border-[#FF4D1A]/30 rounded-lg p-3 mb-4">
-          	<p className="text-sm font-semibold text-[#ffb088] mb-2">
+        	<div className="bg-flame-tint border border-flame/50 rounded-lg p-3 mb-4">
+          	<p className="text-sm font-semibold text-flame-ink mb-2">
             	Este pedido lleva dorso personalizado — hay que imprimir el
             	reverso.
           	</p>
@@ -1400,19 +1400,19 @@ export default function AdminPedidoDetail() {
                 	href={d.url}
                 	target="_blank"
                 	rel="noreferrer"
-                	className="flex items-center gap-2 bg-[#0F1115] border border-white/10 rounded-lg p-2 hover:border-[#FF4D1A]/50"
+                	className="flex items-center gap-2 bg-surface-2 border border-line rounded-lg p-2 hover:border-flame"
               	>
                 	<span
                   	role="img"
                   	aria-label={d.nombre}
-                  	className="w-[40px] h-[56px] rounded bg-[#1E242B] bg-center bg-cover bg-no-repeat block"
+                  	className="w-[40px] h-[56px] rounded bg-surface-2 bg-center bg-cover bg-no-repeat block"
                   	style={{ backgroundImage: `url(${d.url})` }}
                 	/>
                 	<span className="text-xs">
                   	<span className="block font-semibold truncate max-w-[160px]">
                     	{d.nombre}
                   	</span>
-                  	<span className="block text-gray-400">
+                  	<span className="block text-ink-muted">
                     	{d.cartas} carta{d.cartas !== 1 ? "s" : ""} · abrir
                   	</span>
                 	</span>
@@ -1426,41 +1426,41 @@ export default function AdminPedidoDetail() {
         	{pedido.items.map((it, idx) => (
           	<div
             	key={idx}
-            	className="bg-[#0F1115] rounded-lg p-2 border border-white/5"
+            	className="bg-surface-2 rounded-lg p-2 border border-line"
           	>
             	<div
               	role="img"
               	aria-label={it.name}
-              	className="w-full aspect-[5/7] rounded mb-2 bg-[#1E242B] bg-center bg-cover bg-no-repeat"
+              	className="w-full aspect-[5/7] rounded mb-2 bg-surface-2 bg-center bg-cover bg-no-repeat"
               	style={{ backgroundImage: `url(${it.image})` }}
             	/>
             	<p className="text-xs font-semibold truncate">{it.name}</p>
-            	<p className="text-[10px] text-gray-400 truncate">
+            	<p className="text-[10px] text-ink-muted truncate">
               	{it.set_name}
             	</p>
-            	<p className="text-[10px] text-[#FF4D1A]">
+            	<p className="text-[10px] text-flame-ink">
               	{it.quantity}× {it.finish}
             	</p>
             	{it.dorsoUrl ? (
-              	<p className="text-[10px] text-[#ffb088]">+ dorso custom</p>
+              	<p className="text-[10px] text-flame-ink">+ dorso custom</p>
             	) : null}
           	</div>
         	))}
       	</div>
     	</div>
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
+    	<div className="bg-surface-2 p-5 rounded-xl border border-line mt-6">
       	<h2 className="font-bold mb-3">Notas internas (admin)</h2>
       	<textarea
         	value={adminNotas}
         	onChange={(e) => setAdminNotas(e.target.value)}
         	placeholder="Ej: cliente pagó por MACH a las 15:30, verificado..."
-        	className="w-full bg-[#0F1115] border border-white/10 rounded-lg p-3 text-sm min-h-[120px]"
+        	className="w-full bg-surface-2 border border-line rounded-lg p-3 text-sm min-h-[120px]"
       	/>
       	<button
         	onClick={saveNotas}
         	disabled={saving}
-        	className="mt-3 bg-[#FF4D1A] hover:bg-[#e64418] px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+        	className="mt-3 btn-flame px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2"
       	>
         	{saving ? (
           	<Loader2 className="animate-spin" size={14} />
@@ -1472,19 +1472,19 @@ export default function AdminPedidoDetail() {
     	</div>
 
     	{pedido.historial && pedido.historial.length > 0 ? (
-      	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
+      	<div className="bg-surface-2 p-5 rounded-xl border border-line mt-6">
         	<h2 className="font-bold mb-3">Historial de cambios</h2>
         	<div className="space-y-2">
           	{pedido.historial.map((h, idx) => (
             	<div
               	key={idx}
-              	className="text-sm flex items-center gap-3 text-gray-300"
+              	className="text-sm flex items-center gap-3 text-ink-soft"
             	>
-              	<span className="text-xs text-gray-500 w-40">
+              	<span className="text-xs text-ink-faint w-40">
                 	{new Date(h.at).toLocaleString("es-CL")}
               	</span>
               	<span className="capitalize">{h.from}</span>
-              	<span className="text-[#FF4D1A]">→</span>
+              	<span className="text-flame-ink">→</span>
               	<span className="capitalize">{h.to}</span>
             	</div>
           	))}

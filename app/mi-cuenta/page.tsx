@@ -55,51 +55,51 @@ export default function MiCuentaPage() {
 
   if (loadingUser || !user) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white">
+  	<main className="min-h-screen bg-surface text-ink-soft">
     	<NavBar />
     	<div className="flex items-center justify-center py-32">
-      	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+      	<Loader2 className="animate-spin text-flame-ink" size={32} />
     	</div>
   	</main>
 	);
   }
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<div className="max-w-3xl mx-auto px-6 py-10">
     	<div className="flex items-center justify-between mb-8">
       	<div className="flex items-center gap-3">
-        	<div className="bg-[#FF4D1A]/20 p-3 rounded-full">
-          	<UserIcon className="text-[#FF4D1A]" size={24} />
+        	<div className="bg-flame-tint p-3 rounded-full">
+          	<UserIcon className="text-flame-ink" size={24} />
         	</div>
         	<div>
           	<h1 className="text-xl font-display font-extrabold">Mi cuenta</h1>
-          	<p className="text-sm text-gray-400">{user.email}</p>
+          	<p className="text-sm text-ink-muted">{user.email}</p>
         	</div>
       	</div>
       	<button
         	onClick={handleLogout}
-        	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg transition"
+        	className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink bg-ink/5 hover:bg-ink/10 px-3 py-2 rounded-lg transition"
       	>
         	<LogOut size={16} /> Cerrar sesión
       	</button>
     	</div>
 
     	<h2 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
-      	<Package size={18} className="text-[#FF4D1A]" /> Mis pedidos
+      	<Package size={18} className="text-flame-ink" /> Mis pedidos
     	</h2>
 
     	{loadingPedidos ? (
       	<div className="flex justify-center py-12">
-        	<Loader2 className="animate-spin text-[#FF4D1A]" size={24} />
+        	<Loader2 className="animate-spin text-flame-ink" size={24} />
       	</div>
     	) : pedidos.length === 0 ? (
       	<div className="glass-card rounded-xl p-8 text-center">
-        	<p className="text-gray-400 mb-4">Aún no tienes pedidos.</p>
+        	<p className="text-ink-muted mb-4">Aún no tienes pedidos.</p>
         	<button
           	onClick={() => router.push("/catalogo")}
-          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-5 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all"
+          	className="btn-flame px-5 py-2.5 rounded-lg font-semibold transition-all"
         	>
           	Explorar catálogo
         	</button>
@@ -110,11 +110,11 @@ export default function MiCuentaPage() {
           	<button
             	key={p.id}
             	onClick={() => router.push("/seguimiento/" + p.numero)}
-            	className="w-full flex items-center justify-between glass-card hover:border-[#FF4D1A]/50 rounded-xl p-4 transition-colors text-left"
+            	className="w-full flex items-center justify-between glass-card hover:border-flame rounded-xl p-4 transition-colors text-left"
           	>
             	<div>
               	<p className="font-semibold">Pedido #{p.numero}</p>
-              	<p className="text-xs text-gray-400">
+              	<p className="text-xs text-ink-muted">
                 	{new Date(p.created_at).toLocaleDateString("es-CL")} ·{" "}
                 	{p.metodo_pago === "flow" ? "Flow.cl" : "Transferencia"}
               	</p>
@@ -123,7 +123,7 @@ export default function MiCuentaPage() {
               	<p className="font-display font-bold text-lava">
                 	{formatCLP(p.total)}
               	</p>
-              	<p className="text-xs text-gray-400">
+              	<p className="text-xs text-ink-muted">
                 	{ESTADO_LABEL[p.estado] || p.estado}
               	</p>
             	</div>

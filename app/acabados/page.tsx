@@ -183,19 +183,19 @@ export default function AcabadosPage() {
   const hayAngulo = fotos.has(FOTO_ANGULO);
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
 
   	<section className="px-6 pt-14 pb-10 max-w-5xl mx-auto">
     	<Reveal className="text-center">
       	<Sparkles
-        	className="mx-auto text-[#FF4D1A] mb-4 drop-shadow-[0_0_10px_rgba(255,79,26,0.6)]"
+        	className="mx-auto text-flame-ink mb-4 drop-"
         	size={40}
       	/>
       	<h1 className="font-display font-extrabold text-3xl md:text-5xl mb-4">
         	Nuestros <span className="text-lava">acabados</span>
       	</h1>
-      	<p className="text-gray-300 max-w-2xl mx-auto">
+      	<p className="text-ink-soft max-w-2xl mx-auto">
         	Cada tipo de carta lleva un proceso distinto, y ninguno es
         	&quot;el mejor&quot; para todo: cambian el grosor, el brillo y cuánto
         	trabajo lleva. Acá te contamos exactamente cómo se hace cada una, con
@@ -214,33 +214,33 @@ export default function AcabadosPage() {
         	<table className="w-full text-sm border-collapse min-w-[560px]">
           	<thead>
             	<tr className="text-left">
-              	<th className="pb-3 pr-4 text-xs uppercase tracking-wide text-gray-400 font-semibold">
+              	<th className="pb-3 pr-4 text-xs uppercase tracking-wide text-ink-muted font-semibold">
                 	Acabado
               	</th>
               	{COLUMNAS.map((c) => (
                 	<th
                   	key={c.label}
-                  	className="pb-3 pr-4 text-xs uppercase tracking-wide text-gray-400 font-semibold"
+                  	className="pb-3 pr-4 text-xs uppercase tracking-wide text-ink-muted font-semibold"
                 	>
                   	<span className="inline-flex items-center gap-1.5">
-                    	<c.icon size={13} className="text-[#FF4D1A]" />
+                    	<c.icon size={13} className="text-flame-ink" />
                     	{c.label}
                   	</span>
                 	</th>
               	))}
-              	<th className="pb-3 text-xs uppercase tracking-wide text-gray-400 font-semibold text-right">
+              	<th className="pb-3 text-xs uppercase tracking-wide text-ink-muted font-semibold text-right">
                 	Por carta
               	</th>
             	</tr>
           	</thead>
           	<tbody>
             	{disponibles.map((f) => (
-              	<tr key={f} className="border-t border-white/10">
+              	<tr key={f} className="border-t border-line">
                   	<td className="py-3 pr-4 font-semibold whitespace-nowrap">
                     	{FINISH_INFO[f].label}
                   	</td>
                   	{COLUMNAS.map((c) => (
-                    	<td key={c.label} className="py-3 pr-4 text-gray-300">
+                    	<td key={c.label} className="py-3 pr-4 text-ink-soft">
                       	{c.get(f)}
                     	</td>
                   	))}
@@ -252,8 +252,8 @@ export default function AcabadosPage() {
           	</tbody>
         	</table>
       	</div>
-      	<p className="text-sm text-gray-300 mt-4">
-        	<b className="text-white">Sobre el grosor:</b> la Reforzada y la
+      	<p className="text-sm text-ink-soft mt-4">
+        	<b className="text-ink">Sobre el grosor:</b> la Reforzada y la
         	Premium quedan prácticamente iguales a una carta real —la Reforzada
         	apenas más gruesa— y se barajan sin notarse dentro del mazo. La
         	Básica 300g es la única que queda más delgada: lleva el mismo papel
@@ -266,7 +266,7 @@ export default function AcabadosPage() {
         	);
         	if (pausados.length === 0) return null;
         	return (
-          	<p className="text-xs text-gray-500 mt-4 border-t border-white/10 pt-3">
+          	<p className="text-xs text-ink-faint mt-4 border-t border-line pt-3">
             	Temporalmente fuera de catálogo:{" "}
             	{pausados.map((f) => FINISH_INFO[f].label).join(", ")}. Vuelven
             	apenas podamos producirlos con la calidad de siempre.
@@ -274,12 +274,12 @@ export default function AcabadosPage() {
         	);
       	})()}
 
-      	<p className="text-xs text-gray-500 mt-3">
+      	<p className="text-xs text-ink-faint mt-3">
         	Precios por carta suelta. Armando mazo de 60 o 100 el precio baja
         	automáticamente —{" "}
         	<button
           	onClick={() => router.push("/promos")}
-          	className="text-[#FF4D1A] hover:underline"
+          	className="text-flame-ink hover:underline"
         	>
           	ver promos
         	</button>
@@ -295,7 +295,7 @@ export default function AcabadosPage() {
         	<h2 className="font-display font-extrabold text-2xl md:text-3xl mb-2 text-center">
           	La <span className="text-lava">misma carta</span> en cada acabado
         	</h2>
-        	<p className="text-sm text-gray-400 text-center mb-6 max-w-2xl mx-auto">
+        	<p className="text-sm text-ink-muted text-center mb-6 max-w-2xl mx-auto">
           	Misma impresión, misma luz, mismo encuadre. Lo único que cambia es
           	el proceso de acabado.
         	</p>
@@ -310,7 +310,7 @@ export default function AcabadosPage() {
         	>
           	{conMuestra.map((f) => (
             	<figure key={f} className="m-0">
-              	<div className="relative aspect-[5/7] rounded-xl overflow-hidden ring-1 ring-white/10 bg-[#0b0d11]">
+              	<div className="relative aspect-[5/7] rounded-xl overflow-hidden ring-1 ring-line bg-surface-3">
                 	<Image
                   	src={FOTO_MUESTRA(f)}
                   	alt={`Carta con acabado ${FINISH_INFO[f].label}`}
@@ -323,7 +323,7 @@ export default function AcabadosPage() {
                 	<span className="block font-display font-bold text-sm">
                   	{FINISH_INFO[f].label}
                 	</span>
-                	<span className="block text-xs text-gray-400">
+                	<span className="block text-xs text-ink-muted">
                   	{FINISH_INFO[f].contra}
                 	</span>
               	</figcaption>
@@ -333,7 +333,7 @@ export default function AcabadosPage() {
 
         	{hayAngulo && (
           	<figure className="m-0 mt-8">
-            	<div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10 bg-[#0b0d11]">
+            	<div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-line bg-surface-3">
               	<Image
                 	src={FOTO_ANGULO}
                 	alt="Los acabados vistos en ángulo, mostrando la textura de cada uno"
@@ -342,14 +342,14 @@ export default function AcabadosPage() {
                 	className="object-cover"
               	/>
             	</div>
-            	<figcaption className="mt-2 text-xs text-gray-400 text-center">
+            	<figcaption className="mt-2 text-xs text-ink-muted text-center">
               	En ángulo se nota lo que de frente no se ve: la textura de cada
               	acabado.
             	</figcaption>
           	</figure>
         	)}
 
-        	<p className="text-xs text-gray-500 mt-6 text-center">
+        	<p className="text-xs text-ink-faint mt-6 text-center">
           	Fotos reales de nuestra producción, sin retoque de color.
         	</p>
       	</Reveal>
@@ -377,15 +377,15 @@ export default function AcabadosPage() {
               	<h2 className="font-display font-extrabold text-2xl md:text-3xl">
                 	{info.label}
               	</h2>
-              	<p className="text-sm text-gray-400 mt-1">{info.desc}</p>
+              	<p className="text-sm text-ink-muted mt-1">{info.desc}</p>
             	</div>
             	<div className="text-right">
               	<p className="font-display font-extrabold text-2xl text-lava">
                 	{formatCLP(precios.unitario[f])}
               	</p>
-              	<p className="text-xs text-gray-500">por carta</p>
+              	<p className="text-xs text-ink-faint">por carta</p>
               	{!disponible && (
-                	<p className="text-xs text-yellow-400 mt-1">
+                	<p className="text-xs text-amber-700 mt-1">
                   	No disponible por ahora
                 	</p>
               	)}
@@ -394,16 +394,16 @@ export default function AcabadosPage() {
 
           	<div className="grid md:grid-cols-2 gap-6">
             	<div>
-              	<h3 className="text-xs uppercase tracking-wide text-gray-400 font-semibold mb-2">
+              	<h3 className="text-xs uppercase tracking-wide text-ink-muted font-semibold mb-2">
                 	Cómo se hace
               	</h3>
               	<ol className="space-y-2">
                 	{det.proceso.map((paso, i) => (
                   	<li
                     	key={i}
-                    	className="flex gap-3 text-sm text-gray-300"
+                    	className="flex gap-3 text-sm text-ink-soft"
                   	>
-                    	<span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#FF4D1A]/15 text-[#FF4D1A] text-[11px] font-bold flex items-center justify-center mt-0.5">
+                    	<span className="flex-shrink-0 w-5 h-5 rounded-full bg-flame-tint text-flame-ink text-[11px] font-bold flex items-center justify-center mt-0.5">
                       	{i + 1}
                     	</span>
                     	{paso}
@@ -411,30 +411,30 @@ export default function AcabadosPage() {
                 	))}
               	</ol>
 
-              	<h3 className="text-xs uppercase tracking-wide text-gray-400 font-semibold mt-5 mb-2 flex items-center gap-1.5">
-                	<Hand size={13} className="text-[#FF4D1A]" /> Cómo se siente
+              	<h3 className="text-xs uppercase tracking-wide text-ink-muted font-semibold mt-5 mb-2 flex items-center gap-1.5">
+                	<Hand size={13} className="text-flame-ink" /> Cómo se siente
               	</h3>
-              	<p className="text-sm text-gray-300">{det.sensacion}</p>
+              	<p className="text-sm text-ink-soft">{det.sensacion}</p>
             	</div>
 
             	<div className="space-y-3">
-              	<div className="bg-[#0b0d11]/60 p-4 rounded-xl border border-green-500/20">
-                	<p className="text-sm text-green-300 flex gap-2">
+              	<div className="bg-surface-3 p-4 rounded-xl border border-green-700/35">
+                	<p className="text-sm text-green-700 flex gap-2">
                   	<Check size={16} className="flex-shrink-0 mt-0.5" />
                   	<span>{info.pro}</span>
                 	</p>
               	</div>
-              	<div className="bg-[#0b0d11]/60 p-4 rounded-xl border border-yellow-500/20">
-                	<p className="text-sm text-yellow-300 flex gap-2">
+              	<div className="bg-surface-3 p-4 rounded-xl border border-amber-700/35">
+                	<p className="text-sm text-amber-700 flex gap-2">
                   	<AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
                   	<span>{info.contra}</span>
                 	</p>
               	</div>
-              	<div className="bg-[#0b0d11]/60 p-4 rounded-xl border border-white/10">
-                	<h3 className="text-xs uppercase tracking-wide text-gray-400 font-semibold mb-1.5 flex items-center gap-1.5">
-                  	<Wallet size={13} className="text-[#FF4D1A]" /> Ideal para
+              	<div className="bg-surface-3 p-4 rounded-xl border border-line">
+                	<h3 className="text-xs uppercase tracking-wide text-ink-muted font-semibold mb-1.5 flex items-center gap-1.5">
+                  	<Wallet size={13} className="text-flame-ink" /> Ideal para
                 	</h3>
-                	<p className="text-sm text-gray-300">{det.idealPara}</p>
+                	<p className="text-sm text-ink-soft">{det.idealPara}</p>
               	</div>
             	</div>
           	</div>
@@ -476,9 +476,9 @@ export default function AcabadosPage() {
           	.map(({ si, elige }) => (
           	<div
             	key={elige}
-            	className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-white/10 pb-3 last:border-0"
+            	className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3 last:border-0"
           	>
-            	<span className="text-gray-300 flex-1 min-w-[240px]">{si}</span>
+            	<span className="text-ink-soft flex-1 min-w-[240px]">{si}</span>
             	<span className="font-display font-bold text-lava whitespace-nowrap">
               	→ {FINISH_INFO[elige].label}
             	</span>
@@ -486,7 +486,7 @@ export default function AcabadosPage() {
         	))}
       	</div>
 
-      	<p className="text-xs text-gray-400 mt-5 text-center">
+      	<p className="text-xs text-ink-muted mt-5 text-center">
         	Puedes mezclar acabados en un mismo pedido. Eso sí, las promos de 60 y
         	100 cartas piden que todas lleven el mismo.
       	</p>
@@ -499,20 +499,20 @@ export default function AcabadosPage() {
       	<h2 className="font-display font-bold text-xl mb-3">
         	Lo mismo en los cuatro
       	</h2>
-      	<ul className="space-y-2 text-sm text-gray-300">
+      	<ul className="space-y-2 text-sm text-ink-soft">
         	<li>
-          	• Todas son <b className="text-white">proxies artesanales</b> hechas
+          	• Todas son <b className="text-ink">proxies artesanales</b> hechas
           	a mano en Pucón. No buscan pasar por cartas oficiales.
         	</li>
         	<li>
-          	• El <b className="text-white">reverso es blanco liso</b> en las
+          	• El <b className="text-ink">reverso es blanco liso</b> en las
           	cartas de una cara, salvo que subas un{" "}
-          	<b className="text-white">dorso personalizado</b> desde el carrito.
-          	Las <b className="text-white">MDFC</b> llevan su reverso real
+          	<b className="text-ink">dorso personalizado</b> desde el carrito.
+          	Las <b className="text-ink">MDFC</b> llevan su reverso real
           	impreso sin costo extra.
         	</li>
         	<li>
-          	• Pedido mínimo de <b className="text-white">8 cartas</b> (una hoja
+          	• Pedido mínimo de <b className="text-ink">8 cartas</b> (una hoja
           	completa), en cualquier acabado.
         	</li>
         	<li>
@@ -525,7 +525,7 @@ export default function AcabadosPage() {
 
   	<section className="px-6 pb-20 text-center">
     	<Reveal>
-      	<p className="text-gray-300 mb-5">
+      	<p className="text-ink-soft mb-5">
         	{disponibles.length === FINISHES.length
           	? "Los cuatro acabados están disponibles ahora."
           	: `Disponibles ahora: ${disponibles
@@ -535,13 +535,13 @@ export default function AcabadosPage() {
       	<div className="flex flex-col sm:flex-row gap-3 justify-center">
         	<button
           	onClick={() => router.push("/catalogo")}
-          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-7 py-3.5 rounded-lg font-semibold shadow-[0_10px_30px_-10px_rgba(255,79,26,0.6)] transition-all"
+          	className="btn-flame px-7 py-3.5 rounded-lg font-semibold transition-all"
         	>
           	Explorar catálogo
         	</button>
         	<button
           	onClick={() => router.push("/importar")}
-          	className="glass-card hover:border-[#FF4D1A]/40 px-7 py-3.5 rounded-lg font-semibold transition-colors"
+          	className="glass-card hover:border-flame/60 px-7 py-3.5 rounded-lg font-semibold transition-colors"
         	>
           	Importar mi mazo
         	</button>

@@ -25,17 +25,17 @@ const ETIQUETA: Record<EstadoPlazo, { label: string; desc: string; color: string
   normal: {
 	label: "Normal",
 	desc: "Se promete el plazo como un máximo. Sin aviso en el sitio.",
-	color: "border-green-500/40 bg-green-500/10",
+	color: "border-green-700/35 bg-green-500/10",
   },
   alta: {
 	label: "Alta demanda",
 	desc: "El plazo pasa a ser aproximado y aparece un aviso en todo el sitio.",
-	color: "border-amber-500/40 bg-amber-500/10",
+	color: "border-amber-700/35 bg-amber-500/10",
   },
   pausado: {
 	label: "Pausado",
 	desc: "Además, el checkout no deja terminar la compra.",
-	color: "border-red-500/40 bg-red-500/10",
+	color: "border-red-700/35 bg-red-500/10",
   },
 };
 
@@ -103,38 +103,38 @@ export default function AdminPlazosPage() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white flex justify-center py-32">
-    	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
+    	<Loader2 className="animate-spin text-flame-ink" size={32} />
   	</main>
 	);
   }
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<div className="max-w-3xl mx-auto px-6 py-8">
     	<button
       	onClick={() => router.push("/admin")}
-      	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+      	className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
     	>
       	<ArrowLeft size={16} /> Volver al panel
     	</button>
 
     	<h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-      	<Clock className="text-[#FF4D1A]" size={28} />
+      	<Clock className="text-flame-ink" size={28} />
       	Plazos de entrega
     	</h1>
-    	<p className="text-gray-400 mb-8">
+    	<p className="text-ink-muted mb-8">
       	Lo que dice el sitio en la portada, el checkout, la FAQ, nosotros y{" "}
-      	<b className="text-white">el correo de confirmación</b>. Se guarda en el
+      	<b className="text-ink">el correo de confirmación</b>. Se guarda en el
       	pedido al comprar, así que subir el plazo después no cambia lo que se le
       	prometió a quien ya compró.
     	</p>
 
     	{/* La cola real */}
-    	<div className="rounded-xl border border-white/10 p-5 mb-8">
+    	<div className="rounded-xl border border-line p-5 mb-8">
       	<h2 className="font-bold mb-3">Tu cola ahora</h2>
       	{!cola || cola.pedidos === 0 ? (
-        	<p className="text-sm text-gray-400">
+        	<p className="text-sm text-ink-muted">
           	No hay pedidos pendientes. Puedes prometer tu plazo más corto.
         	</p>
       	) : (
@@ -142,27 +142,27 @@ export default function AdminPlazosPage() {
           	<div className="grid grid-cols-3 gap-4 mb-4">
             	<div>
               	<p className="text-2xl font-bold">{cola.pedidos}</p>
-              	<p className="text-xs text-gray-500">pedidos sin salir</p>
+              	<p className="text-xs text-ink-faint">pedidos sin salir</p>
             	</div>
             	<div>
               	<p className="text-2xl font-bold">{cola.cartas.toLocaleString("es-CL")}</p>
-              	<p className="text-xs text-gray-500">cartas por producir</p>
+              	<p className="text-xs text-ink-faint">cartas por producir</p>
             	</div>
             	<div>
               	<p className="text-2xl font-bold">{cola.horas.toFixed(1)} h</p>
-              	<p className="text-xs text-gray-500">de trabajo, con tus tiempos</p>
+              	<p className="text-xs text-ink-faint">de trabajo, con tus tiempos</p>
             	</div>
           	</div>
           	{cola.diasHabiles === null ? (
-            	<p className="text-sm text-amber-400">
+            	<p className="text-sm text-amber-700">
               	Pon abajo cuántas horas al día le dedicas y te digo en cuántos
               	días sale esta cola.
             	</p>
           	) : (
             	<>
-              	<p className="text-sm text-gray-300 mb-3">
+              	<p className="text-sm text-ink-soft mb-3">
                 	A {plazos.horasPorDia} h al día, esta cola sale en{" "}
-                	<b className="text-[#FF4D1A]">
+                	<b className="text-flame-ink">
                   	{cola.diasHabiles} día{cola.diasHabiles === 1 ? "" : "s"} de
                   	trabajo
                 	</b>
@@ -170,13 +170,13 @@ export default function AdminPlazosPage() {
                 	además hay que producirlo.
               	</p>
               	{sugerido && (
-                	<div className="flex flex-wrap items-center gap-3 rounded-lg border border-[#FF4D1A]/30 bg-[#FF4D1A]/10 p-3">
+                	<div className="flex flex-wrap items-center gap-3 rounded-lg border border-flame/50 bg-flame-tint p-3">
                   	<span className="text-sm">
                     	Con esa cola, yo publicaría{" "}
-                    	<b className="text-[#FF4D1A]">{sugerido}</b>.
+                    	<b className="text-flame-ink">{sugerido}</b>.
                   	</span>
                   	{plazos.plazo === sugerido ? (
-                    	<span className="text-xs text-green-400">
+                    	<span className="text-xs text-green-700">
                       	Es lo que tienes puesto.
                     	</span>
                   	) : (
@@ -187,7 +187,7 @@ export default function AdminPlazosPage() {
                           	set("estado", "alta");
                         	}
                       	}}
-                      	className="text-xs font-semibold bg-[#FF4D1A] hover:bg-[#e64418] px-3 py-1.5 rounded-lg"
+                      	className="text-xs font-semibold btn-flame px-3 py-1.5 rounded-lg"
                     	>
                       	Usar esta
                     	</button>
@@ -211,11 +211,11 @@ export default function AdminPlazosPage() {
             	"w-full text-left p-4 rounded-lg border transition " +
             	(plazos.estado === e
               	? ETIQUETA[e].color
-              	: "border-white/10 hover:border-white/30")
+              	: "border-line hover:border-line")
           	}
         	>
           	<p className="font-semibold">{ETIQUETA[e].label}</p>
-          	<p className="text-sm text-gray-400">{ETIQUETA[e].desc}</p>
+          	<p className="text-sm text-ink-muted">{ETIQUETA[e].desc}</p>
         	</button>
       	))}
     	</div>
@@ -231,7 +231,7 @@ export default function AdminPlazosPage() {
           	value={plazos.plazo}
           	onChange={(e) => set("plazo", e.target.value)}
           	placeholder="48 horas"
-          	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
         	/>
         	<div className="flex flex-wrap gap-2 mt-2">
           	{PLAZOS_RAPIDOS.map((op) => (
@@ -241,31 +241,31 @@ export default function AdminPlazosPage() {
               	className={
                 	"px-3 py-1 rounded-lg text-xs font-semibold border transition " +
                 	(plazos.plazo === op
-                  	? "bg-white/10 border-white/40 text-white"
-                  	: "border-white/10 text-gray-400 hover:border-white/30")
+                  	? "bg-ink border-ink text-ink-invert"
+                  	: "border-line text-ink-muted hover:border-line")
               	}
             	>
               	{op}
             	</button>
           	))}
         	</div>
-        	<p className="text-xs text-gray-500 mt-2">
+        	<p className="text-xs text-ink-faint mt-2">
           	Va a leerse: &quot;Despachamos {promesa(plazos)}&quot;.
         	</p>
       	</div>
 
       	<div>
         	<label className="block text-sm font-semibold mb-1.5">
-          	Aviso extra <span className="text-gray-500 font-normal">(opcional)</span>
+          	Aviso extra <span className="text-ink-faint font-normal">(opcional)</span>
         	</label>
         	<textarea
           	value={plazos.aviso}
           	onChange={(e) => set("aviso", e.target.value)}
           	rows={2}
           	placeholder="Estamos con más pedidos de lo habitual. Gracias por la paciencia."
-          	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
         	/>
-        	<p className="text-xs text-gray-500 mt-1">
+        	<p className="text-xs text-ink-faint mt-1">
           	Aparece en la barra de aviso, bajo el plazo.
         	</p>
       	</div>
@@ -279,7 +279,7 @@ export default function AdminPlazosPage() {
             	value={plazos.reapertura}
             	onChange={(e) => set("reapertura", e.target.value)}
             	placeholder="el lunes 6 de octubre"
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
       	)}
@@ -295,9 +295,9 @@ export default function AdminPlazosPage() {
           	step={0.5}
           	value={plazos.horasPorDia}
           	onChange={(e) => set("horasPorDia", Number(e.target.value))}
-          	className="w-40 bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-40 bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
         	/>
-        	<p className="text-xs text-gray-500 mt-1">
+        	<p className="text-xs text-ink-faint mt-1">
           	Solo para estimar la cola de arriba. El cliente no lo ve. En cero, no
           	se estima nada.
         	</p>
@@ -306,14 +306,14 @@ export default function AdminPlazosPage() {
 
     	{/* Vista previa */}
     	<h2 className="font-bold mb-3">Cómo se va a ver</h2>
-    	<div className="rounded-lg border border-white/10 overflow-hidden mb-8">
+    	<div className="rounded-lg border border-line overflow-hidden mb-8">
       	{plazos.estado !== "normal" && (
         	<div
           	className={
             	"px-4 py-2.5 text-sm text-center " +
             	(plazos.estado === "pausado"
-              	? "bg-red-500/15 text-red-300"
-              	: "bg-[#FF4D1A]/15 text-[#ffb08a]")
+              	? "bg-red-500/15 text-red-700"
+              	: "bg-flame-tint text-flame-ink")
           	}
         	>
           	{plazos.estado === "pausado" ? (
@@ -330,7 +330,7 @@ export default function AdminPlazosPage() {
           	{plazos.aviso ? ` ${plazos.aviso}` : ""}
         	</div>
       	)}
-      	<div className="p-4 text-sm text-gray-300">
+      	<div className="p-4 text-sm text-ink-soft">
         	En el correo al cliente:{" "}
         	<i>
           	&quot;Dejamos tu pedido despachado {promesa(plazos)}{" "}
@@ -340,24 +340,24 @@ export default function AdminPlazosPage() {
       	</div>
     	</div>
 
-    	<div className="border-t border-white/10 pt-4 flex justify-between items-center">
+    	<div className="border-t border-line pt-4 flex justify-between items-center">
       	{error ? (
-        	<p className="text-xs text-red-400">{error}</p>
+        	<p className="text-xs text-red-700">{error}</p>
       	) : sucio ? (
-        	<p className="text-xs text-amber-400">
+        	<p className="text-xs text-amber-700">
           	Tienes cambios sin guardar.
         	</p>
       	) : savedAt ? (
-        	<p className="text-xs text-green-400">Guardado a las {savedAt}</p>
+        	<p className="text-xs text-green-700">Guardado a las {savedAt}</p>
       	) : (
-        	<p className="text-xs text-gray-500">
+        	<p className="text-xs text-ink-faint">
           	Click &quot;Guardar&quot; para aplicar
         	</p>
       	)}
       	<button
         	onClick={guardar}
         	disabled={saving}
-        	className="bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50"
+        	className="btn-flame px-5 py-2 rounded-lg font-semibold flex items-center gap-2"
       	>
         	{saving ? (
           	<Loader2 className="animate-spin" size={16} />
@@ -369,9 +369,9 @@ export default function AdminPlazosPage() {
     	</div>
 
     	{plazos.estado === "pausado" && (
-      	<div className="flex gap-3 p-4 rounded-lg border border-red-500/40 bg-red-500/5 mt-6">
-        	<AlertTriangle className="text-red-400 shrink-0" size={18} />
-        	<p className="text-sm text-red-300">
+      	<div className="flex gap-3 p-4 rounded-lg border border-red-700/35 bg-red-500/5 mt-6">
+        	<AlertTriangle className="text-red-700 shrink-0" size={18} />
+        	<p className="text-sm text-red-700">
           	Con los pedidos pausados <b>nadie puede comprar</b>. Acuérdate de
           	volver a activarlo.
         	</p>

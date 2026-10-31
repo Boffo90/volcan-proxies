@@ -26,11 +26,11 @@ export default function RecuperarPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<div className="max-w-sm mx-auto px-6 py-16">
     	<div className="flex items-center gap-2 mb-8">
-      	<Flame className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]" size={28} />
+      	<Flame className="text-flame-ink " size={28} />
       	<h1 className="font-display font-extrabold text-2xl">
         	Recuperar contraseña
       	</h1>
@@ -38,11 +38,11 @@ export default function RecuperarPage() {
 
     	{enviado ? (
       	<div className="glass-card p-6 rounded-xl text-center space-y-3">
-        	<p className="text-gray-300">
-          	Si hay una cuenta con <b className="text-white">{email}</b>, le
+        	<p className="text-ink-soft">
+          	Si hay una cuenta con <b className="text-ink">{email}</b>, le
           	mandamos un enlace para cambiar la contraseña.
         	</p>
-        	<p className="text-xs text-gray-500">
+        	<p className="text-xs text-ink-faint">
           	Revisa la carpeta de spam, y ábrelo en{" "}
           	<b>este mismo navegador</b>.
         	</p>
@@ -52,7 +52,7 @@ export default function RecuperarPage() {
         	onSubmit={handleSubmit}
         	className="glass-card p-6 rounded-xl space-y-4"
       	>
-        	<p className="text-sm text-gray-400">
+        	<p className="text-sm text-ink-muted">
           	Escribe tu email y te mandamos un enlace para elegir una
           	contraseña nueva.
         	</p>
@@ -63,14 +63,14 @@ export default function RecuperarPage() {
             	required
             	value={email}
             	onChange={(e) => setEmail(e.target.value)}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
 
         	<button
           	type="submit"
           	disabled={loading}
-          	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          	className="w-full btn-flame py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
         	>
           	{loading ? (
             	<Loader2 className="animate-spin" size={18} />
@@ -80,8 +80,8 @@ export default function RecuperarPage() {
           	Enviar enlace
         	</button>
 
-        	<p className="text-sm text-gray-400 text-center">
-          	<Link href="/login" className="text-[#FF4D1A] hover:underline">
+        	<p className="text-sm text-ink-muted text-center">
+          	<Link href="/login" className="text-flame-ink hover:underline">
             	Volver a iniciar sesión
           	</Link>
         	</p>

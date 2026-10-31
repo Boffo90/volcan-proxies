@@ -79,38 +79,38 @@ function GraciasContent() {
   const pagoFallido = estadoPago === "sin-pagar";
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<Reveal className="max-w-2xl mx-auto px-6 py-20 text-center">
     	{estadoPago === "verificando" ? (
       	<>
         	<Loader2
-          	className="mx-auto text-[#FF4D1A] mb-6 animate-spin"
+          	className="mx-auto text-flame-ink mb-6 animate-spin"
           	size={56}
         	/>
         	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-4">
           	Verificando tu pago…
         	</h1>
-        	<p className="text-gray-300">
+        	<p className="text-ink-soft">
           	Esto toma unos segundos. No cierres esta página.
         	</p>
       	</>
     	) : pagoFallido ? (
       	<>
         	<AlertTriangle
-          	className="mx-auto text-yellow-400 mb-6 drop-shadow-[0_0_15px_rgba(250,204,21,0.4)]"
+          	className="mx-auto text-amber-700 mb-6 drop-shadow-[0_0_15px_rgba(250,204,21,0.4)]"
           	size={56}
         	/>
         	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-4">
           	Tu pago no se completó
         	</h1>
-        	<p className="text-gray-300 mb-2">
+        	<p className="text-ink-soft mb-2">
           	Guardamos tu pedido{" "}
           	<b className="text-lava font-display font-bold">#{numero}</b>{" "}
           	completo, así que no perdiste nada. Puedes intentar pagarlo de
           	nuevo aquí mismo.
         	</p>
-        	<p className="text-gray-500 text-sm mb-8">
+        	<p className="text-ink-faint text-sm mb-8">
           	Si acabas de pagar recién, puede que Flow todavía no nos confirme.
           	Recarga en un minuto antes de reintentar.
         	</p>
@@ -118,7 +118,7 @@ function GraciasContent() {
         	<button
           	onClick={reintentarPago}
           	disabled={reintentando}
-          	className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-8 py-4 rounded-lg font-semibold text-lg inline-flex items-center gap-2 shadow-[0_10px_30px_-10px_rgba(255,79,26,0.6)] transition-all disabled:opacity-50"
+          	className="btn-flame px-8 py-4 rounded-lg font-semibold text-lg inline-flex items-center gap-2 transition-all"
         	>
           	{reintentando ? (
             	<Loader2 className="animate-spin" size={20} />
@@ -128,16 +128,16 @@ function GraciasContent() {
           	Reintentar el pago
         	</button>
 
-        	<p className="text-xs text-gray-500 mt-6">
+        	<p className="text-xs text-ink-faint mt-6">
           	¿Prefieres transferencia? Escríbenos a{" "}
-          	<b className="text-gray-300">volcanproxies@gmail.com</b> indicando
+          	<b className="text-ink-soft">volcanproxies@gmail.com</b> indicando
           	tu pedido #{numero} y lo coordinamos.
         	</p>
       	</>
     	) : (
       	<>
         	<CheckCircle2
-          	className="mx-auto text-[#FF4D1A] mb-6 drop-shadow-[0_0_15px_rgba(255,79,26,0.6)]"
+          	className="mx-auto text-flame-ink mb-6 drop-"
           	size={64}
         	/>
         	<h1 className="font-display font-extrabold text-3xl md:text-4xl mb-4">
@@ -145,7 +145,7 @@ function GraciasContent() {
             	? "¡Pago confirmado! 🌋"
             	: "¡Gracias por tu compra! 🌋"}
         	</h1>
-        	<p className="text-gray-300 mb-2">
+        	<p className="text-ink-soft mb-2">
           	Tu pedido{" "}
           	<b className="text-lava font-display font-bold">#{numero}</b>{" "}
           	{estadoPago === "pagado"
@@ -180,7 +180,7 @@ function GraciasContent() {
                 	<b>Email:</b> smyanezo@gmail.com
               	</p>
             	</div>
-            	<p className="text-xs text-gray-400 mt-4">
+            	<p className="text-xs text-ink-muted mt-4">
               	Envía el comprobante a volcanproxies@gmail.com indicando tu
               	pedido #{numero}.
             	</p>
@@ -193,14 +193,14 @@ function GraciasContent() {
       	{numero ? (
         	<button
           	onClick={() => router.push("/seguimiento/" + numero)}
-          	className="glass-card hover:border-[#FF4D1A]/40 px-6 py-3 rounded-lg font-semibold transition-colors"
+          	className="glass-card hover:border-flame/60 px-6 py-3 rounded-lg font-semibold transition-colors"
         	>
           	Ver mi pedido
         	</button>
       	) : null}
       	<button
         	onClick={() => router.push("/catalogo")}
-        	className="text-[#FF4D1A] hover:underline px-6 py-3"
+        	className="text-flame-ink hover:underline px-6 py-3"
       	>
         	← Seguir comprando
       	</button>

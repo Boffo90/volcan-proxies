@@ -77,7 +77,7 @@ function TarjetaCarta({
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="group relative glass-card rounded-lg overflow-hidden hover:border-[#FF4D1A]/50 transition-colors flex flex-col"
+      className="group relative glass-card rounded-lg overflow-hidden hover:border-flame transition-colors flex flex-col"
     >
       <button onClick={onVer} className="text-left" title="Ver la carta">
         <div
@@ -94,7 +94,7 @@ function TarjetaCarta({
           />
           {card.needsCustomLanguage && (
             <div className="absolute top-2 right-2 z-10">
-              <span className="bg-[#FF4F1A]/95 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-lg">
+              <span className="bg-flame text-white border border-ink text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-lg">
                 Custom {etiquetaDeIdioma(card.idiomaSolicitado ?? card.idioma).toUpperCase()}
               </span>
             </div>
@@ -102,7 +102,7 @@ function TarjetaCarta({
         </div>
         <div className="px-3 pt-3">
           <p className="font-semibold text-sm truncate">{card.name}</p>
-          <p className="text-xs text-gray-400 uppercase truncate">
+          <p className="text-xs text-ink-muted uppercase truncate">
             {card.set_name}
           </p>
         </div>
@@ -114,7 +114,7 @@ function TarjetaCarta({
             onClick={() => setQty((q) => Math.max(1, q - 1))}
             disabled={qty <= 1}
             aria-label="Una menos"
-            className="w-9 h-9 rounded border border-white/15 flex items-center justify-center text-gray-300 hover:border-white/40 disabled:opacity-30"
+            className="w-9 h-9 rounded border border-line flex items-center justify-center text-ink-soft hover:border-line disabled:opacity-30"
           >
             <Minus size={15} />
           </button>
@@ -124,7 +124,7 @@ function TarjetaCarta({
           <button
             onClick={() => setQty((q) => Math.min(99, q + 1))}
             aria-label="Una más"
-            className="w-9 h-9 rounded border border-white/15 flex items-center justify-center text-gray-300 hover:border-white/40"
+            className="w-9 h-9 rounded border border-line flex items-center justify-center text-ink-soft hover:border-line"
           >
             <Plus size={15} />
           </button>
@@ -134,8 +134,8 @@ function TarjetaCarta({
           className={
             "w-full py-2.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 " +
             (agregada
-              ? "bg-green-500/20 text-green-400 border border-green-500/40"
-              : "bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 text-white")
+              ? "bg-green-500/20 text-green-700 border border-green-700/35"
+              : "btn-flame text-white")
           }
         >
           {agregada ? (
@@ -252,7 +252,7 @@ export default function Buscador({
   };
 
   return (
-    <main className="min-h-screen bg-[#0b0d11] text-white">
+    <main className="min-h-screen bg-surface text-ink-soft">
       <NavBar />
 
       <section className="px-6 py-10 max-w-6xl mx-auto">
@@ -261,7 +261,7 @@ export default function Buscador({
             <h1 className="font-display font-extrabold text-3xl md:text-4xl">
               Catálogo <span className="text-lava">{catalogo.corto}</span>
             </h1>
-            <p className="text-gray-400 mt-2">
+            <p className="text-ink-muted mt-2">
               {mode === "random"
                 ? "Selección aleatoria del momento. Usa el buscador para encontrar cartas específicas."
                 : "Resultados de búsqueda"}
@@ -270,7 +270,7 @@ export default function Buscador({
           {mode === "random" && (
             <button
               onClick={() => loadRandom(juego, idioma)}
-              className="glass-card hover:border-[#FF4D1A]/50 px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
+              className="glass-card hover:border-flame px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
             >
               <Shuffle size={16} /> Otras aleatorias
             </button>
@@ -287,8 +287,8 @@ export default function Buscador({
                 className={
                   "px-4 py-2 rounded-lg text-sm font-semibold transition-colors border " +
                   (c.id === juego
-                    ? "bg-[#FF4D1A]/15 border-[#FF4D1A]/60 text-white"
-                    : "glass-card border-white/10 text-gray-300 hover:border-white/30")
+                    ? "bg-flame-tint border-flame text-ink"
+                    : "glass-card border-line text-ink-soft hover:border-line")
                 }
               >
                 {c.corto}
@@ -301,7 +301,7 @@ export default function Buscador({
             existe se paga en el despacho, no en la búsqueda. */}
         {catalogo.idiomas.length > 1 && (
           <div className="flex gap-2 flex-wrap mt-3 items-center">
-            <span className="text-xs text-gray-500 mr-1">Idioma:</span>
+            <span className="text-xs text-ink-faint mr-1">Idioma:</span>
             {catalogo.idiomas.map((id) => (
               <button
                 key={id}
@@ -309,8 +309,8 @@ export default function Buscador({
                 className={
                   "px-3 py-1 rounded-lg text-xs font-semibold transition-colors border " +
                   (id === idioma
-                    ? "bg-white/10 border-white/40 text-white"
-                    : "border-white/10 text-gray-400 hover:border-white/30")
+                    ? "bg-ink border-ink text-ink-invert"
+                    : "border-line text-ink-muted hover:border-line")
                 }
               >
                 {etiquetaDeIdioma(id)}
@@ -322,40 +322,40 @@ export default function Buscador({
         <form onSubmit={onSubmit} className="flex gap-2 mb-4 mt-6">
           <div className="relative flex-1">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint"
               size={18}
             />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={catalogo.placeholder}
-              className="w-full glass-card rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-[#FF4D1A]/60 transition-colors"
+              className="w-full glass-card rounded-lg pl-10 pr-4 py-3 focus:outline-none focus:border-flame transition-colors"
             />
           </div>
           <button
             type="submit"
-            className="bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 px-6 py-3 rounded-lg font-semibold transition-all shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)]"
+            className="btn-flame px-6 py-3 rounded-lg font-semibold transition-all"
           >
             Buscar
           </button>
         </form>
 
         {catalogo.ayuda ? (
-          <div className="text-xs text-gray-500 mb-2">{catalogo.ayuda}</div>
+          <div className="text-xs text-ink-faint mb-2">{catalogo.ayuda}</div>
         ) : null}
         {catalogo.aviso ? (
-          <div className="text-xs text-gray-400 mb-2">{catalogo.aviso}</div>
+          <div className="text-xs text-ink-muted mb-2">{catalogo.aviso}</div>
         ) : null}
         <div className="mb-8" />
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+            <Loader2 className="animate-spin text-flame-ink" size={32} />
           </div>
         ) : null}
 
         {!loading && cards.length === 0 ? (
-          <p className="text-center text-gray-400 py-20">
+          <p className="text-center text-ink-muted py-20">
             No se encontraron cartas. Prueba con otra búsqueda.
           </p>
         ) : null}
@@ -363,14 +363,14 @@ export default function Buscador({
         {!loading && cards.length > 0 ? (
           <>
             {mode === "search" && (
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-ink-muted mb-4">
                 {total.toLocaleString("es-CL")} cartas encontradas (mostrando{" "}
                 {cards.length})
               </p>
             )}
             {acabadosVivos.length > 1 && (
               <div className="flex gap-2 flex-wrap mb-4 items-center">
-                <span className="text-xs text-gray-500 mr-1">
+                <span className="text-xs text-ink-faint mr-1">
                   Agregar como:
                 </span>
                 {acabadosVivos.map((f) => (
@@ -380,8 +380,8 @@ export default function Buscador({
                     className={
                       "px-3 py-1 rounded-lg text-xs font-semibold transition-colors border " +
                       (f === finish
-                        ? "bg-white/10 border-white/40 text-white"
-                        : "border-white/10 text-gray-400 hover:border-white/30")
+                        ? "bg-ink border-ink text-ink-invert"
+                        : "border-line text-ink-muted hover:border-line")
                     }
                   >
                     {FINISH_INFO[f].corto} · {formatCLP(precios.unitario[f])}

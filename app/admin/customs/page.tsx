@@ -129,37 +129,37 @@ export default function AdminCustomsPage() {
 
   if (loading) {
 	return (
-  	<main className="min-h-screen bg-[#0F1115] text-white flex justify-center py-32">
-    	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
+    	<Loader2 className="animate-spin text-flame-ink" size={32} />
   	</main>
 	);
   }
 
   return (
-	<main className="min-h-screen bg-[#0F1115] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<div className="max-w-4xl mx-auto px-6 py-8">
     	<button
       	onClick={() => router.push("/admin")}
-      	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+      	className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
     	>
       	<ArrowLeft size={16} /> Volver al panel
     	</button>
 
     	<h1 className="text-3xl font-bold mb-2">
-      	Catálogo de <span className="text-[#FF4D1A]">customs</span>
+      	Catálogo de <span className="text-flame-ink">customs</span>
     	</h1>
-    	<p className="text-gray-400 mb-6 text-sm">
+    	<p className="text-ink-muted mb-6 text-sm">
       	Diseños subidos aquí aparecen en la galería pública en{" "}
       	<code>/customs</code>.
     	</p>
 
-    	<div className="bg-[#1E242B] p-6 rounded-xl border border-white/10 mb-8">
+    	<div className="bg-surface-2 p-6 rounded-xl border border-line mb-8">
       	<h2 className="font-bold mb-4">Agregar nuevo diseño</h2>
 
       	<div className="grid md:grid-cols-[160px_1fr] gap-4">
         	<div>
           	<div
-            	className="aspect-[5/7] rounded-lg border-2 border-dashed border-white/20 hover:border-[#FF4D1A]/50 transition bg-[#0F1115] bg-center bg-cover bg-no-repeat flex items-center justify-center cursor-pointer"
+            	className="aspect-[5/7] rounded-lg border-2 border-dashed border-line hover:border-flame transition bg-surface-2 bg-center bg-cover bg-no-repeat flex items-center justify-center cursor-pointer"
             	style={
               	form.image_url
                 	? { backgroundImage: `url(${form.image_url})` }
@@ -169,9 +169,9 @@ export default function AdminCustomsPage() {
           	>
             	{!form.image_url ? (
               	uploading ? (
-                	<Loader2 className="animate-spin text-[#FF4D1A]" size={24} />
+                	<Loader2 className="animate-spin text-flame-ink" size={24} />
               	) : (
-                	<Upload className="text-gray-500" size={24} />
+                	<Upload className="text-ink-faint" size={24} />
               	)
             	) : null}
           	</div>
@@ -189,7 +189,7 @@ export default function AdminCustomsPage() {
             	value={form.name}
             	onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             	placeholder="Nombre del diseño"
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
           	/>
           	<textarea
             	value={form.description}
@@ -197,13 +197,13 @@ export default function AdminCustomsPage() {
               	setForm((f) => ({ ...f, description: e.target.value }))
             	}
             	placeholder="Descripción (opcional)"
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm min-h-[70px]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm min-h-[70px]"
           	/>
           	<input
             	value={form.tags}
             	onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
             	placeholder="Tags separados por coma (ej: fantasía, oscuro)"
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
           	/>
           	<input
             	type="number"
@@ -212,17 +212,17 @@ export default function AdminCustomsPage() {
               	setForm((f) => ({ ...f, surcharge: e.target.value }))
             	}
             	placeholder="Recargo específico en CLP (opcional, usa el global si se deja vacío)"
-            	className="w-full bg-[#0F1115] border border-white/10 rounded-lg px-3 py-2 text-sm"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 text-sm"
           	/>
         	</div>
       	</div>
 
-      	{error ? <p className="text-sm text-red-400 mt-3">{error}</p> : null}
+      	{error ? <p className="text-sm text-red-700 mt-3">{error}</p> : null}
 
       	<button
         	onClick={handleCreate}
         	disabled={creating || uploading}
-        	className="mt-4 bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition disabled:opacity-50"
+        	className="mt-4 btn-flame px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition"
       	>
         	{creating ? (
           	<Loader2 className="animate-spin" size={16} />
@@ -240,26 +240,26 @@ export default function AdminCustomsPage() {
       	{customs.map((c) => (
         	<div
           	key={c.id}
-          	className="bg-[#1E242B] p-4 rounded-xl border border-white/10 flex items-center gap-4"
+          	className="bg-surface-2 p-4 rounded-xl border border-line flex items-center gap-4"
         	>
           	<div
-            	className="w-14 h-20 rounded bg-[#0F1115] bg-center bg-cover bg-no-repeat flex-shrink-0"
+            	className="w-14 h-20 rounded bg-surface-2 bg-center bg-cover bg-no-repeat flex-shrink-0"
             	style={{ backgroundImage: `url(${c.image_url})` }}
           	/>
           	<div className="flex-1 min-w-0">
             	<p className="font-semibold truncate">{c.name}</p>
-            	<p className="text-xs text-gray-400 truncate">
+            	<p className="text-xs text-ink-muted truncate">
               	{c.tags.join(", ") || "sin tags"}
               	{c.surcharge != null ? ` · recargo ${c.surcharge}` : ""}
             	</p>
           	</div>
-          	<label className="text-xs text-gray-400 flex items-center gap-1">
+          	<label className="text-xs text-ink-muted flex items-center gap-1">
             	Orden
             	<input
               	type="number"
               	defaultValue={c.sort_order}
               	onBlur={(e) => updateSortOrder(c, Number(e.target.value) || 0)}
-              	className="w-14 bg-[#0F1115] border border-white/10 rounded px-1.5 py-1 text-xs"
+              	className="w-14 bg-surface-2 border border-line rounded px-1.5 py-1 text-xs"
             	/>
           	</label>
           	<button
@@ -268,8 +268,8 @@ export default function AdminCustomsPage() {
             	className={
               	"p-2 rounded-lg transition " +
               	(c.active
-                	? "text-green-400 hover:bg-green-500/10"
-                	: "text-gray-500 hover:bg-white/5")
+                	? "text-green-700 hover:bg-green-500/10"
+                	: "text-ink-faint hover:bg-ink/5")
             	}
           	>
             	{c.active ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -277,14 +277,14 @@ export default function AdminCustomsPage() {
           	<button
             	onClick={() => handleDelete(c)}
             	title="Eliminar"
-            	className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition"
+            	className="p-2 rounded-lg text-red-700 hover:bg-red-500/10 transition"
           	>
             	<Trash2 size={16} />
           	</button>
         	</div>
       	))}
       	{customs.length === 0 ? (
-        	<p className="text-gray-500 text-sm">Aún no hay diseños custom.</p>
+        	<p className="text-ink-faint text-sm">Aún no hay diseños custom.</p>
       	) : null}
     	</div>
   	</div>

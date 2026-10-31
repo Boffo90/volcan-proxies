@@ -2,37 +2,37 @@ import { Flame, Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
-	<footer className="relative bg-[#0d1015]/80 backdrop-blur-xl border-t border-white/10 mt-16 overflow-hidden">
-  	<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF4D1A]/60 to-transparent" />
+	<footer className="relative bg-surface-3/80 backdrop-blur-xl border-t border-line mt-16 overflow-hidden">
+  	<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-flame to-transparent" />
   	<div className="max-w-6xl mx-auto px-6 py-12 relative">
     	<div className="grid md:grid-cols-4 gap-8 mb-8">
       	<div className="md:col-span-1">
         	<div className="flex items-center gap-2 mb-3">
           	<Flame
-            	className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]"
+            	className="text-flame-ink "
             	size={24}
           	/>
           	<span className="font-display font-extrabold text-lg">
             	VOLCÁN <span className="text-lava">PROXIES</span>
           	</span>
         	</div>
-        	<p className="text-sm text-gray-400 mb-4">
+        	<p className="text-sm text-ink-muted mb-4">
           	Proxies de calidad, hechas en Pucón.
         	</p>
-        	<p className="text-xs text-gray-500 italic">
+        	<p className="text-xs text-ink-faint italic">
           	Que ganes por jugar contra mí, no contra mi billetera.
         	</p>
       	</div>
 
       	<div>
-        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-300">
+        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-ink-soft">
           	Tienda
         	</h3>
         	<ul className="space-y-2 text-sm">
           	<li>
             	<a
               	href="/catalogo"
-              	className="text-gray-400 hover:text-[#FF4D1A]"
+              	className="text-ink-muted hover:text-flame-ink"
             	>
               	Catálogo MTG
             	</a>
@@ -40,7 +40,7 @@ export default function Footer() {
           	<li>
             	<a
               	href="/promos"
-              	className="text-gray-400 hover:text-[#FF4D1A]"
+              	className="text-ink-muted hover:text-flame-ink"
             	>
               	Promociones
             	</a>
@@ -48,7 +48,7 @@ export default function Footer() {
           	<li>
             	<a
               	href="/customs"
-              	className="text-gray-400 hover:text-[#FF4D1A]"
+              	className="text-ink-muted hover:text-flame-ink"
             	>
               	Galería Custom
             	</a>
@@ -56,7 +56,7 @@ export default function Footer() {
           	<li>
             	<a
               	href="/custom"
-              	className="text-gray-400 hover:text-[#FF4D1A]"
+              	className="text-ink-muted hover:text-flame-ink"
             	>
               	Sube tu diseño
             	</a>
@@ -65,20 +65,20 @@ export default function Footer() {
       	</div>
 
       	<div>
-        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-300">
+        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-ink-soft">
           	Empresa
         	</h3>
         	<ul className="space-y-2 text-sm">
           	<li>
             	<a
               	href="/nosotros"
-              	className="text-gray-400 hover:text-[#FF4D1A]"
+              	className="text-ink-muted hover:text-flame-ink"
             	>
               	Sobre nosotros
             	</a>
           	</li>
           	<li>
-            	<a href="/faq" className="text-gray-400 hover:text-[#FF4D1A]">
+            	<a href="/faq" className="text-ink-muted hover:text-flame-ink">
               	Preguntas frecuentes
             	</a>
           	</li>
@@ -86,17 +86,17 @@ export default function Footer() {
       	</div>
 
       	<div>
-        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-300">
+        	<h3 className="font-bold mb-3 text-sm uppercase tracking-wide text-ink-soft">
           	Contacto
         	</h3>
         	<ul className="space-y-2 text-sm">
-          	<li className="flex items-center gap-2 text-gray-400">
+          	<li className="flex items-center gap-2 text-ink-muted">
             	<MapPin size={14} /> Pucón, Chile
           	</li>
-          	<li className="flex items-center gap-2 text-gray-400">
+          	<li className="flex items-center gap-2 text-ink-muted">
             	<Mail size={14} /> volcanproxies@gmail.com
           	</li>
-          	<li className="flex items-center gap-2 text-gray-400">
+          	<li className="flex items-center gap-2 text-ink-muted">
             	<svg
               	width="14"
               	height="14"
@@ -115,12 +115,12 @@ export default function Footer() {
               	href="https://instagram.com/volcanproxies"
               	target="_blank"
               	rel="noreferrer"
-              	className="hover:text-[#FF4D1A]"
+              	className="hover:text-flame-ink"
             	>
               	@volcanproxies
             	</a>
           	</li>
-          	<li className="flex items-center gap-2 text-gray-400">
+          	<li className="flex items-center gap-2 text-ink-muted">
             	<svg
               	width="14"
               	height="14"
@@ -133,7 +133,7 @@ export default function Footer() {
               	href="https://tiktok.com/@volcanproxies"
               	target="_blank"
               	rel="noreferrer"
-              	className="hover:text-[#FF4D1A]"
+              	className="hover:text-flame-ink"
             	>
               	@volcanproxies
             	</a>
@@ -142,12 +142,12 @@ export default function Footer() {
       	</div>
     	</div>
 
-    	<div className="border-t border-white/10 pt-6 flex flex-wrap items-center justify-between gap-4">
-      	<p className="text-xs text-gray-500">
+    	<div className="border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4">
+      	<p className="text-xs text-ink-faint">
         	© {new Date().getFullYear()} Volcán Proxies · Hecho en Pucón, Chile
         	🌋
       	</p>
-      	<div className="flex items-center gap-3 text-xs text-gray-500">
+      	<div className="flex items-center gap-3 text-xs text-ink-faint">
         	<span>Métodos de pago:</span>
         	<span className="glass-card px-2 py-1 rounded">Transferencia</span>
         	<span className="glass-card px-2 py-1 rounded">Flow.cl</span>

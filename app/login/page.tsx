@@ -73,11 +73,11 @@ export default function LoginPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<div className="max-w-sm mx-auto px-6 py-16">
     	<div className="flex items-center gap-2 mb-8">
-      	<Flame className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]" size={28} />
+      	<Flame className="text-flame-ink " size={28} />
       	<h1 className="font-display font-extrabold text-2xl">Iniciar sesión</h1>
     	</div>
 
@@ -92,7 +92,7 @@ export default function LoginPage() {
           	required
           	value={email}
           	onChange={(e) => setEmail(e.target.value)}
-          	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
         	/>
       	</div>
       	<div>
@@ -104,15 +104,15 @@ export default function LoginPage() {
           	required
           	value={password}
           	onChange={(e) => setPassword(e.target.value)}
-          	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+          	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
         	/>
       	</div>
 
-      	{error ? <p className="text-sm text-red-400">{error}</p> : null}
+      	{error ? <p className="text-sm text-red-700">{error}</p> : null}
 
       	{sinConfirmar ? (
         	reenviado ? (
-          	<p className="text-sm text-green-400">
+          	<p className="text-sm text-green-700">
             	Correo enviado. Ábrelo en este mismo navegador.
           	</p>
         	) : (
@@ -120,7 +120,7 @@ export default function LoginPage() {
             	type="button"
             	disabled={reenviando}
             	onClick={handleReenviar}
-            	className="text-sm text-[#FF4D1A] hover:underline disabled:opacity-50"
+            	className="text-sm text-flame-ink hover:underline disabled:opacity-50"
           	>
             	{reenviando ? "Enviando…" : "Reenviar correo de confirmación"}
           	</button>
@@ -130,7 +130,7 @@ export default function LoginPage() {
       	<button
         	type="submit"
         	disabled={loading}
-        	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+        	className="w-full btn-flame py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
       	>
         	{loading ? (
           	<Loader2 className="animate-spin" size={18} />
@@ -143,18 +143,18 @@ export default function LoginPage() {
       	<p className="text-sm text-center">
         	<Link
           	href="/recuperar"
-          	className="text-gray-400 hover:text-[#FF4D1A] hover:underline"
+          	className="text-ink-muted hover:text-flame-ink hover:underline"
         	>
           	Olvidé mi contraseña
         	</Link>
       	</p>
 
-      	<p className="text-sm text-gray-400 text-center">
+      	<p className="text-sm text-ink-muted text-center">
         	¿No tienes cuenta?{" "}
         	<button
           	type="button"
           	onClick={() => router.push("/registro")}
-          	className="text-[#FF4D1A] hover:underline"
+          	className="text-flame-ink hover:underline"
         	>
           	Crear cuenta
         	</button>

@@ -65,8 +65,8 @@ export default function AdminStockPage() {
 
   if (loading || !datos) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white flex justify-center py-32">
-    	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
+    	<Loader2 className="animate-spin text-flame-ink" size={32} />
   	</main>
 	);
   }
@@ -80,31 +80,31 @@ export default function AdminStockPage() {
   );
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<div className="max-w-4xl mx-auto px-6 py-8">
     	<button
       	onClick={() => router.push("/admin")}
-      	className="flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6"
+      	className="flex items-center gap-2 text-sm text-ink-muted hover:text-ink mb-6"
     	>
       	<ArrowLeft size={16} /> Volver al panel
     	</button>
 
     	<h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-      	<Package className="text-[#FF4D1A]" size={28} />
-      	Stock de <span className="text-[#FF4D1A]">materiales</span>
+      	<Package className="text-flame-ink" size={28} />
+      	Stock de <span className="text-flame-ink">materiales</span>
     	</h1>
-    	<p className="text-gray-400 mb-6 text-sm">
+    	<p className="text-ink-muted mb-6 text-sm">
       	Los números los llevas tú: actualízalos cuando compres o produzcas.
       	La columna <b>En cola</b> se calcula sola con los{" "}
       	{datos.pedidosPendientes} pedido(s) que todavía no salen.
     	</p>
 
     	{faltantes.length > 0 && (
-      	<div className="bg-red-500/15 border border-red-500/50 p-4 rounded-xl mb-4">
-        	<p className="font-bold text-red-200 flex items-center gap-2 text-sm">
+      	<div className="bg-red-500/15 border border-red-700/35 p-4 rounded-xl mb-4">
+        	<p className="font-bold text-red-700 flex items-center gap-2 text-sm">
           	<AlertTriangle size={16} /> No te alcanza para los pedidos en cola
         	</p>
-        	<ul className="text-xs text-red-200/80 mt-2 space-y-1">
+        	<ul className="text-xs text-red-700 mt-2 space-y-1">
           	{faltantes.map((m) => (
             	<li key={m}>
               	• {MATERIAL_INFO[m].label}: tienes {stock[m].cantidad} y
@@ -118,11 +118,11 @@ export default function AdminStockPage() {
     	)}
 
     	{faltantes.length === 0 && bajoMinimo.length > 0 && (
-      	<div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-xl mb-4">
-        	<p className="font-bold text-yellow-300 flex items-center gap-2 text-sm">
+      	<div className="bg-yellow-500/10 border border-amber-700/35 p-4 rounded-xl mb-4">
+        	<p className="font-bold text-amber-700 flex items-center gap-2 text-sm">
           	<AlertTriangle size={16} /> Conviene reponer pronto
         	</p>
-        	<p className="text-xs text-yellow-200/80 mt-1">
+        	<p className="text-xs text-amber-700 mt-1">
           	Después de producir la cola, estos quedan bajo el mínimo que
           	fijaste:{" "}
           	{bajoMinimo.map((m) => MATERIAL_INFO[m].label).join(", ")}.
@@ -130,24 +130,24 @@ export default function AdminStockPage() {
       	</div>
     	)}
 
-    	<div className="bg-[#1E242B] rounded-xl border border-white/10 overflow-hidden">
+    	<div className="bg-surface-2 rounded-xl border border-line overflow-hidden">
       	<div className="overflow-x-auto">
         	<table className="w-full text-sm min-w-[640px]">
           	<thead>
-            	<tr className="text-left border-b border-white/10">
-              	<th className="p-4 text-xs uppercase tracking-wide text-gray-400 font-semibold">
+            	<tr className="text-left border-b border-line">
+              	<th className="p-4 text-xs uppercase tracking-wide text-ink-muted font-semibold">
                 	Material
               	</th>
-              	<th className="p-4 text-xs uppercase tracking-wide text-gray-400 font-semibold">
+              	<th className="p-4 text-xs uppercase tracking-wide text-ink-muted font-semibold">
                 	Tengo
               	</th>
-              	<th className="p-4 text-xs uppercase tracking-wide text-gray-400 font-semibold text-right">
+              	<th className="p-4 text-xs uppercase tracking-wide text-ink-muted font-semibold text-right">
                 	En cola
               	</th>
-              	<th className="p-4 text-xs uppercase tracking-wide text-gray-400 font-semibold text-right">
+              	<th className="p-4 text-xs uppercase tracking-wide text-ink-muted font-semibold text-right">
                 	Queda
               	</th>
-              	<th className="p-4 text-xs uppercase tracking-wide text-gray-400 font-semibold text-right">
+              	<th className="p-4 text-xs uppercase tracking-wide text-ink-muted font-semibold text-right">
                 	Mínimo
               	</th>
             	</tr>
@@ -161,10 +161,10 @@ export default function AdminStockPage() {
               	const bajo = !critico && queda < stock[m].minimo;
 
               	return (
-                	<tr key={m} className="border-b border-white/5">
+                	<tr key={m} className="border-b border-line">
                   	<td className="p-4">
                     	<p className="font-semibold">{info.label}</p>
-                    	<p className="text-[11px] text-gray-500">
+                    	<p className="text-[11px] text-ink-faint">
                       	{info.ayuda}
                     	</p>
                   	</td>
@@ -172,7 +172,7 @@ export default function AdminStockPage() {
                     	<div className="flex items-center gap-1">
                       	<button
                         	onClick={() => sumar(m, -10)}
-                        	className="w-7 h-7 rounded bg-[#0F1115] border border-white/10 hover:border-[#FF4D1A] text-xs"
+                        	className="w-7 h-7 rounded bg-surface-2 border border-line hover:border-flame text-xs"
                         	aria-label={`Restar 10 a ${info.label}`}
                       	>
                         	−10
@@ -184,31 +184,31 @@ export default function AdminStockPage() {
                         	onChange={(e) =>
                           	set(m, "cantidad", Number(e.target.value) || 0)
                         	}
-                        	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1.5 text-center"
+                        	className="w-20 bg-surface-2 border border-line rounded px-2 py-1.5 text-center"
                       	/>
                       	<button
                         	onClick={() => sumar(m, 10)}
-                        	className="w-7 h-7 rounded bg-[#0F1115] border border-white/10 hover:border-[#FF4D1A] text-xs"
+                        	className="w-7 h-7 rounded bg-surface-2 border border-line hover:border-flame text-xs"
                         	aria-label={`Sumar 10 a ${info.label}`}
                       	>
                         	+10
                       	</button>
                     	</div>
-                    	<p className="text-[11px] text-gray-500 mt-1">
+                    	<p className="text-[11px] text-ink-faint mt-1">
                       	{info.unidad}
                     	</p>
                   	</td>
-                  	<td className="p-4 text-right text-gray-300">
+                  	<td className="p-4 text-right text-ink-soft">
                     	{necesita > 0 ? necesita : "—"}
                   	</td>
                   	<td
                     	className={
                       	"p-4 text-right font-bold " +
                       	(critico
-                        	? "text-red-400"
+                        	? "text-red-700"
                         	: bajo
-                        	? "text-yellow-400"
-                        	: "text-green-400")
+                        	? "text-amber-700"
+                        	: "text-green-700")
                     	}
                   	>
                     	{queda}
@@ -221,7 +221,7 @@ export default function AdminStockPage() {
                       	onChange={(e) =>
                         	set(m, "minimo", Number(e.target.value) || 0)
                       	}
-                      	className="w-20 bg-[#0F1115] border border-white/10 rounded px-2 py-1.5 text-center"
+                      	className="w-20 bg-surface-2 border border-line rounded px-2 py-1.5 text-center"
                     	/>
                   	</td>
                 	</tr>
@@ -231,18 +231,18 @@ export default function AdminStockPage() {
         	</table>
       	</div>
 
-      	<div className="p-4 border-t border-white/10 flex justify-between items-center flex-wrap gap-3">
+      	<div className="p-4 border-t border-line flex justify-between items-center flex-wrap gap-3">
         	{savedAt ? (
-          	<p className="text-xs text-green-400">Guardado a las {savedAt}</p>
+          	<p className="text-xs text-green-700">Guardado a las {savedAt}</p>
         	) : (
-          	<p className="text-xs text-gray-500">
+          	<p className="text-xs text-ink-faint">
             	Los cambios no se aplican hasta que guardes
           	</p>
         	)}
         	<button
           	onClick={guardar}
           	disabled={saving}
-          	className="bg-[#FF4D1A] hover:bg-[#e64418] px-5 py-2 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50"
+          	className="btn-flame px-5 py-2 rounded-lg font-semibold flex items-center gap-2"
         	>
           	{saving ? (
             	<Loader2 className="animate-spin" size={16} />
@@ -254,16 +254,16 @@ export default function AdminStockPage() {
       	</div>
     	</div>
 
-    	<div className="bg-[#1E242B] p-5 rounded-xl border border-white/10 mt-6">
+    	<div className="bg-surface-2 p-5 rounded-xl border border-line mt-6">
       	<h2 className="font-bold mb-2 text-sm">Cómo se calcula la cola</h2>
-      	<ul className="text-xs text-gray-400 space-y-1">
+      	<ul className="text-xs text-ink-muted space-y-1">
         	<li>
-          	• Cada hoja A4 rinde <b className="text-gray-300">8 cartas</b> (4×2), y
+          	• Cada hoja A4 rinde <b className="text-ink-soft">8 cartas</b> (4×2), y
           	las hojas se redondean hacia arriba: un pedido de 60 cartas ocupa 7
           	hojas, no 6,67.
         	</li>
         	<li>
-          	• El <b className="text-gray-300">Matte Premium</b> comparte una
+          	• El <b className="text-ink-soft">Matte Premium</b> comparte una
           	lámina de pouch cada dos hojas, así que gasta la mitad que el Matte
           	normal.
         	</li>

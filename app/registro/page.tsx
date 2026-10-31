@@ -67,33 +67,33 @@ export default function RegistroPage() {
   };
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<div className="max-w-sm mx-auto px-6 py-16">
     	<div className="flex items-center gap-2 mb-8">
-      	<Flame className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]" size={28} />
+      	<Flame className="text-flame-ink " size={28} />
       	<h1 className="font-display font-extrabold text-2xl">Crear cuenta</h1>
     	</div>
 
     	{done ? (
       	<div className="glass-card p-6 rounded-xl text-center space-y-3">
-        	<p className="text-gray-300">
-          	Te mandamos un correo a <b className="text-white">{email}</b>.
+        	<p className="text-ink-soft">
+          	Te mandamos un correo a <b className="text-ink">{email}</b>.
           	Ábrelo para confirmar tu cuenta antes de iniciar sesión.
         	</p>
-        	<p className="text-xs text-gray-500">
+        	<p className="text-xs text-ink-faint">
           	Revisa también la carpeta de spam. Abre el enlace en{" "}
           	<b>este mismo navegador</b>: si lo abres en otro, la confirmación
           	falla y hay que pedir el correo de nuevo.
         	</p>
         	{reenviado ? (
-          	<p className="text-sm text-green-400">Correo reenviado.</p>
+          	<p className="text-sm text-green-700">Correo reenviado.</p>
         	) : (
           	<button
             	type="button"
             	disabled={reenviando}
             	onClick={handleReenviar}
-            	className="text-sm text-[#FF4D1A] hover:underline disabled:opacity-50"
+            	className="text-sm text-flame-ink hover:underline disabled:opacity-50"
           	>
             	{reenviando ? "Reenviando…" : "No me llegó, reenviar"}
           	</button>
@@ -111,7 +111,7 @@ export default function RegistroPage() {
             	required
             	value={email}
             	onChange={(e) => setEmail(e.target.value)}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
         	<div>
@@ -123,16 +123,16 @@ export default function RegistroPage() {
             	required
             	value={password}
             	onChange={(e) => setPassword(e.target.value)}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
 
-        	{error ? <p className="text-sm text-red-400">{error}</p> : null}
+        	{error ? <p className="text-sm text-red-700">{error}</p> : null}
 
         	<button
           	type="submit"
           	disabled={loading}
-          	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          	className="w-full btn-flame py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
         	>
           	{loading ? (
             	<Loader2 className="animate-spin" size={18} />
@@ -142,12 +142,12 @@ export default function RegistroPage() {
           	Crear cuenta
         	</button>
 
-        	<p className="text-sm text-gray-400 text-center">
+        	<p className="text-sm text-ink-muted text-center">
           	¿Ya tienes cuenta?{" "}
           	<button
             	type="button"
             	onClick={() => router.push("/login")}
-            	className="text-[#FF4D1A] hover:underline"
+            	className="text-flame-ink hover:underline"
           	>
             	Inicia sesión
           	</button>

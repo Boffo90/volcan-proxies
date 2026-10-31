@@ -59,18 +59,18 @@ export default function ActualizarPasswordPage() {
 
   if (cargandoUser) {
 	return (
-  	<main className="min-h-screen bg-[#0b0d11] text-white flex justify-center py-32">
-    	<Loader2 className="animate-spin text-[#FF4D1A]" size={32} />
+  	<main className="min-h-screen bg-surface text-ink-soft flex justify-center py-32">
+    	<Loader2 className="animate-spin text-flame-ink" size={32} />
   	</main>
 	);
   }
 
   return (
-	<main className="min-h-screen bg-[#0b0d11] text-white">
+	<main className="min-h-screen bg-surface text-ink-soft">
   	<NavBar />
   	<div className="max-w-sm mx-auto px-6 py-16">
     	<div className="flex items-center gap-2 mb-8">
-      	<Flame className="text-[#FF4D1A] drop-shadow-[0_0_8px_rgba(255,79,26,0.7)]" size={28} />
+      	<Flame className="text-flame-ink " size={28} />
       	<h1 className="font-display font-extrabold text-2xl">
         	Nueva contraseña
       	</h1>
@@ -78,7 +78,7 @@ export default function ActualizarPasswordPage() {
 
     	{listo ? (
       	<div className="glass-card p-6 rounded-xl text-center">
-        	<p className="text-green-400">
+        	<p className="text-green-700">
           	Listo, contraseña cambiada. Te llevamos a tu cuenta.
         	</p>
       	</div>
@@ -96,7 +96,7 @@ export default function ActualizarPasswordPage() {
             	required
             	value={password}
             	onChange={(e) => setPassword(e.target.value)}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
         	<div>
@@ -108,16 +108,16 @@ export default function ActualizarPasswordPage() {
             	required
             	value={repetir}
             	onChange={(e) => setRepetir(e.target.value)}
-            	className="w-full bg-[#0b0d11] border border-white/10 rounded-lg px-3 py-2 focus:outline-none focus:border-[#FF4D1A]"
+            	className="w-full bg-surface-2 border border-line rounded-lg px-3 py-2 focus:outline-none focus:border-flame"
           	/>
         	</div>
 
-        	{error ? <p className="text-sm text-red-400">{error}</p> : null}
+        	{error ? <p className="text-sm text-red-700">{error}</p> : null}
 
         	<button
           	type="submit"
           	disabled={loading}
-          	className="w-full bg-gradient-to-br from-[#ff8a3d] via-[#FF4D1A] to-[#c92a1f] hover:brightness-110 py-2.5 rounded-lg font-semibold shadow-[0_4px_20px_-4px_rgba(255,79,26,0.5)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+          	className="w-full btn-flame py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
         	>
           	{loading ? (
             	<Loader2 className="animate-spin" size={18} />
