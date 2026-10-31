@@ -13,6 +13,8 @@ import {
   Package,
   CheckCircle2,
   ShoppingCart,
+  Store,
+  ArrowUpRight,
 } from "lucide-react";
 import { motion } from "motion/react";
 import NavBar from "@/components/NavBar";
@@ -379,6 +381,51 @@ export default function Home() {
             </button>
           </div>
         </div>
+      </section>
+
+
+      {/* OTRA TIENDA — el cruce con Proxies Abu Dabi.
+          Va justo después de las promos a propósito: es el momento en que el
+          visitante ya vio que acá los acabados son Básica y Premium, así que
+          es cuando se pregunta por el foil. En azul de maná y no en naranjo
+          para que se lea como otra tienda y no como una sección más de esta.
+          El enlace de vuelta ya existe en proxiesabudabi.cl. */}
+      <section className="px-6 pt-20 max-w-5xl mx-auto">
+        <Reveal>
+          <div className="block-card glow-hover p-7 md:p-8 flex flex-col md:flex-row md:items-center gap-6">
+            <div className="flex items-start gap-5 flex-1">
+              <span
+                className="inline-flex items-center justify-center w-14 h-14 rounded-xl border-2 border-ink shrink-0"
+                style={{ backgroundColor: "var(--mana-u)" }}
+              >
+                <Store className="text-white" size={26} />
+              </span>
+              <div>
+                <p className="text-xs uppercase tracking-wider font-bold text-mana-u">
+                  Nuestra otra tienda
+                </p>
+                <h2 className="font-display font-extrabold text-2xl md:text-3xl text-ink mt-1 mb-2">
+                  ¿Buscas foil, holo o serialized?
+                </h2>
+                <p className="text-ink-muted max-w-xl">
+                  Acá imprimimos a mano en Pucón y los acabados son Básica y
+                  Premium. Si lo tuyo son las réplicas con acabados especiales
+                  —foil, surge, galaxy, serialized—, las importamos por lote en{" "}
+                  <b className="text-ink">Proxies Abu Dabi</b>. Tardan más en
+                  llegar, pero es lo que acá no hacemos.
+                </p>
+              </div>
+            </div>
+            <a
+              href="https://proxiesabudabi.cl"
+              target="_blank"
+              rel="noopener"
+              className="btn-ghost px-6 py-3.5 shrink-0 inline-flex items-center justify-center gap-2 whitespace-nowrap"
+            >
+              Ir a Abu Dabi <ArrowUpRight size={18} />
+            </a>
+          </div>
+        </Reveal>
       </section>
 
       {/* CATÁLOGO TEASER — cartas repartidas sobre la mesa */}

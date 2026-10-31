@@ -1,8 +1,8 @@
-import { Flame, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, Flame, Mail, MapPin, Store } from "lucide-react";
 
 export default function Footer() {
   return (
-	<footer className="relative bg-surface-3/80 backdrop-blur-xl border-t border-line mt-16 overflow-hidden">
+	<footer className="relative bg-surface-3 border-t border-line mt-16 overflow-hidden">
   	<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-flame to-transparent" />
   	<div className="max-w-6xl mx-auto px-6 py-12 relative">
     	<div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -22,6 +22,31 @@ export default function Footer() {
         	<p className="text-xs text-ink-faint italic">
           	Que ganes por jugar contra mí, no contra mi billetera.
         	</p>
+
+        	{/* El cruce a la otra tienda. En el footer porque acá llega quien
+            	ya recorrió el sitio y no encontró lo que buscaba; el banner de
+            	la portada agarra al que se va antes. Azul de maná, igual que
+            	allá, para que no se confunda con una sección de Volcán. */}
+        	<a
+          	href="https://proxiesabudabi.cl"
+          	target="_blank"
+          	rel="noopener"
+          	className="mt-5 inline-flex items-start gap-2.5 rounded-xl border-2 border-line bg-surface-2 p-3 transition-colors hover:border-ink"
+        	>
+          	<Store size={16} className="text-mana-u mt-0.5 shrink-0" />
+          	<span className="text-xs text-ink-muted">
+            	¿Buscas foil, holo o serialized? Los importamos en{" "}
+            	{/* La flecha pegada a la ultima palabra: suelta se caia sola
+                	a una tercera linea en la columna angosta del footer. */}
+            	<b className="text-ink">
+              	Proxies Abu{" "}
+              	<span className="whitespace-nowrap">
+                	Dabi
+                	<ArrowUpRight size={12} className="inline ml-0.5 -mt-0.5" />
+              	</span>
+            	</b>
+          	</span>
+        	</a>
       	</div>
 
       	<div>
