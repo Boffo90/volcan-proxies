@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { catalogo, type JuegoId } from "@/lib/catalogo";
 import {
@@ -167,6 +167,51 @@ function buildMpcfillXml(items: PedidoItem[]): string {
   ].join("\n");
 }
 
+/**
+ * Línea de dato del cliente con botón para copiarla al portapapeles.
+ *
+ * Existe para rellenar el formulario de Blue Express sin tener que seleccionar
+ * texto a mano: cada dato se copia por separado porque allá cada uno va en su
+ * propio campo.
+ */
+function DatoCopiable({
+  valor,
+  etiqueta,
+  copiado,
+  onCopiar,
+  className = "",
+  children,
+}: {
+  /** Lo que se manda al portapapeles. */
+  valor: string;
+  /** Nombre del dato, para el título del botón ("Copiar el teléfono"). */
+  etiqueta: string;
+  copiado: boolean;
+  onCopiar: () => void;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`flex items-start gap-2 ${className}`}>
+      <div className="flex-1 min-w-0 break-words">{children}</div>
+      <button
+        type="button"
+        onClick={onCopiar}
+        disabled={!valor}
+        title={copiado ? "Copiado" : `Copiar ${etiqueta}`}
+        aria-label={copiado ? "Copiado" : `Copiar ${etiqueta}`}
+        className="shrink-0 p-1.5 rounded-lg border border-line text-ink-muted hover:bg-ink/5 hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        {copiado ? (
+          <Check size={13} className="text-green-700" />
+        ) : (
+          <Copy size={13} />
+        )}
+      </button>
+    </div>
+  );
+}
+
 export default function AdminPedidoDetail() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -179,6 +224,8 @@ export default function AdminPedidoDetail() {
   const [trackingCourier, setTrackingCourier] = useState<CourierKey>("");
   const [copiedDeck, setCopiedDeck] = useState(false);
   const [copiedXml, setCopiedXml] = useState(false);
+  /** Qué dato del cliente se acaba de copiar, para mostrarle el visto. */
+  const [copiadoCampo, setCopiadoCampo] = useState<string | null>(null);
   const [generandoLista, setGenerandoLista] = useState(false);
   const [avisoLista, setAvisoLista] = useState("");
   const [confirmando, setConfirmando] = useState(false);
@@ -615,6 +662,20 @@ export default function AdminPedidoDetail() {
 	await navigator.clipboard.writeText(mpcXml);
 	setCopiedXml(true);
 	setTimeout(() => setCopiedXml(false), 2000);
+  };
+
+  /** Copia un dato del cliente y deja el visto puesto un par de segundos. */
+  const copiarCampo = async (clave: string, texto: string) => {
+	try {
+	  await navigator.clipboard.writeText(texto);
+	  setCopiadoCampo(clave);
+	  setTimeout(
+		() => setCopiadoCampo((actual) => (actual === clave ? null : actual)),
+		2000
+	  );
+	} catch {
+	  // Sin permiso de portapapeles (o sin HTTPS): que no reviente la página.
+	}
   };
 
   /**
@@ -1163,19 +1224,74 @@ export default function AdminPedidoDetail() {
           	</div>
         	) : (
           	<>
-            	<p className="mb-1">
-              	<b>{pedido.cliente_nombre}</b>{" "}
-              	{pedido.cliente_rut ? `(${pedido.cliente_rut})` : ""}
-            	</p>
-            	<p className="text-sm text-ink-soft mb-1">
-              	📧 {pedido.cliente_email}
-            	</p>
-            	<p className="text-sm text-ink-soft mb-3">
-              	📱 {pedido.cliente_telefono || "-"}
-            	</p>
-            	<p className="text-sm text-ink-soft">
-              	📍 {pedido.direccion}, {pedido.comuna}, {pedido.region}
-            	</p>
+            	<DatoCopiable
+              	valor={pedido.cliente_nombre}
+              	etiqueta="el nombre"
+              	copiado={copiadoCampo === "nombre"}
+              	onCopiar={() => copiarCampo("nombre", pedido.cliente_nombre)}
+              	className="mb-1"
+            	>
+              	<p>
+                	<b>{pedido.cliente_nombre}</b>
+              	</p>
+            	</DatoCopiable>
+            	{pedido.cliente_rut ? (
+              	<DatoCopiable
+                	valor={pedido.cliente_rut}
+                	etiqueta="el RUT"
+                	copiado={copiadoCampo === "rut"}
+                	onCopiar={() => copiarCampo("rut", pedido.cliente_rut || "")}
+                	className="mb-1"
+              	>
+                	<p className="text-sm text-ink-soft">
+                  	🪪 {pedido.cliente_rut}
+                	</p>
+              	</DatoCopiable>
+            	) : null}
+            	<DatoCopiable
+              	valor={pedido.cliente_email}
+              	etiqueta="el correo"
+              	copiado={copiadoCampo === "email"}
+              	onCopiar={() => copiarCampo("email", pedido.cliente_email)}
+              	className="mb-1"
+            	>
+              	<p className="text-sm text-ink-soft">
+                	📧 {pedido.cliente_email}
+              	</p>
+            	</DatoCopiable>
+            	<DatoCopiable
+              	valor={pedido.cliente_telefono || ""}
+              	etiqueta="el teléfono"
+              	copiado={copiadoCampo === "telefono"}
+              	onCopiar={() =>
+                	copiarCampo("telefono", pedido.cliente_telefono || "")
+              	}
+              	className="mb-3"
+            	>
+              	<p className="text-sm text-ink-soft">
+                	📱 {pedido.cliente_telefono || "-"}
+              	</p>
+            	</DatoCopiable>
+            	<DatoCopiable
+              	valor={pedido.direccion}
+              	etiqueta="la dirección (sin comuna ni región)"
+              	copiado={copiadoCampo === "direccion"}
+              	onCopiar={() => copiarCampo("direccion", pedido.direccion)}
+            	>
+              	<p className="text-sm text-ink-soft">
+                	📍 {pedido.direccion}
+              	</p>
+            	</DatoCopiable>
+            	<DatoCopiable
+              	valor={pedido.comuna}
+              	etiqueta="la comuna"
+              	copiado={copiadoCampo === "comuna"}
+              	onCopiar={() => copiarCampo("comuna", pedido.comuna)}
+            	>
+              	<p className="text-sm text-ink-soft pl-6">
+                	{pedido.comuna}, {pedido.region}
+              	</p>
+            	</DatoCopiable>
             	{pedido.notas ? (
               	<p className="text-sm text-ink-muted mt-3 italic">
                 	Notas cliente: {pedido.notas}
