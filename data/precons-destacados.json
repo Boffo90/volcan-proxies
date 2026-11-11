@@ -1,0 +1,24 @@
+{
+ "total": 186,
+ "desde": "2011",
+ "destacados": [
+  {
+   "nombre": "Calling All Angels",
+   "set": "fdc",
+   "slug": "calling-all-angels",
+   "id": "4ebc7622-08a1-4f43-92dd-8675d395e8f6"
+  },
+  {
+   "nombre": "Multiverse Reforged",
+   "set": "frc",
+   "slug": "multiverse-reforged",
+   "id": "55cd03d9-2535-4cf3-a8b2-1418e1190f4a"
+  },
+  {
+   "nombre": "Odds and Ends",
+   "set": "sld",
+   "slug": "odds-and-ends",
+   "id": "0ba9362f-eb35-4e72-8c51-7047c0a3f648"
+  }
+ ]
+}

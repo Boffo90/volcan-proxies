@@ -4,7 +4,7 @@ Documento de traspaso. Si estás retomando el proyecto en una sesión nueva,
 lee esto antes de tocar código: acá está lo que no se deduce leyendo los
 archivos.
 
-Última actualización: 31 de octubre de 2026.
+Última actualización: 11 de noviembre de 2026.
 
 ---
 
@@ -282,6 +282,105 @@ La salida fue copiar las cartas a la tabla `riftbound_cartas`:
 
 Si el catálogo de Riftbound aparece vacío, lo primero que hay que mirar es si
 la sincronización se corrió.
+
+---
+
+## 4b. Precons de Commander y el importador
+
+Nacen de mirar a la competencia en noviembre de 2026: `mtgproxis.cl` ofrece los
+186 precons de Commander como producto, y el que recién empieza no tiene una
+lista que pegar. Hoy `/precons` los lista (búsqueda, color, año, "español
+completo", "sin Universes Beyond") y `/precons/<set>/<slug>` es la página de
+cada uno, con la lista por tipo, los tokens y el precio real con promo.
+
+**Los mazos viven en el repo, no en una API ni en la base.** Los escribe
+`node scripts/sync-precons.mjs`:
+
+- `data/precons-index.json` — el listado, que importan `/precons` y el sitemap.
+- `data/precons-destacados.json` — cuántos son y tres carátulas, para la
+  portada. Va aparte para no meter el índice entero (70 KB) en la página más
+  visitada.
+- `public/precons/<set>/<slug>.json` — las cartas de cada mazo. En `public/`
+  porque el importador las pide desde el navegador.
+
+Hay que **volver a correrlo cuando salga un producto de Commander** y hacer
+commit de lo que cambie. Tarda unos diez minutos, casi todo esperando a
+Scryfall.
+
+Las listas salen de **MTGJSON**; las ediciones de coleccionista se descartan
+porque son el mismo mazo. Las páginas se generan todas en el build
+(`dynamicParams = false`): una dirección que no esté en el índice es un 404 sin
+tocar el disco.
+
+### Las imágenes no se le piden a nadie
+
+`imagenDeScryfall(id, talla)` arma la dirección desde el id: el CDN de Scryfall
+ordena los archivos por los dos primeros caracteres. Cien cartas de un mazo son
+cien direcciones que se escriben solas, sin una sola llamada a la API.
+
+### "Español completo" es lo que el importador va a encontrar
+
+Cada carta guarda en `es` el **id de la impresión en español**, no un sí/no. Se
+busca primero la misma impresión del producto y, si no salió traducida,
+cualquier otra edición de esa carta que sí (`esOtra: 1`): a quien pide el mazo
+en español le importa poder leerla más que de qué edición viene. Como el
+importador pide ese id tal cual, lo que promete la página es exactamente lo que
+después aparece en la revisión.
+
+### La búsqueda de Scryfall tiene su propio límite, y bloquea
+
+El resto de la API aguanta diez por segundo; **`/cards/search` aguanta dos**, y
+al pasarse responde 429 durante un minuto entero con una amenaza explícita de
+bloquear la red. La primera versión del script esperaba 110 ms y murió a la
+mitad. Hoy espera 600 ms por búsqueda y respeta el 429 esperando 70 segundos.
+Si algún día se escribe otro script contra Scryfall, ese es el número.
+
+### "Pedir este mazo" no agrega al carrito: manda al importador
+
+`/importar?precon=fdc/reign-of-dragons&acabado=…&idioma=…&tokens=1`. Un precon
+y una lista pegada pasan por **la misma revisión**, así no hay dos pantallas
+que mantener iguales. La diferencia es cómo se resuelven: una lista pegada son
+cien peticiones y casi medio minuto; el precon ya trae los ids y se pide entero
+en dos llamadas a `/cards/collection` (`lib/preconImport.ts`).
+
+Scryfall rechaza **el lote entero** si un identificador no es un id válido. Por
+eso `idDe` comprueba que `es` sea texto: un archivo viejo dejaba al cliente sin
+ninguna de las cien cartas por culpa de una.
+
+### Lo que ganó la revisión
+
+- **Quitar cartas y cambiar cantidades**, que antes no se podía: el caso de
+  quien ya tiene la mitad del mazo.
+- **Tokens.** En un precon vienen del producto. En una lista pegada se leen de
+  `all_parts` de cada carta y **se ofrecen, no se suman solos**: son cartas que
+  se cobran. Se deja uno por token (por `oracle_id`), no uno por impresión.
+- **El total es el del carrito**, con promos. Antes era precio suelto por
+  cantidad y un mazo de 100 mostraba más de lo que después cobraba.
+
+### Por enlace: Archidekt sí, Moxfield no
+
+`/api/mazo-link` convierte un enlace en la misma lista de texto que se pegaría
+a mano. **Archidekt** tiene API abierta. **Moxfield responde 403 a los clientes
+automáticos y lo hace a propósito**; disfrazarse de navegador para pasar es
+saltarse esa protección y no se hace. La vía correcta es pedirles acceso (dan
+un identificador de cliente autorizado). Mientras tanto, a quien pega un enlace
+de Moxfield se le explica cómo exportar. La ruta solo va a buscar a los sitios
+de su lista y solo con el id que saca del enlace: no es un proxy abierto.
+
+### Lo que la competencia tiene y acá falta
+
+- **Mazos listos** (cEDH y Bracket 3, con plan de juego y combos). No es
+  código, es contenido: qué mazos se ofrecen y qué se dice de cada uno lo
+  decide Seba. La forma de datos de un precon sirve tal cual.
+- **Arte alternativo de MPCFill en la revisión del mazo.** Hoy solo está en la
+  ficha de cada carta.
+- **Subir el XML de MPCFill** y **guardar la lista** para retomarla.
+- **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
+  de atender por ahí.
+
+Y lo que acá hay y allá no: cinco juegos, cartas custom subidas por el cliente
+(allá se piden por WhatsApp), dorso personalizado, tokens para cualquier lista
+y no solo para los mazos de la casa, y siete idiomas.
 
 ---
 
@@ -1013,6 +1112,8 @@ hechos a la medida de sus parsers reales.
 
 ## 11. Pendientes
 
+- **Resincronizar los precons cuando salga un producto de Commander**:
+  `node scripts/sync-precons.mjs` y commit de lo que cambie.
 - **Resincronizar Riftbound cuando salga un set**: `node scripts/sync-riftbound.mjs`
   desde la máquina de Seba. Es lo único del catálogo que no se actualiza solo.
 - **Los pedidos con varios juegos son varias tandas de impresión** si mezclan

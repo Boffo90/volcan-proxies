@@ -25,6 +25,10 @@ export type ImportedCard = ParsedLine & {
   * Hoy solo uno: que el set y el número que traía apuntaban a otra carta.
   */
   aviso?: string;
+  /** Los tokens que crea esta carta, para ofrecerlos al final de la lista. */
+  tokenIds?: string[];
+  /** Esta línea ES un token, sumado por nosotros y no escrito por el cliente. */
+  esToken?: boolean;
 };
 
 /**
@@ -132,6 +136,34 @@ function nombresCalzan(deLaLinea: string, deLaCarta: string): boolean {
 	.some((cara) => cara === pedido || normalizarNombre(deLaCarta) === pedido);
 }
 
+/**
+ * Los tokens que crea una carta, por id de Scryfall.
+ *
+ * Se leen de la impresión en inglés, antes de traducir: `all_parts` es de la
+ * carta y no de cada idioma, pero no todas las impresiones traducidas lo traen.
+ */
+function tokensDe(card: ScryfallCard): string[] {
+  return (card.all_parts ?? [])
+    .filter((p) => p.component === "token")
+    .map((p) => p.id);
+}
+
+async function encontrada(
+  line: ParsedLine,
+  card: ScryfallCard,
+  idioma: IdiomaId,
+  aviso?: string
+): Promise<ImportedCard> {
+  const tokenIds = tokensDe(card);
+  return {
+    ...line,
+    status: "ok",
+    aviso,
+    card: aCarta(await enIdioma(card, idioma)),
+    ...(tokenIds.length ? { tokenIds } : {}),
+  };
+}
+
 export async function resolveCard(
   line: ParsedLine,
   idioma: IdiomaId = IDIOMA_BASE
@@ -152,7 +184,7 @@ export async function resolveCard(
   	if (res.ok) {
     	const card: ScryfallCard = await res.json();
     	if (nombresCalzan(line.name, card.name)) {
-      	return { ...line, status: "ok", card: aCarta(await enIdioma(card, idioma)) };
+      	return encontrada(line, card, idioma, aviso);
     	}
     	// Gana el nombre: es lo que un humano escribió y lo que reconoce. El
     	// número es dato de máquina y es lo que se desactualiza.
@@ -169,12 +201,7 @@ export async function resolveCard(
   if (line.set && !line.collector_number) {
 	const search = await searchCards(`!"${line.name}" set:${line.set}`);
 	if (search?.data?.length) {
-  	return {
-    	...line,
-    	status: "ok",
-    	aviso,
-    	card: aCarta(await enIdioma(search.data[0], idioma)),
-  	};
+  	return encontrada(line, search.data[0], idioma, aviso);
 	}
   }
 
@@ -186,12 +213,7 @@ export async function resolveCard(
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return {
-    	...line,
-    	status: "ok",
-    	aviso,
-    	card: aCarta(await enIdioma(card, idioma)),
-  	};
+  	return encontrada(line, card, idioma, aviso);
 	}
   } catch {
 	// sigue
@@ -205,12 +227,7 @@ export async function resolveCard(
 	);
 	if (res.ok) {
   	const card: ScryfallCard = await res.json();
-  	return {
-    	...line,
-    	status: "ok",
-    	aviso,
-    	card: aCarta(await enIdioma(card, idioma)),
-  	};
+  	return encontrada(line, card, idioma, aviso);
 	}
   } catch {
 	// sigue
