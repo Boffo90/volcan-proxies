@@ -101,8 +101,10 @@ export default async function PreconPage({
         </nav>
 
         <div className="grid lg:grid-cols-[minmax(0,340px)_1fr] gap-8 lg:gap-12 items-start">
-          {/* El o los comandantes. Con dos, la segunda asoma por detrás. */}
-          <div className="relative mx-auto w-full max-w-[300px] lg:max-w-none lg:sticky lg:top-24">
+          {/* El o los comandantes. Con dos, la segunda asoma por detrás. En
+              teléfono va chica: a todo el ancho empujaba el precio y el
+              botón dos pantallas más abajo. */}
+          <div className="relative mx-auto w-full max-w-[190px] sm:max-w-[300px] lg:max-w-none lg:sticky lg:top-24">
             {mazo.comandantes.slice(0, 2).map((c, i, todos) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img

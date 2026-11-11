@@ -46,8 +46,48 @@ import FinishButtons from "@/components/FinishButtons";
 import { usePrecios } from "@/hooks/usePrecios";
 import { resolverPrecon, tokensDeLaLista, traerPrecon } from "@/lib/preconImport";
 import { rutaPrecon } from "@/lib/precons";
+import type { MpcCard } from "@/app/api/mpcfill/route";
 
-type CardWithFinish = ImportedCard & { finish?: Finish };
+type CardWithFinish = ImportedCard & {
+  finish?: Finish;
+  /** El arte HD de MPCFill elegido para esta carta, si cambió el oficial. */
+  mpc?: MpcCard;
+};
+
+/**
+ * La revisión a medio hacer, guardada en el navegador.
+ *
+ * Revisar cien cartas toma un rato, y cerrar la pestaña sin querer lo botaba
+ * todo. Se guarda sola mientras se revisa y se ofrece retomarla al volver; no
+ * se restaura sin preguntar, porque quien vuelve a pegar una lista nueva no
+ * quiere encontrarse la de ayer.
+ */
+const BORRADOR = "importar-borrador";
+
+type Borrador = {
+  cards: CardWithFinish[];
+  text: string;
+  globalFinish: Finish;
+  idioma: IdiomaId;
+  precon: { nombre: string; ruta: string } | null;
+};
+
+function leerBorrador(): Borrador | null {
+  try {
+    const b = JSON.parse(localStorage.getItem(BORRADOR) || "null");
+    return b && Array.isArray(b.cards) && b.cards.length > 0 ? (b as Borrador) : null;
+  } catch {
+    return null;
+  }
+}
+
+function borrarBorrador() {
+  try {
+    localStorage.removeItem(BORRADOR);
+  } catch {
+    // sin almacenamiento no hay nada que borrar
+  }
+}
 
 const EXAMPLE = `1 Lightning Bolt (M11) 149
 1 Sol Ring (CMR) 410
@@ -89,6 +129,15 @@ export default function ImportarPage() {
   const [tokensListos, setTokensListos] = useState(false);
   const arranco = useRef(false);
 
+  // Artes HD de MPCFill, por nombre de carta. `null` es "buscando".
+  const [mpcPorNombre, setMpcPorNombre] = useState<
+    Record<string, MpcCard[] | null>
+  >({});
+  const [mpcError, setMpcError] = useState("");
+
+  // Una revisión anterior sin terminar, para ofrecer retomarla.
+  const [pendiente, setPendiente] = useState<Borrador | null>(null);
+
   // Si un acabado se desactiva desde el admin, corregir el global y limpiar
   // los overrides por carta que quedaron apuntando al acabado bloqueado.
   useEffect(() => {
@@ -116,7 +165,12 @@ export default function ImportarPage() {
 
     const p = new URLSearchParams(window.location.search);
     const [set, slug] = (p.get("precon") ?? "").split("/");
-    if (!set || !slug) return;
+    if (!set || !slug) {
+      // Solo al llegar sin mazo: quien viene desde un precon ya eligió qué
+      // revisar, y ofrecerle otra lista ahí es estorbar.
+      setPendiente(leerBorrador());
+      return;
+    }
 
     const acabado = p.get("acabado");
     if (acabado && FINISHES.includes(acabado as Finish)) {
@@ -143,6 +197,62 @@ export default function ImportarPage() {
     })();
   }, []);
 
+  // Guardar sola la revisión mientras haya algo que revisar.
+  useEffect(() => {
+    if (loading || cards.length === 0) return;
+    try {
+      const b: Borrador = { cards, text, globalFinish, idioma, precon };
+      localStorage.setItem(BORRADOR, JSON.stringify(b));
+    } catch {
+      // Almacenamiento lleno o bloqueado: la revisión sigue, solo no se guarda.
+    }
+  }, [cards, text, globalFinish, idioma, precon, loading]);
+
+  const retomar = () => {
+    if (!pendiente) return;
+    setCards(pendiente.cards);
+    setText(pendiente.text ?? "");
+    if (FINISHES.includes(pendiente.globalFinish)) setGlobalFinish(pendiente.globalFinish);
+    if (esIdioma(pendiente.idioma)) setIdioma(pendiente.idioma);
+    setPrecon(pendiente.precon ?? null);
+    setTokensListos(true);
+    setPendiente(null);
+  };
+
+  const descartarPendiente = () => {
+    borrarBorrador();
+    setPendiente(null);
+  };
+
+  const buscarMpc = async (nombre: string) => {
+    if (nombre in mpcPorNombre) return;
+    setMpcError("");
+    setMpcPorNombre((prev) => ({ ...prev, [nombre]: null }));
+    try {
+      const res = await fetch("/api/mpcfill?q=" + encodeURIComponent(nombre));
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "MPCFill no respondió.");
+      setMpcPorNombre((prev) => ({ ...prev, [nombre]: data.cards || [] }));
+    } catch (err) {
+      setMpcError(err instanceof Error ? err.message : "MPCFill no respondió.");
+      // Se saca la marca de "buscando" para que se pueda reintentar.
+      setMpcPorNombre((prev) => {
+        const next = { ...prev };
+        delete next[nombre];
+        return next;
+      });
+    }
+  };
+
+  const chooseMpc = (idx: number, mpc: MpcCard) => {
+    setCards((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], mpc };
+      return next;
+    });
+    setPrintPickerIdx(null);
+  };
+
   const openPrintPicker = async (idx: number, carta: CartaCatalogo) => {
     setPrintPickerIdx(idx);
     if (printsByOracle[carta.grupoId]) return;
@@ -155,7 +265,7 @@ export default function ImportarPage() {
   const chooseArt = (idx: number, print: CartaCatalogo) => {
     setCards((prev) => {
       const next = [...prev];
-      next[idx] = { ...next[idx], card: print };
+      next[idx] = { ...next[idx], card: print, mpc: undefined };
       return next;
     });
     setPrintPickerIdx(null);
@@ -170,6 +280,7 @@ export default function ImportarPage() {
     setLoading(true);
     setProgress({ done: 0, total: parsed.length });
     setCards([]);
+    setPendiente(null);
     setTokensListos(false);
     setPrintPickerIdx(null);
     const resolved = await resolveDeck(
@@ -222,6 +333,8 @@ export default function ImportarPage() {
   // Quitar una carta: lo que hace quien ya tiene la mitad del mazo en casa.
   const quitar = (idx: number) => {
     setPrintPickerIdx(null);
+    // Al quitar la última ya no queda revisión que guardar.
+    if (cards.length <= 1) borrarBorrador();
     setCards((prev) => prev.filter((_, i) => i !== idx));
   };
 
@@ -257,19 +370,24 @@ export default function ImportarPage() {
     }
     eligible.forEach((c) => {
       if (!c.card) return;
+      // Con arte de MPCFill la línea lleva id propio, igual que desde la
+      // ficha: así no se mezcla en el carrito con la versión oficial.
       addToCart({
-        id: c.card.uid,
+        id: c.mpc ? `${c.card.uid}-mpc-${c.mpc.id}` : c.card.uid,
         juego: c.card.juego,
         idioma: c.card.idioma,
         name: c.card.name,
         set: c.card.set,
-        set_name: c.card.set_name,
+        set_name: c.mpc ? `MPCFill HD · ${c.mpc.name}` : c.card.set_name,
         collector_number: c.card.collector_number,
-        image: c.card.imagenes.normal,
+        image: c.mpc ? c.mpc.thumb : c.card.imagenes.normal,
         finish: getFinish(c),
         quantity: c.quantity,
+        ...(c.mpc ? { mpcfillId: c.mpc.id } : {}),
       });
     });
+    // Ya está en el carrito: no hay nada que retomar.
+    borrarBorrador();
     router.push("/carrito");
   };
 
@@ -295,7 +413,7 @@ export default function ImportarPage() {
   const calculo = calculateTotalWith(
     precios,
     paraElCarrito.map((c) => ({
-      id: c.card?.uid,
+      id: c.card ? c.card.uid + (c.mpc ? "-mpc-" + c.mpc.id : "") : undefined,
       finish: getFinish(c),
       quantity: c.quantity,
     }))
@@ -348,6 +466,28 @@ export default function ImportarPage() {
             </p>
           </Reveal>
         )}
+
+        {pendiente && cards.length === 0 && !loading ? (
+          <div className="block-card p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-ink-soft">
+              <b className="text-ink">Dejaste una revisión sin terminar</b>
+              {pendiente.precon ? `: ${pendiente.precon.nombre}` : ""} (
+              {pendiente.cards.reduce((s, c) => s + (c.quantity || 0), 0)} cartas).
+            </p>
+            <div className="flex gap-2">
+              <button type="button" onClick={retomar} className="btn-flame px-4 py-2 text-sm">
+                Retomarla
+              </button>
+              <button
+                type="button"
+                onClick={descartarPendiente}
+                className="btn-ghost px-4 py-2 text-sm"
+              >
+                Descartar
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         {errorPrecon ? (
           <p className="bg-yellow-500/10 border border-amber-700/35 text-amber-700 text-sm p-3 rounded-lg mb-6">
@@ -655,7 +795,10 @@ export default function ImportarPage() {
               {cards.map((c, idx) => {
                 if (c.status !== "ok" || !c.card) return null;
                 const cardFinish = getFinish(c);
-                const imgSrc = c.card.imagenes.normal;
+                const imgSrc = c.mpc ? c.mpc.thumb : c.card.imagenes.normal;
+                // MPCFill indexa por el nombre en inglés, que es el de la lista.
+                const nombreMpc = c.name.split(" // ")[0];
+                const artesMpc = mpcPorNombre[nombreMpc];
                 return (
                   <div
                     key={c.card.uid + "-" + idx}
@@ -692,7 +835,7 @@ export default function ImportarPage() {
                         />
                       </div>
                       <p className="text-[10px] text-ink-muted truncate">
-                        {c.card.set_name}
+                        {c.mpc ? "MPCFill HD · " + c.mpc.name : c.card.set_name}
                       </p>
                       {/* Solo cuando NO salió en el idioma pedido: decirlo en
                           todas sería ruido, y callarlo sería la sorpresa que
@@ -780,6 +923,52 @@ export default function ImportarPage() {
                               )
                             )
                           )}
+                        </div>
+                      ) : null}
+                      {/* Artes de la comunidad. Los tokens no: MPCFill los
+                          guarda aparte y la búsqueda por nombre trae cartas. */}
+                      {printPickerIdx === idx && !c.esToken ? (
+                        <div className="mt-1">
+                          {artesMpc === undefined ? (
+                            <button
+                              type="button"
+                              onClick={() => buscarMpc(nombreMpc)}
+                              className="w-full py-1 text-[10px] rounded border border-line text-flame-ink font-bold hover:border-ink transition"
+                            >
+                              ✨ Ver artes HD de MPCFill
+                            </button>
+                          ) : artesMpc === null ? (
+                            <Loader2
+                              className="animate-spin text-flame-ink mx-auto my-2"
+                              size={16}
+                            />
+                          ) : artesMpc.length === 0 ? (
+                            <p className="text-[10px] text-ink-muted">
+                              No hay artes de esta carta en MPCFill.
+                            </p>
+                          ) : (
+                            <div className="flex gap-1 overflow-x-auto pb-1">
+                              {artesMpc.map((m) => (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => chooseMpc(idx, m)}
+                                  aria-label={"Arte HD: " + m.name}
+                                  title={m.name + " · " + m.dpi + " DPI"}
+                                  className={
+                                    "relative flex-shrink-0 w-14 aspect-[5/7] rounded border-2 overflow-hidden bg-center bg-cover bg-no-repeat transition " +
+                                    (c.mpc?.id === m.id
+                                      ? "border-flame"
+                                      : "border-line hover:border-ink")
+                                  }
+                                  style={{ backgroundImage: `url(${m.thumb})` }}
+                                />
+                              ))}
+                            </div>
+                          )}
+                          {mpcError && artesMpc === undefined ? (
+                            <p className="text-[10px] text-red-700 mt-1">{mpcError}</p>
+                          ) : null}
                         </div>
                       ) : null}
                       {c.isSideboard && (

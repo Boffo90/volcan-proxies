@@ -357,6 +357,14 @@ ninguna de las cien cartas por culpa de una.
 - **El total es el del carrito**, con promos. Antes era precio suelto por
   cantidad y un mazo de 100 mostraba más de lo que después cobraba.
 
+- **Arte HD de MPCFill**, que antes solo estaba en la ficha. Se busca por el
+  nombre en inglés de la línea (`c.name`), no por el de la carta mostrada: en
+  un mazo en español ese es el traducido y MPCFill no lo conoce. La línea va
+  al carrito con el mismo id `<uid>-mpc-<id>` que arma la ficha.
+- **La revisión se guarda sola** en `localStorage` (`importar-borrador`) y al
+  volver a `/importar` se ofrece retomarla. No se restaura sin preguntar, y
+  no se ofrece al llegar desde un precon. Se borra al agregar al carrito.
+
 ### Por enlace: Archidekt sí, Moxfield no
 
 `/api/mazo-link` convierte un enlace en la misma lista de texto que se pegaría
@@ -372,9 +380,7 @@ de su lista y solo con el id que saca del enlace: no es un proxy abierto.
 - **Mazos listos** (cEDH y Bracket 3, con plan de juego y combos). No es
   código, es contenido: qué mazos se ofrecen y qué se dice de cada uno lo
   decide Seba. La forma de datos de un precon sirve tal cual.
-- **Arte alternativo de MPCFill en la revisión del mazo.** Hoy solo está en la
-  ficha de cada carta.
-- **Subir el XML de MPCFill** y **guardar la lista** para retomarla.
+- **Subir el XML de MPCFill.**
 - **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
   de atender por ahí.
 

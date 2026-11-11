@@ -86,8 +86,10 @@ export default function ListaPrecons({ mazos }: { mazos: PreconResumen[] }) {
   return (
     <div>
       {/* Filtros. Pegados arriba al bajar: con 186 mazos se filtra más de
-          una vez, y volver al inicio cada vez es lo que hace abandonar. */}
-      <div className="sticky top-[68px] z-20 -mx-6 px-6 py-3 bg-surface border-b-2 border-ink mb-8">
+          una vez, y volver al inicio cada vez es lo que hace abandonar. Solo
+          desde tablet: en un teléfono los filtros ocupan un tercio de la
+          pantalla y pegados no dejarían ver los mazos. */}
+      <div className="md:sticky md:top-[68px] z-20 -mx-6 px-6 py-3 bg-surface border-b-2 border-ink mb-8">
         <div className="flex flex-wrap items-center gap-2.5">
           <label className="relative flex-1 min-w-[220px]">
             <span className="sr-only">Buscar precons</span>
