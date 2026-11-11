@@ -2,6 +2,7 @@ import { searchCards, type ScryfallCard } from "./scryfall";
 import { aCarta, enIdioma } from "./catalogo/mtg";
 import { IDIOMA_BASE, type IdiomaId } from "./catalogo/idiomas";
 import type { CartaCatalogo } from "./catalogo/tipos";
+import type { MpcCard } from "@/app/api/mpcfill/route";
 
 export type ParsedLine = {
   raw: string;
@@ -29,6 +30,11 @@ export type ImportedCard = ParsedLine & {
   tokenIds?: string[];
   /** Esta línea ES un token, sumado por nosotros y no escrito por el cliente. */
   esToken?: boolean;
+  /**
+   * El arte de MPCFill con que se imprime esta línea, si no es el oficial.
+   * Lo elige el cliente en la revisión o ya viene en el XML que subió.
+   */
+  mpc?: MpcCard;
 };
 
 /**

@@ -14,7 +14,8 @@
 //
 // Deja:
 //   data/mazos-index.json        el listado, para /mazos
-//   public/mazos/<slug>.json     las cartas, con la misma forma de un precon
+//   public/mazos/<slug>.json     las cartas, con la misma forma de un precon,
+//                                más sus combos según Commander Spellbook
 
 import { mkdir, readdir, readFile, writeFile, rm } from "node:fs/promises";
 import path from "node:path";
@@ -173,6 +174,128 @@ async function enEspanol(oracleIds) {
   console.log();
   for (const [o, id] of respaldo) if (!mapa.has(o)) mapa.set(o, id);
   return mapa;
+}
+
+// --- Combos -----------------------------------------------------------------
+//
+// Los combos de cada lista salen de Commander Spellbook, que es la base de
+// datos de combos de Commander: se le manda el mazo y devuelve los que están
+// completos adentro. Así el "cómo gana" que escribimos nosotros queda
+// respaldado por un dato que no depende de la memoria de nadie.
+
+const SPELLBOOK = "https://backend.commanderspellbook.com/find-my-combos";
+const MAX_COMBOS = 8;
+
+// Lo que produce un combo, en castellano. Spellbook lo escribe en inglés y con
+// un vocabulario acotado; lo que no esté acá se muestra tal como viene, que es
+// mejor que inventarle una traducción.
+const RESULTADOS = {
+  "Infinite creature ETB": "criaturas que entran infinitas veces",
+  "Infinite creature LTB": "criaturas que salen infinitas veces",
+  "Infinite artifact ETB": "artefactos que entran infinitas veces",
+  "Infinite artifact LTB": "artefactos que salen infinitas veces",
+  "Infinite storm count": "tormenta infinita",
+  "Near-infinite storm count": "tormenta casi infinita",
+  "Infinite death triggers": "muertes infinitas",
+  "Infinite creature sacrifice triggers": "sacrificios de criatura infinitos",
+  "Infinite artifact sacrifice triggers": "sacrificios de artefacto infinitos",
+  "Infinite lifegain": "vida infinita",
+  "Infinite lifegain triggers": "ganancias de vida infinitas",
+  "Infinite lifeloss": "pérdida de vida infinita",
+  "Infinite damage": "daño infinito",
+  "Near-infinite damage": "daño casi infinito",
+  "Infinite colorless mana": "maná incoloro infinito",
+  "Near-infinite colorless mana": "maná incoloro casi infinito",
+  "Infinite colored mana": "maná de color infinito",
+  "Near-infinite colored mana": "maná de color casi infinito",
+  "Infinite red mana": "maná rojo infinito",
+  "Infinite green mana": "maná verde infinito",
+  "Infinite blue mana": "maná azul infinito",
+  "Infinite black mana": "maná negro infinito",
+  "Infinite white mana": "maná blanco infinito",
+  "Infinite card draw": "robo infinito",
+  "Infinite card draw for all players": "robo infinito para todos",
+  "Infinite draw triggers": "robos infinitos",
+  "Infinite draw triggers for all players": "robos infinitos para todos",
+  "Infinite self-mill": "moler la propia biblioteca",
+  "Near-infinite mill": "moler casi infinito",
+  "Infinite mill": "moler infinito",
+  "Infinite creature tokens": "fichas de criatura infinitas",
+  "Infinite creature tokens with haste": "fichas de criatura con prisa infinitas",
+  "Infinite artifact tokens": "fichas de artefacto infinitas",
+  "Infinite Treasure tokens": "Tesoros infinitos",
+  "Near-infinite Treasure tokens": "Tesoros casi infinitos",
+  "Infinite tapped Treasure tokens": "Tesoros girados infinitos",
+  "Infinite magecraft triggers": "disparos de magecraft infinitos",
+  "Near-infinite magecraft triggers": "disparos de magecraft casi infinitos",
+  "Infinite landfall triggers": "disparos de landfall infinitos",
+  "Infinite commander casts": "lanzar el comandante infinitas veces",
+  "Infinite blinking": "parpadeos infinitos",
+  "Infinite looting": "robar y descartar infinito",
+  "Infinite untap of creatures you control": "enderezar tus criaturas infinitas veces",
+  "Infinite untap of permanents you control": "enderezar tus permanentes infinitas veces",
+  "Infinite untap of artifacts you control": "enderezar tus artefactos infinitas veces",
+  "Infinite untap of lands you control": "enderezar tus tierras infinitas veces",
+  "Infinite mana creatures you control can produce": "todo el maná que den tus criaturas, infinito",
+  "Infinite mana lands you control can produce": "todo el maná que den tus tierras, infinito",
+  "Infinite mana permanents you control can produce": "todo el maná que den tus permanentes, infinito",
+  "Infinite mana artifacts you control can produce": "todo el maná que den tus artefactos, infinito",
+  "Win the game": "ganas la partida",
+  "Target opponent loses the game": "un oponente pierde la partida",
+  "Each opponent loses the game": "cada oponente pierde la partida",
+  "Exile your library": "exiliar tu biblioteca",
+  "Destroy all creatures opponents control": "destruir las criaturas de los oponentes",
+  "Destroy all artifacts opponents control": "destruir los artefactos de los oponentes",
+  "Infinite looting for all players":
+    "robar y descartar infinito para todos",
+  "Infinite looting for opponents":
+    "robar y descartar infinito para los oponentes",
+  "Near-infinite mana among colors of legendary creatures and planeswalkers you control":
+    "maná casi infinito de los colores de tus leyendas",
+  "Infinite untap of legendary creatures you control":
+    "enderezar tus criaturas legendarias infinitas veces",
+  "Infinite mana legendary creatures you control can produce":
+    "todo el maná que den tus criaturas legendarias, infinito",
+  "Infinite colored mana that can only be spent to activate abilities":
+    "maná de color infinito, solo para activar habilidades",
+  Lock: "bloqueo de la mesa",
+};
+
+async function combosDe(m) {
+  let res;
+  try {
+    res = await pedir(SPELLBOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        commanders: m.comandantes.map((card) => ({ card, quantity: 1 })),
+        main: m.cartas.map((c) => ({ card: c.n, quantity: c.q })),
+      }),
+    });
+  } catch {
+    // Sin Spellbook el mazo se publica igual, solo sin la sección de combos.
+    return [];
+  }
+  await espera(1000);
+
+  const vistos = new Set();
+  return (res?.results?.included ?? [])
+    // Los de una sola carta piden además "alguna otra pieza" que no nombran;
+    // listarlos como combo del mazo sería prometer algo que no está completo.
+    .filter((c) => c.uses.length >= 2)
+    .sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0))
+    .map((c) => ({
+      id: c.id,
+      cartas: c.uses.map((u) => u.card.name),
+      produce: c.produces.map((p) => RESULTADOS[p.feature.name] ?? p.feature.name).slice(0, 3),
+    }))
+    .filter((c) => {
+      const clave = [...c.cartas].sort().join("|");
+      if (vistos.has(clave)) return false;
+      vistos.add(clave);
+      return true;
+    })
+    .slice(0, MAX_COMBOS);
 }
 
 // ---------------------------------------------------------------------------
@@ -349,6 +472,8 @@ for (const { m, comandantes, gameChangers, tierras, total } of armados) {
     .reduce((s, sc) => s + (sc.cmc ?? 0), 0);
   const curva = Math.round((sumaCmc / noTierras.reduce((s, c) => s + c.q, 0)) * 100) / 100;
 
+  const combos = await combosDe(m);
+
   const identidad = new Set(comandantes.flatMap((c) => c.color_identity ?? []));
   const resumen = {
     slug: m.slug,
@@ -374,6 +499,7 @@ for (const { m, comandantes, gameChangers, tierras, total } of armados) {
       // De dónde salió la lista, para decirlo en la página.
       fuente: m.fuente ?? "",
       fuenteUrl: m.fuenteUrl ?? "",
+      combos,
       gameChangers,
       tokens,
       cartas,

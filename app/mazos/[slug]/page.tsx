@@ -199,6 +199,46 @@ export default async function MazoPage({
           </div>
         </section>
 
+        {mazo.combos && mazo.combos.length > 0 ? (
+          <section className="mt-8">
+            <h2 className="font-display font-extrabold text-xl text-ink mb-1">
+              Combos del mazo{" "}
+              <span className="text-ink-faint">{mazo.combos.length}</span>
+            </h2>
+            <p className="text-sm text-ink-muted mb-3">
+              Los que la lista trae completos, según{" "}
+              <a
+                href="https://commanderspellbook.com"
+                target="_blank"
+                rel="noopener nofollow"
+                className="font-bold text-flame-ink underline underline-offset-2"
+              >
+                Commander Spellbook
+              </a>
+              . Toca uno para ver el paso a paso.
+            </p>
+            <ul className="grid md:grid-cols-2 gap-2.5">
+              {mazo.combos.map((c) => (
+                <li key={c.id}>
+                  <a
+                    href={"https://commanderspellbook.com/combo/" + c.id}
+                    target="_blank"
+                    rel="noopener nofollow"
+                    className="block h-full rounded-lg border-2 border-line bg-surface-2 px-3.5 py-2.5 hover:border-ink transition-colors"
+                  >
+                    <span className="block font-bold text-ink text-sm">
+                      {c.cartas.join(" + ")}
+                    </span>
+                    <span className="block text-xs text-ink-muted mt-0.5">
+                      {c.produce.join(" · ")}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         {mazo.fuente ? (
           <p className="mt-6 text-sm text-ink-muted">
             <b className="text-ink">De dónde sale esta lista:</b> {mazo.fuente}.{" "}

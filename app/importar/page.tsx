@@ -6,6 +6,7 @@ import Link from "next/link";
 import {
   Loader2,
   Upload,
+  FileUp,
   CheckCircle2,
   ShoppingCart,
   FileText,
@@ -46,6 +47,7 @@ import FinishButtons from "@/components/FinishButtons";
 import { usePrecios } from "@/hooks/usePrecios";
 import {
   resolverPrecon,
+  resolverXmlMpc,
   tokensDeLaLista,
   traerMazo,
   traerPrecon,
@@ -140,6 +142,12 @@ export default function ImportarPage() {
     Record<string, MpcCard[] | null>
   >({});
   const [mpcError, setMpcError] = useState("");
+
+  // Agregar cartas a una revisión ya abierta.
+  const [panelAgregar, setPanelAgregar] = useState(false);
+  const [textoExtra, setTextoExtra] = useState("");
+  const [agregando, setAgregando] = useState(false);
+  const [archivoMsg, setArchivoMsg] = useState("");
 
   // Una revisión anterior sin terminar, para ofrecer retomarla.
   const [pendiente, setPendiente] = useState<Borrador | null>(null);
@@ -282,10 +290,46 @@ export default function ImportarPage() {
     setPrintPickerIdx(null);
   };
 
-  const analizar = async (lista: string) => {
+  /**
+   * Suma cartas a la revisión que ya está abierta.
+   *
+   * Si la carta ya estaba —la misma impresión, con el mismo arte— se suma la
+   * cantidad en vez de repetir la línea: quien agrega "4 Forest" a un mazo que
+   * ya tenía Forest espera una línea con más copias, no dos.
+   */
+  const fusionar = (previas: CardWithFinish[], nuevas: CardWithFinish[]) => {
+    const todas = [...previas];
+    for (const n of nuevas) {
+      const i =
+        n.status === "ok" && n.card
+          ? todas.findIndex(
+              (p) =>
+                p.status === "ok" &&
+                p.card?.uid === n.card!.uid &&
+                (p.mpc?.id ?? "") === (n.mpc?.id ?? "") &&
+                Boolean(p.isSideboard) === Boolean(n.isSideboard)
+            )
+          : -1;
+      if (i >= 0) todas[i] = { ...todas[i], quantity: todas[i].quantity + n.quantity };
+      else todas.push(n);
+    }
+    return todas;
+  };
+
+  const analizar = async (lista: string, sumar = false) => {
     const parsed = parseDeck(lista);
     if (parsed.length === 0) {
       alert("No se detectaron cartas válidas. Revisa el formato.");
+      return;
+    }
+    if (sumar) {
+      // La revisión sigue a la vista mientras llegan las cartas nuevas.
+      setAgregando(true);
+      const nuevas = await resolveDeck(parsed, undefined, idioma);
+      setCards((prev) => fusionar(prev, nuevas));
+      setTokensListos(false);
+      setTextoExtra("");
+      setAgregando(false);
       return;
     }
     setLoading(true);
@@ -303,7 +347,46 @@ export default function ImportarPage() {
     setLoading(false);
   };
 
-  const traerDeEnlace = async () => {
+  /**
+   * Un archivo: el cards.xml de MPCFill, con el arte ya elegido en cada
+   * carta, o una lista en .txt. `sumar` lo agrega a la revisión abierta.
+   */
+  const subirArchivo = async (archivo: File | undefined, sumar = false) => {
+    if (!archivo) return;
+    setArchivoMsg("");
+    if (archivo.size > 2 * 1024 * 1024) {
+      setArchivoMsg("Ese archivo pesa más de 2 MB. Un pedido de MPCFill pesa mucho menos.");
+      return;
+    }
+    const contenido = await archivo.text();
+    const esXml = /\.xml$/i.test(archivo.name) || contenido.trimStart().startsWith("<");
+    if (!esXml) {
+      if (!sumar) setText(contenido);
+      await analizar(contenido, sumar);
+      return;
+    }
+    if (sumar) setAgregando(true);
+    else {
+      setLoading(true);
+      setProgress({ done: 0, total: 0 });
+      setCards([]);
+      setPendiente(null);
+      setPrintPickerIdx(null);
+    }
+    try {
+      const nuevas = await resolverXmlMpc(contenido);
+      setCards((prev) => (sumar ? fusionar(prev, nuevas) : nuevas));
+      // El XML ya trae los tokens que el cliente quiso: no se le ofrecen más.
+      if (!sumar) setTokensListos(true);
+    } catch (err) {
+      setArchivoMsg(err instanceof Error ? err.message : "No pudimos leer ese archivo.");
+    } finally {
+      setLoading(false);
+      setAgregando(false);
+    }
+  };
+
+  const traerDeEnlace = async (sumar = false) => {
     const url = linkUrl.trim();
     if (!url) return;
     setLinkLoading(true);
@@ -315,14 +398,15 @@ export default function ImportarPage() {
         setLinkMsg({ ok: false, texto: json.error || "No pudimos traer ese mazo." });
         return;
       }
-      setText(json.lista);
+      if (!sumar) setText(json.lista);
       setLinkMsg({
         ok: true,
         texto: json.nombre
           ? `Trajimos "${json.nombre}" desde ${json.origen}.`
           : `Trajimos tu mazo desde ${json.origen}.`,
       });
-      await analizar(json.lista);
+      await analizar(json.lista, sumar);
+      if (sumar) setLinkUrl("");
     } catch {
       setLinkMsg({
         ok: false,
@@ -556,7 +640,7 @@ export default function ImportarPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={traerDeEnlace}
+                  onClick={() => traerDeEnlace()}
                   disabled={linkLoading || loading || !linkUrl.trim()}
                   className="btn-ghost px-4 py-2.5 text-sm flex items-center gap-2 whitespace-nowrap"
                 >
@@ -598,6 +682,33 @@ export default function ImportarPage() {
                 <code>1 Carta (SET) 123</code>. Si trae la edición, imprimimos
                 esa misma.
               </p>
+
+              {/* El cards.xml de MPCFill: quien ya eligió sus artes allá no
+                  tiene por qué elegirlos de nuevo acá. */}
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <label className="btn-ghost px-4 py-2.5 text-sm inline-flex items-center gap-2 cursor-pointer">
+                  <FileUp size={16} /> Subir archivo
+                  <input
+                    type="file"
+                    accept=".xml,.txt,text/xml,text/plain"
+                    className="sr-only"
+                    onChange={(e) => {
+                      subirArchivo(e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <p className="text-xs text-ink-faint flex-1 min-w-[200px]">
+                  El <code>cards.xml</code> que baja mpcfill.com con Download —
+                  respetamos el arte que elegiste en cada carta — o una lista
+                  en <code>.txt</code>.
+                </p>
+              </div>
+              {archivoMsg ? (
+                <p role="alert" className="text-xs text-amber-700 mt-2">
+                  {archivoMsg}
+                </p>
+              ) : null}
             </div>
 
             <div className="glass-card p-5 rounded-xl h-fit">
@@ -772,9 +883,84 @@ export default function ImportarPage() {
               </div>
             ) : null}
 
-            <h2 className="font-bold text-lg mb-1">
-              Cartas detectadas ({okCards.length})
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+              <h2 className="font-bold text-lg">
+                Cartas detectadas ({okCards.length})
+              </h2>
+              <button
+                type="button"
+                onClick={() => setPanelAgregar((v) => !v)}
+                aria-expanded={panelAgregar}
+                className="btn-ghost px-3.5 py-1.5 text-sm inline-flex items-center gap-1.5"
+              >
+                <Plus size={15} /> Agregar cartas
+              </button>
+            </div>
+
+            {panelAgregar ? (
+              <div className="glass-card rounded-xl p-4 mb-4">
+                <label htmlFor="extra-lista" className="block text-sm font-semibold mb-1.5">
+                  Pega las cartas que quieres sumar, una por línea
+                </label>
+                <textarea
+                  id="extra-lista"
+                  value={textoExtra}
+                  onChange={(e) => setTextoExtra(e.target.value)}
+                  placeholder={"1 Sol Ring\n4 Forest"}
+                  className="w-full bg-surface border border-line rounded-lg p-3 text-sm font-mono min-h-[96px] focus:outline-none focus:border-flame"
+                />
+                <div className="flex flex-wrap items-center gap-2.5 mt-2.5">
+                  <button
+                    type="button"
+                    onClick={() => analizar(textoExtra, true)}
+                    disabled={agregando || !textoExtra.trim()}
+                    className="btn-flame px-4 py-2 text-sm inline-flex items-center gap-2"
+                  >
+                    {agregando ? <Loader2 className="animate-spin" size={15} /> : null}
+                    Agregar a la lista
+                  </button>
+                  <label className="btn-ghost px-4 py-2 text-sm inline-flex items-center gap-2 cursor-pointer">
+                    <FileUp size={15} /> Subir XML o .txt
+                    <input
+                      type="file"
+                      accept=".xml,.txt,text/xml,text/plain"
+                      className="sr-only"
+                      disabled={agregando}
+                      onChange={(e) => {
+                        subirArchivo(e.target.files?.[0], true);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </div>
+                <div className="flex gap-2 mt-2.5">
+                  <input
+                    aria-label="Enlace de otro mazo en Archidekt"
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="O el enlace de otro mazo en Archidekt"
+                    className="flex-1 bg-surface border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-flame"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => traerDeEnlace(true)}
+                    disabled={agregando || linkLoading || !linkUrl.trim()}
+                    className="btn-ghost px-4 py-2 text-sm whitespace-nowrap"
+                  >
+                    Traer y sumar
+                  </button>
+                </div>
+                {archivoMsg || (linkMsg && !linkMsg.ok) ? (
+                  <p role="alert" className="text-xs text-amber-700 mt-2">
+                    {archivoMsg || linkMsg?.texto}
+                  </p>
+                ) : null}
+                <p className="text-xs text-ink-faint mt-2">
+                  Si ya tenías alguna de estas cartas en la lista, sumamos la
+                  cantidad en vez de repetirla.
+                </p>
+              </div>
+            ) : null}
             {corregidas.length > 0 ? (
               <div className="bg-yellow-500/10 border border-amber-700/35 rounded-lg p-3 mb-3">
                 <p className="text-xs text-amber-700 font-semibold mb-1">

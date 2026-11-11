@@ -434,11 +434,48 @@ revisión del importador (`/importar?mazo=kinnan`). La versión en español de
 cada carta es siempre "otra edición": acá no hay una impresión del producto
 que respetar.
 
+### Combos: los pone Commander Spellbook, no nosotros
+
+Cada mazo listo muestra sus combos. `build-mazos.mjs` le manda la lista a
+`find-my-combos` de Commander Spellbook y guarda los que vienen completos
+(`included`), los ocho más populares, con enlace al paso a paso. Es lo que
+respalda el "cómo gana" que sí escribimos a mano.
+
+- **Se descartan los de una sola carta.** Spellbook los lista cuando la otra
+  mitad es "alguna pieza que cumpla tal cosa"; mostrarlos como combo del mazo
+  sería prometer algo que no está completo.
+- **Lo que produce se traduce con un diccionario** (`RESULTADOS`). Lo que no
+  esté ahí sale en inglés, a propósito: mejor eso que inventarle traducción.
+  Al agregar mazos hay que mirar si apareció alguno nuevo.
+- **Si Spellbook no responde, el mazo se publica igual**, sin la sección.
+- Sauron y Y'shtola no tienen ninguno, y está bien: no son mazos de combo.
+
+### Agregar cartas a la revisión y subir archivos
+
+**"Agregar cartas"** suma a la revisión abierta una lista pegada, un archivo o
+un enlace. Si la carta ya estaba —misma impresión, mismo arte— **se suma la
+cantidad** (`fusionar`). La misma carta con otro arte es otra línea, igual que
+en el carrito. La revisión no se esconde mientras llegan las nuevas.
+
+**Se puede subir el `cards.xml` de MPCFill** (o una lista `.txt`). Del XML se
+leen solo los frentes: cada `<card>` trae el id del diseño y en `<slots>`
+cuántas copias son. Los dorsos del archivo se ignoran; acá el dorso se elige en
+el carrito. Tres cosas que no se deducen:
+
+- El XML trae solo ids. El nombre y la miniatura se piden a MPCFill por
+  `POST /api/mpcfill` con la lista de ids (un mazo no cabe en una dirección).
+  La ruta solo manda ids con forma de id de Google Drive.
+- Cada diseño se cruza con Scryfall por nombre para que la línea sea una carta
+  de verdad. **Si Scryfall no la reconoce —tokens, customs— la línea se arma
+  igual** (`cartaSoloMpc`, uid `mtg:mpc-<id>`): lo que se imprime es el archivo
+  de MPCFill. Esas líneas no tienen "otras versiones".
+- Un diseño que ya no existe en MPCFill sale en "no encontradas" con ese
+  motivo, en vez de desaparecer en silencio.
+
 ### Lo que la competencia tiene y acá falta
 
 - **Más mazos listos.** Allá son veinte; acá dieciséis. Sumar otro es una
   línea en `data/mazos/fuentes.json` y sus textos.
-- **Subir el XML de MPCFill.**
 - **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
   de atender por ahí.
 

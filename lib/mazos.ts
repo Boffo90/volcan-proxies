@@ -36,6 +36,14 @@ export type MazoResumen = {
   gameChangers: number;
 };
 
+export type MazoCombo = {
+  /** Id del combo en Commander Spellbook, para enlazarlo. */
+  id: string;
+  cartas: string[];
+  /** Lo que produce, ya en castellano. */
+  produce: string[];
+};
+
 export type Mazo = Omit<MazoResumen, "tokens" | "gameChangers"> & {
   /** Cómo juega, en un párrafo. */
   juega: string;
@@ -48,6 +56,12 @@ export type Mazo = Omit<MazoResumen, "tokens" | "gameChangers"> & {
    */
   fuente: string;
   fuenteUrl: string;
+  /**
+   * Los combos que la lista trae completos, según Commander Spellbook. No los
+   * escribimos nosotros: salen de mandarle el mazo a su buscador al armarlo.
+   * Vacío si el mazo no tiene ninguno (o si Spellbook no respondió ese día).
+   */
+  combos?: MazoCombo[];
   gameChangers: string[];
   tokens: PreconToken[];
   cartas: PreconCarta[];
