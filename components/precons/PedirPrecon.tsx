@@ -15,8 +15,10 @@ import {
 } from "@/lib/pricing";
 
 type Props = {
-  set: string;
-  slug: string;
+  /** Con qué parámetro llega el mazo al importador: un precon o un mazo listo. */
+  clave: "precon" | "mazo";
+  /** "fdc/reign-of-dragons" para un precon, "kinnan" para un mazo listo. */
+  valor: string;
   total: number;
   enEs: number;
   tokens: number;
@@ -30,7 +32,7 @@ type Props = {
  * así un precon y una lista pegada pasan por la misma revisión, y no hay dos
  * pantallas que mantener iguales.
  */
-export default function PedirPrecon({ set, slug, total, enEs, tokens }: Props) {
+export default function PedirPrecon({ clave, valor, total, enEs, tokens }: Props) {
   const router = useRouter();
   const { precios } = usePrecios();
   const [elegido, setFinish] = useState<Finish | null>(null);
@@ -51,7 +53,7 @@ export default function PedirPrecon({ set, slug, total, enEs, tokens }: Props) {
 
   const pedir = () => {
     const p = new URLSearchParams({
-      precon: `${set}/${slug}`,
+      [clave]: valor,
       acabado: finish,
       idioma,
     });

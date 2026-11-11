@@ -1,0 +1,139 @@
+[
+ {
+  "slug": "kinnan",
+  "nombre": "Kinnan — Maná infinito",
+  "formato": "cedh",
+  "arquetipo": "Combo / Midrange",
+  "comandantes": [
+   {
+    "n": "Kinnan, Bonder Prodigy",
+    "id": "63cda4a0-0dff-4edb-ae67-a2b7e2971350"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 88,
+  "tokens": 2,
+  "tierras": 24,
+  "curva": 2.11,
+  "gameChangers": 16
+ },
+ {
+  "slug": "magda",
+  "nombre": "Magda — Enanos y tesoros",
+  "formato": "cedh",
+  "arquetipo": "Combo de artefactos",
+  "comandantes": [
+   {
+    "n": "Magda, Brazen Outlaw",
+    "id": "079e6263-e54c-4899-a336-5315909b9322"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 82,
+  "tokens": 4,
+  "tierras": 27,
+  "curva": 2.18,
+  "gameChangers": 10
+ },
+ {
+  "slug": "blue-farm",
+  "nombre": "Tymna + Kraum — Blue Farm",
+  "formato": "cedh",
+  "arquetipo": "Midrange",
+  "comandantes": [
+   {
+    "n": "Tymna the Weaver",
+    "id": "bc7cbe9b-324e-42b8-94e2-36e91cb32163"
+   },
+   {
+    "n": "Kraum, Ludevic's Opus",
+    "id": "557fcd17-6cb3-414a-b2b1-ea9ae32e5aec"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 80,
+  "tokens": 3,
+  "tierras": 26,
+  "curva": 1.85,
+  "gameChangers": 25
+ },
+ {
+  "slug": "edgar-markov",
+  "nombre": "Edgar Markov — Vampiros",
+  "formato": "b3",
+  "arquetipo": "Aggro / Tribal",
+  "comandantes": [
+   {
+    "n": "Edgar Markov",
+    "id": "a577ba08-0aa8-45be-aa83-d5078770127c"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 5,
+  "tierras": 35,
+  "curva": 2.97,
+  "gameChangers": 1
+ },
+ {
+  "slug": "krenko",
+  "nombre": "Krenko — Goblins",
+  "formato": "b3",
+  "arquetipo": "Tokens / Tribal",
+  "comandantes": [
+   {
+    "n": "Krenko, Mob Boss",
+    "id": "824b2d73-2151-4e5e-9f05-8f63e2bdcaa9"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 96,
+  "tokens": 1,
+  "tierras": 34,
+  "curva": 2.73,
+  "gameChangers": 0
+ },
+ {
+  "slug": "lathril",
+  "nombre": "Lathril — Elfos",
+  "formato": "b3",
+  "arquetipo": "Tribal / Tokens",
+  "comandantes": [
+   {
+    "n": "Lathril, Blade of the Elves",
+    "id": "8d4e5480-a287-4a25-b855-a26dae555b1c"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 2,
+  "tierras": 36,
+  "curva": 2.88,
+  "gameChangers": 0
+ }
+]

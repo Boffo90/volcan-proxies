@@ -43,6 +43,13 @@ export default function PreconsPage() {
             >
               Impórtala acá
             </Link>
+            . ¿Buscas algo más fuerte que un precon?{" "}
+            <Link
+              href="/mazos"
+              className="font-bold text-flame-ink underline underline-offset-2"
+            >
+              Mira los mazos listos
+            </Link>
             .
           </p>
         </header>

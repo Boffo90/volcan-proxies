@@ -118,6 +118,7 @@ export default function NavBar() {
   const navLinks = [
 	{ slug: "catalogo", label: "Catálogo" },
 	{ slug: "precons", label: "Precons" },
+	{ slug: "mazos", label: "Mazos" },
 	{ slug: "importar", label: "Importar lista" },
 	{ slug: "acabados", label: "Acabados" },
 	{ slug: "promos", label: "Promos" },
@@ -206,8 +207,8 @@ export default function NavBar() {
         	)}
       	</div>
 
-      	{/* Ocho enlaces no caben bajo 1280: ahi manda el menu. */}
-      	<div className="hidden xl:flex gap-4 2xl:gap-6 text-sm flex-shrink-0">
+      	{/* Nueve enlaces no caben bajo 1280: ahi manda el menu. A 1280 justo entran apretados, por eso el espacio y la letra crecen recien en 2xl. */}
+      	<div className="hidden xl:flex gap-3 2xl:gap-6 text-[13px] 2xl:text-sm flex-shrink-0">
         	{navLinks.map((n) => (
           	<button
             	key={n.slug}

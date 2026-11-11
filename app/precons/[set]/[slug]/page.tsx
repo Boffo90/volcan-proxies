@@ -171,8 +171,8 @@ export default async function PreconPage({
             </p>
 
             <PedirPrecon
-              set={mazo.set}
-              slug={mazo.slug}
+              clave="precon"
+              valor={`${mazo.set}/${mazo.slug}`}
               total={total}
               enEs={mazo.enEs}
               tokens={mazo.tokens.length}

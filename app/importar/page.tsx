@@ -44,8 +44,14 @@ import {
 } from "@/lib/pricing";
 import FinishButtons from "@/components/FinishButtons";
 import { usePrecios } from "@/hooks/usePrecios";
-import { resolverPrecon, tokensDeLaLista, traerPrecon } from "@/lib/preconImport";
+import {
+  resolverPrecon,
+  tokensDeLaLista,
+  traerMazo,
+  traerPrecon,
+} from "@/lib/preconImport";
 import { rutaPrecon } from "@/lib/precons";
+import { rutaMazo } from "@/lib/mazos";
 import type { MpcCard } from "@/app/api/mpcfill/route";
 
 type CardWithFinish = ImportedCard & {
@@ -165,7 +171,9 @@ export default function ImportarPage() {
 
     const p = new URLSearchParams(window.location.search);
     const [set, slug] = (p.get("precon") ?? "").split("/");
-    if (!set || !slug) {
+    // Un mazo listo llega igual que un precon, con su propio parámetro.
+    const mazoListo = p.get("mazo") ?? "";
+    if ((!set || !slug) && !mazoListo) {
       // Solo al llegar sin mazo: quien viene desde un precon ya eligió qué
       // revisar, y ofrecerle otra lista ahí es estorbar.
       setPendiente(leerBorrador());
@@ -183,13 +191,16 @@ export default function ImportarPage() {
 
     (async () => {
       setLoading(true);
-      const mazo = await traerPrecon(set, slug);
+      const mazo = mazoListo ? await traerMazo(mazoListo) : await traerPrecon(set, slug);
       if (!mazo) {
         setErrorPrecon("No encontramos ese mazo. Puedes pegar la lista acá abajo.");
         setLoading(false);
         return;
       }
-      setPrecon({ nombre: mazo.nombre, ruta: rutaPrecon(mazo) });
+      setPrecon({
+        nombre: mazo.nombre,
+        ruta: mazoListo ? rutaMazo({ slug: mazoListo }) : rutaPrecon({ set, slug }),
+      });
       setCards(await resolverPrecon(mazo, idiomaPedido, conTokens));
       // Vengan o no: en un precon los tokens se deciden en su página.
       setTokensListos(true);

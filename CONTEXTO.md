@@ -375,11 +375,41 @@ un identificador de cliente autorizado). Mientras tanto, a quien pega un enlace
 de Moxfield se le explica cómo exportar. La ruta solo va a buscar a los sitios
 de su lista y solo con el id que saca del enlace: no es un proxy abierto.
 
+### Mazos listos: listas nuestras, no productos
+
+`/mazos` ofrece mazos armados por nosotros para cEDH y Bracket 3, cada uno con
+"cómo juega" y "cómo gana". Son la respuesta a lo mismo en mtgproxis.cl.
+
+**La fuente es un `.txt` por mazo en `data/mazos/`**, que se edita a mano: una
+cabecera (`nombre`, `formato` cedh|b3, `arquetipo`, `comandantes`, `juega`, y
+una o más líneas `gana`), una línea `---` y la lista. El nombre del archivo es
+la dirección: `kinnan.txt` → `/mazos/kinnan`. Agregar un mazo es crear el
+archivo y correr `node scripts/build-mazos.mjs` (`--check` solo valida).
+
+**Una lista que no cumple las reglas no se escribe.** El script comprueba
+contra Scryfall que sean 100 cartas, sin repetidas salvo básicas, todas dentro
+de la identidad de color del comandante y legales en Commander, y que un
+Bracket 3 no pase de 3 Game Changers (Scryfall marca cada carta con
+`game_changer`, así que la lista oficial no se copia a mano). Las primeras
+versiones de las seis listas fallaron por conteo y una por color: sin el
+validador habrían salido así.
+
+**Las seis primeras las propuso el asistente, no Seba**, y están validadas en
+legalidad pero no en mesa: Kinnan, Magda y Blue Farm (cEDH); Krenko, Lathril y
+Edgar Markov (Bracket 3). Cuáles se ofrecen y qué se dice de cada una es
+decisión de negocio; conviene que alguien que juegue el formato las revise
+antes de promocionarlas.
+
+Salen con la misma forma de un precon (`public/mazos/<slug>.json`), y por eso
+reusan la lista, el panel de compra (`PedirPrecon` recibe `clave="mazo"`) y la
+revisión del importador (`/importar?mazo=kinnan`). La versión en español de
+cada carta es siempre "otra edición": acá no hay una impresión del producto
+que respetar.
+
 ### Lo que la competencia tiene y acá falta
 
-- **Mazos listos** (cEDH y Bracket 3, con plan de juego y combos). No es
-  código, es contenido: qué mazos se ofrecen y qué se dice de cada uno lo
-  decide Seba. La forma de datos de un precon sirve tal cual.
+- **Más mazos listos.** Allá son veinte; acá seis, propuestos y sin revisar
+  por un jugador del formato.
 - **Subir el XML de MPCFill.**
 - **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
   de atender por ahí.

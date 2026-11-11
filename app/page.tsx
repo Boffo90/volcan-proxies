@@ -30,6 +30,7 @@ import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
 // Un resumen chico de los precons, no el índice entero: la portada solo
 // necesita cuántos son y tres carátulas.
 import destacados from "@/data/precons-destacados.json";
+import { MAZOS, etiquetaFormato } from "@/lib/mazos";
 
 export default function Home() {
   const router = useRouter();
@@ -203,7 +204,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* POR DÓNDE EMPEZAR — tres caminos según lo que el visitante ya tiene.
+      {/* POR DÓNDE EMPEZAR — cuatro caminos según lo que el visitante ya tiene.
           Antes acá había un solo banner hacia el importador, que le sirve al
           que llega con su lista hecha y a nadie más. El que recién empieza no
           tiene lista: necesita que le muestren mazos. */}
@@ -214,12 +215,12 @@ export default function Home() {
               Elige por dónde <span className="text-lava">empezar</span>
             </h2>
             <p className="text-ink-muted">
-              Tres caminos, el mismo final: tu mazo impreso en la puerta de tu
+              Cuatro caminos, el mismo final: tu mazo impreso en la puerta de tu
               casa.
             </p>
           </Reveal>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
             <Reveal>
               <Link
                 href="/precons"
@@ -261,7 +262,50 @@ export default function Home() {
               </Link>
             </Reveal>
 
-            <Reveal delay={0.08}>
+            <Reveal delay={0.06}>
+              <Link
+                href="/mazos"
+                className="block-card glow-hover h-full flex flex-col overflow-hidden"
+              >
+                {/* Los comandantes de los mazos, con su formato encima. */}
+                <div className="relative h-44 bg-surface-ink border-b-2 border-ink overflow-hidden">
+                  {MAZOS.slice(0, 3).map((m, i) => (
+                    <div
+                      key={m.slug}
+                      className="absolute top-5 w-[118px] aspect-[5/7] rounded-lg bg-cover bg-center border-2 border-ink shadow-[3px_4px_0_rgba(0,0,0,0.5)]"
+                      style={{
+                        backgroundImage: `url(https://cards.scryfall.io/normal/front/${m.comandantes[0].id[0]}/${m.comandantes[0].id[1]}/${m.comandantes[0].id}.jpg)`,
+                        left: `calc(50% - 59px + ${(i - 1) * 78}px)`,
+                        transform: `rotate(${(i - 1) * 9}deg) translateY(${
+                          i === 1 ? -4 : 8
+                        }px)`,
+                        zIndex: i === 1 ? 2 : 1,
+                      }}
+                    />
+                  ))}
+                  <span className="badge absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-mana-w text-ink text-[11px] px-2.5 py-1 whitespace-nowrap">
+                    {[...new Set(MAZOS.map((m) => etiquetaFormato(m.formato)))].join(" · ")}
+                  </span>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-flame-ink mb-1">
+                    ¿Quieres competir?
+                  </p>
+                  <h3 className="font-display font-extrabold text-2xl text-ink mb-2">
+                    Mazos listos
+                  </h3>
+                  <p className="text-sm text-ink-muted mb-4">
+                    Listas armadas para cEDH y Bracket 3, con cómo juegan y
+                    cómo ganan explicado sin jerga.
+                  </p>
+                  <span className="mt-auto font-bold text-flame-ink inline-flex items-center gap-1.5">
+                    Ver los mazos <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+
+            <Reveal delay={0.12}>
               <Link
                 href="/importar"
                 className="block-card glow-hover h-full flex flex-col overflow-hidden"
@@ -293,7 +337,7 @@ export default function Home() {
               </Link>
             </Reveal>
 
-            <Reveal delay={0.16}>
+            <Reveal delay={0.18}>
               <Link
                 href="/catalogo"
                 className="block-card glow-hover h-full flex flex-col overflow-hidden"

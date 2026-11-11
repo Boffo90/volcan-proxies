@@ -3,6 +3,7 @@ import { aCarta } from "./catalogo/mtg";
 import type { IdiomaId } from "./catalogo/idiomas";
 import type { ImportedCard } from "./deckParser";
 import { archivoPrecon, type Precon } from "./precons";
+import { archivoMazo } from "./mazos";
 
 /** El archivo del mazo, o null si esa dirección no es de ninguno. */
 export async function traerPrecon(set: string, slug: string): Promise<Precon | null> {
@@ -11,6 +12,23 @@ export async function traerPrecon(set: string, slug: string): Promise<Precon | n
     const res = await fetch(archivoPrecon(set, slug));
     if (!res.ok) return null;
     return (await res.json()) as Precon;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Un mazo listo, con la misma forma: comparten cartas y tokens, que es todo
+ * lo que usa `resolverPrecon`.
+ */
+export async function traerMazo(
+  slug: string
+): Promise<Pick<Precon, "nombre" | "cartas" | "tokens"> | null> {
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
+  try {
+    const res = await fetch(archivoMazo(slug));
+    if (!res.ok) return null;
+    return await res.json();
   } catch {
     return null;
   }
@@ -28,7 +46,7 @@ export async function traerPrecon(set: string, slug: string): Promise<Precon | n
  * mazo llega en inglés y el cliente lo ve tal cual en la revisión.
  */
 export async function resolverPrecon(
-  mazo: Precon,
+  mazo: Pick<Precon, "cartas" | "tokens">,
   idioma: IdiomaId,
   conTokens: boolean
 ): Promise<ImportedCard[]> {

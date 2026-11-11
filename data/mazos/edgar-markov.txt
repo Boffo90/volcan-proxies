@@ -1,0 +1,97 @@
+nombre: Edgar Markov — Vampiros
+formato: b3
+arquetipo: Aggro / Tribal
+comandantes: Edgar Markov
+juega: Edgar crea un vampiro cada vez que lanzas otro, y lo hace desde la zona de mando, sin necesidad de bajarlo. El mazo juega vampiros baratos desde el turno uno, los hace crecer con señores y drena a la mesa cada vez que una criatura muere.
+gana: Atacar ancho con señores como Captivating Vampire y Stromkirk Captain, con Shared Animosity para el golpe final.
+gana: Blood Artist, Cruel Celebrant y Sanctum Seeker: cada ataque y cada muerte drenan a toda la mesa.
+gana: Exquisite Blood con Vito o Sanguine Bond drena en cadena; llega tarde y la mesa lo ve venir, así que es un cierre y no un atajo.
+---
+1 Vampire of the Dire Moon
+1 Indulgent Aristocrat
+1 Knight of the Ebon Legion
+1 Viscera Seer
+1 Vicious Conquistador
+1 Skymarcher Aspirant
+1 Legion Lieutenant
+1 Blood Artist
+1 Cruel Celebrant
+1 Adanto Vanguard
+1 Stromkirk Captain
+1 Captivating Vampire
+1 Bloodline Keeper
+1 Drana, Liberator of Malakir
+1 Olivia Voldaren
+1 Olivia, Crimson Bride
+1 Sorin, Lord of Innistrad
+1 Sanctum Seeker
+1 Elenda, the Dusk Rose
+1 Mavren Fein, Dusk Apostle
+1 Champion of Dusk
+1 Twilight Prophet
+1 Vito, Thorn of the Dusk Rose
+1 Markov Baron
+1 Stromkirk Condemned
+1 Anowon, the Ruin Sage
+1 Patron of the Vein
+1 Bloodghast
+1 Welcoming Vampire
+1 Cordial Vampire
+1 Forerunner of the Legion
+1 Yahenni, Undying Partisan
+1 Vampire Nighthawk
+1 Dusk Legion Zealot
+1 Sol Ring
+1 Arcane Signet
+1 Orzhov Signet
+1 Rakdos Signet
+1 Boros Signet
+1 Talisman of Hierarchy
+1 Talisman of Indulgence
+1 Skullclamp
+1 Lightning Greaves
+1 Swiftfoot Boots
+1 Vanquisher's Banner
+1 Herald's Horn
+1 Shared Animosity
+1 Exquisite Blood
+1 Sanguine Bond
+1 Stensia Masquerade
+1 Radiant Destiny
+1 Swords to Plowshares
+1 Path to Exile
+1 Anguished Unmaking
+1 Vindicate
+1 Mortify
+1 Kolaghan's Command
+1 Boros Charm
+1 Teferi's Protection
+1 Read the Bones
+1 Night's Whisper
+1 New Blood
+1 Blasphemous Act
+1 Kindred Dominance
+1 Command Tower
+1 Path of Ancestry
+1 Unclaimed Territory
+1 Secluded Courtyard
+1 Godless Shrine
+1 Blood Crypt
+1 Sacred Foundry
+1 Isolated Chapel
+1 Dragonskull Summit
+1 Clifftop Retreat
+1 Caves of Koilos
+1 Sulfurous Springs
+1 Battlefield Forge
+1 Nomad Outpost
+1 Savai Triome
+1 Smoldering Marsh
+1 Canyon Slough
+1 Exotic Orchard
+1 Voldaren Estate
+1 Bojuka Bog
+1 Rogue's Passage
+7 Swamp
+4 Plains
+3 Mountain

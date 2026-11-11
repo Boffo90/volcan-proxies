@@ -1,0 +1,89 @@
+nombre: Lathril — Elfos
+formato: b3
+arquetipo: Tribal / Tokens
+comandantes: Lathril, Blade of the Elves
+juega: Elfos que dan maná, elfos que hacen crecer a los demás y una comandante que crea más elfos cada vez que conecta. La mesa se llena rápido y cualquier efecto que pida girar diez elfos se cumple solo. Verde y negro, con buena recuperación después de un barrido.
+gana: Lathril gira diez elfos: cada oponente pierde 10 vidas y tú ganas 10. Dos activaciones suelen bastar.
+gana: Una mesa ancha con Elvish Archdruid y Imperious Perfect, más Overwhelming Stampede para pasar por encima.
+gana: Shaman of the Pack al entrar, con la mesa llena, cierra contra quien esté más bajo.
+---
+1 Llanowar Elves
+1 Elvish Mystic
+1 Fyndhorn Elves
+1 Elves of Deep Shadow
+1 Priest of Titania
+1 Elvish Archdruid
+1 Circle of Dreams Druid
+1 Marwyn, the Nurturer
+1 Wirewood Channeler
+1 Leaf-Crowned Visionary
+1 Elvish Visionary
+1 Elvish Warmaster
+1 Dwynen's Elite
+1 Imperious Perfect
+1 Elvish Champion
+1 Elvish Clancaller
+1 Dwynen, Gilt-Leaf Daen
+1 Canopy Tactician
+1 Ezuri, Renegade Leader
+1 Shaman of the Pack
+1 Lys Alana Huntmaster
+1 Jagged-Scar Archers
+1 Timberwatch Elf
+1 Wellwisher
+1 Wirewood Symbiote
+1 Reclamation Sage
+1 Beast Whisperer
+1 Miara, Thorn of the Glade
+1 Elderfang Venom
+1 Tyvar the Bellicose
+1 Rhys the Exiled
+1 Abomination of Llanowar
+1 Nullmage Shepherd
+1 Elvish Harbinger
+1 Realmwalker
+1 Farhaven Elf
+1 Wood Elves
+1 Sol Ring
+1 Arcane Signet
+1 Golgari Signet
+1 Talisman of Resilience
+1 Skullclamp
+1 Lightning Greaves
+1 Swiftfoot Boots
+1 Heirloom Blade
+1 Vanquisher's Banner
+1 Herald's Horn
+1 Coat of Arms
+1 Elven Ambush
+1 Elvish Promenade
+1 Harvest Season
+1 Overwhelming Stampede
+1 Return of the Wildspeaker
+1 Harmonize
+1 Eyeblight Massacre
+1 Putrefy
+1 Assassin's Trophy
+1 Beast Within
+1 Golgari Charm
+1 Heroic Intervention
+1 Pact of the Serpent
+1 Beastmaster Ascension
+1 Guardian Project
+1 Command Tower
+1 Overgrown Tomb
+1 Woodland Cemetery
+1 Llanowar Wastes
+1 Golgari Rot Farm
+1 Temple of Malady
+1 Jungle Hollow
+1 Tainted Wood
+1 Path of Ancestry
+1 Unclaimed Territory
+1 Secluded Courtyard
+1 Wirewood Lodge
+1 Bojuka Bog
+1 Evolving Wilds
+1 Terramorphic Expanse
+15 Forest
+6 Swamp
