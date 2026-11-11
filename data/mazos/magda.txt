@@ -4,92 +4,93 @@ arquetipo: Combo de artefactos
 comandantes: Magda, Brazen Outlaw
 juega: Cada enano que se gira deja un Tesoro, y cinco Tesoros sacrificados a Magda traen cualquier artefacto o dragón de la biblioteca directo a la mesa. Es un mazo mono rojo barato de pilotar y difícil de frenar: el motor es el comandante, que cuesta dos manás.
 gana: Magda busca Clock of Omens: con dos Tesoros se endereza un enano, que al girarse crea otro Tesoro. Tesoros infinitos.
-gana: Con Tesoros infinitos, Magda trae cada dragón y artefacto del mazo; Hellkite Tyrant o un golpe con todo cierran la partida.
+gana: Con Tesoros infinitos, Magda trae cada artefacto y dragón del mazo.
 gana: Maskwood Nexus convierte todas tus criaturas en enanos y multiplica los Tesoros.
+fuente: 1.º lugar en Mulligan's Championship Series - January w/ Guaranteed Tundra (73 jugadores, enero de 2026), vía edhtop16.com
+fuenteUrl: https://edhtop16.com/tournament/mulligans-championship-series-january/decklist/oQYF7Qdfq0atPPZx4P7S0if41Uc2
 ---
-1 Universal Automaton
+1 Abrade
 1 Adaptive Automaton
-1 Metallic Mimic
-1 Dwarven Recruiter
-1 Dwarven Blastminer
-1 Dwarven Miner
-1 Seven Dwarves
-1 Torbran, Thane of Red Fell
-1 Vault Robber
-1 Axgard Cavalry
-1 Dwarven Bloodboiler
-1 Erebor Flamesmith
+1 Ancient Tomb
+1 Arena of Glory
+1 Barkform Harvester
+1 Battered Golem
+1 Blasphemous Act
+1 Bloodfire Dwarf
+1 Bloodline Pretender
+1 Bottle-Cap Blast
+1 Cavern of Souls
+1 Chrome Mox
+1 Clock of Omens
+1 Clown Car
+1 Command Beacon
+1 Cursed Mirror
+1 Dead // Gone
+1 Deflecting Swat
+1 Dualcaster Mage
+1 Dwarven Armorer
+1 Dwarven Grunt
 1 Dwarven Scorcher
-1 Imperial Recruiter
+1 Eriette's Tempting Apple
+1 Flare of Duplication
+1 Flywheel Racer
+1 Galvanic Blast
+1 Gemstone Caverns
+1 Ghostfire Slice
 1 Goblin Engineer
 1 Goblin Welder
-1 Simian Spirit Guide
-1 Professional Face-Breaker
-1 Ragavan, Nimble Pilferer
-1 Hellkite Tyrant
-1 Goldspan Dragon
-1 Ancient Copper Dragon
-1 Terror of the Peaks
-1 Xorn
-1 Liberator, Urza's Battlethopter
-1 Clock of Omens
-1 Maskwood Nexus
-1 Sol Ring
-1 Mana Vault
-1 Chrome Mox
-1 Mox Diamond
-1 Mox Opal
-1 Mox Amber
-1 Lotus Petal
-1 Lion's Eye Diamond
-1 Grim Monolith
-1 Arcane Signet
-1 Fellwar Stone
-1 Ruby Medallion
-1 Springleaf Drum
-1 Paradise Mantle
-1 Relic of Legends
-1 Cloudstone Curio
-1 Staff of Domination
-1 Aetherflux Reservoir
-1 The One Ring
-1 Sensei's Divining Top
-1 Lightning Greaves
-1 Defense Grid
-1 Pithing Needle
-1 Grafdigger's Cage
-1 Cursed Totem
-1 Red Elemental Blast
-1 Pyroblast
-1 Deflecting Swat
-1 Tibalt's Trickery
-1 Lightning Bolt
-1 Abrade
-1 Chaos Warp
-1 Untimely Malfunction
-1 Rite of Flame
-1 Pyretic Ritual
-1 Desperate Ritual
+1 God-Pharaoh's Statue
+1 Gogo, Mysterious Mime
+1 Guild Artisan
+1 Heat Shimmer
+1 High-Speed Hoverbike
+1 Holdout Settlement
 1 Jeska's Will
-1 Gamble
-1 Wheel of Fortune
-1 Reforge the Soul
-1 Faithless Looting
-1 Vandalblast
-1 Underworld Breach
-1 Blood Moon
-1 Magus of the Moon
-1 Ancient Tomb
-1 Gemstone Caverns
-1 City of Traitors
-1 Cavern of Souls
-1 Urza's Saga
-1 Inventors' Fair
-1 Great Furnace
-1 Darksteel Citadel
+1 Kavaron, Memorial World
+1 Knuckles the Echidna
+1 Liberated Dwarf
+1 Lifecraft Engine
+1 Lightning Bolt
+1 Lotus Petal
+1 Magda, the Hoardmaster
+1 Mana Vault
+1 Maskwood Nexus
+1 Metallic Mimic
+1 Meteor Sword
+1 Mishra's Workshop
+1 Molten Duplication
+15 Mountain
+1 Mox Opal
+1 Mutavault
+1 Peter Parker's Camera
+1 Plaza of Heroes
+1 Portal to Phyrexia
+1 Professional Face-Breaker
+1 Pyroblast
+1 Pyrokinesis
+1 Ragavan, Nimble Pilferer
+1 Realm-Scorcher Hellkite
+1 Redirect Lightning
+1 Roaming Throne
+1 Sculpting Steel
+1 Siege Smash
+1 Simian Spirit Guide
+1 Smuggler's Copter
+1 Sol Ring
+1 Spark Mage
+1 Springleaf Drum
+1 Stoke the Flames
+1 Sudden Shock
+1 Survivors' Encampment
+1 The Mycosynth Gardens
+1 The One Ring
+1 Three Tree Mascot
+1 Tibalt's Trickery
 1 Treasure Vault
-1 War Room
-1 Sokenzan, Crucible of Defiance
-1 Castle Embereth
-1 Hanweir Battlements
-14 Mountain
+1 Universal Automaton
+1 Unlicensed Hearse
+1 Untimely Malfunction
+1 Urza's Saga
+1 Volatile Fault
+1 Xorn
+1 Zoyowa's Justice

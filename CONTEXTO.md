@@ -375,30 +375,58 @@ un identificador de cliente autorizado). Mientras tanto, a quien pega un enlace
 de Moxfield se le explica cómo exportar. La ruta solo va a buscar a los sitios
 de su lista y solo con el id que saca del enlace: no es un proxy abierto.
 
-### Mazos listos: listas nuestras, no productos
+### Mazos listos: listas que se juegan, no inventadas
 
-`/mazos` ofrece mazos armados por nosotros para cEDH y Bracket 3, cada uno con
-"cómo juega" y "cómo gana". Son la respuesta a lo mismo en mtgproxis.cl.
+`/mazos` ofrece mazos de cEDH y Bracket 3, cada uno con "cómo juega" y "cómo
+gana". Son la respuesta a lo mismo en mtgproxis.cl.
 
-**La fuente es un `.txt` por mazo en `data/mazos/`**, que se edita a mano: una
-cabecera (`nombre`, `formato` cedh|b3, `arquetipo`, `comandantes`, `juega`, y
-una o más líneas `gana`), una línea `---` y la lista. El nombre del archivo es
-la dirección: `kinnan.txt` → `/mazos/kinnan`. Agregar un mazo es crear el
-archivo y correr `node scripts/build-mazos.mjs` (`--check` solo valida).
+**Las listas no las escribe nadie de acá.** La primera versión la armó el
+asistente de memoria y Seba pidió sacarlas de donde se juegan:
 
-**Una lista que no cumple las reglas no se escribe.** El script comprueba
-contra Scryfall que sean 100 cartas, sin repetidas salvo básicas, todas dentro
-de la identidad de color del comandante y legales en Commander, y que un
-Bracket 3 no pase de 3 Game Changers (Scryfall marca cada carta con
-`game_changer`, así que la lista oficial no se copia a mano). Las primeras
-versiones de las seis listas fallaron por conteo y una por color: sin el
-validador habrían salido así.
+- **cEDH: edhtop16.com.** Para cada comandante, la lista mejor ubicada del
+  último año en torneos de 50 jugadores o más (el orden por defecto de su
+  página). Las ocho de hoy son primeros lugares.
+- **Bracket 3: EDHREC.** El mazo promedio de ese comandante en Bracket 3
+  ("upgraded"), calculado sobre miles de mazos.
 
-**Las seis primeras las propuso el asistente, no Seba**, y están validadas en
-legalidad pero no en mesa: Kinnan, Magda y Blue Farm (cEDH); Krenko, Lathril y
-Edgar Markov (Bracket 3). Cuáles se ofrecen y qué se dice de cada una es
-decisión de negocio; conviene que alguien que juegue el formato las revise
-antes de promocionarlas.
+Qué comandantes hay lo dice `data/mazos/fuentes.json`; se eligieron los más
+jugados de cada fuente. Son dos pasos:
+
+1. `node scripts/fetch-mazos.mjs` trae las listas a `data/mazos/<slug>.txt`
+   y anota de dónde salió cada una (`fuente:` y `fuenteUrl:`). Con un slug
+   de argumento trae solo ese.
+2. `node scripts/build-mazos.mjs` las valida y arma lo que usa el sitio
+   (`--check` solo valida).
+
+**Refrescar es volver a correr los dos.** El metajuego cambia: una lista de
+torneo de hace un año deja de ser "la que gana".
+
+**Lo nuestro son el nombre, el arquetipo y los textos.** `fetch-mazos` solo
+reescribe la lista y las líneas de fuente; el resto de la cabecera se conserva.
+Un mazo nuevo nace con esos campos vacíos y `build-mazos` se niega a
+publicarlo hasta que alguien los escriba.
+
+**Ojo al refrescar: el "cómo gana" nombra cartas.** Si la lista nueva ya no
+trae una, el texto queda prometiendo algo que el mazo no tiene. El validador lo
+detecta solo cuando la carta sigue en algún otro mazo; hay que releer los
+textos del mazo que cambió. Pasó al cambiar de fuente: la lista de Blue Farm
+que ganó no lleva Thassa's Oracle y la de Kinnan no lleva Isochron Scepter,
+que eran justo lo que decían los textos escritos de memoria.
+
+**Cómo se leen esas fuentes, y el límite.** edhtop16 es una app que trae sus
+datos incrustados en la página; de ahí se lee el resultado y sus cartas. Su API
+GraphQL solo acepta consultas propias y no se intenta usar. EDHREC publica el
+mazo promedio como JSON. Los dos `robots.txt` lo permiten, el script se
+identifica y hace una petición por segundo. **Si alguno empieza a rechazar, no
+se disfraza el cliente**: es la misma regla que con Moxfield. cedhstats no
+respondió y no se usa. Cada página enlaza a la lista original.
+
+**Una lista que no cumple las reglas no se escribe.** Contra Scryfall: 100
+cartas, sin repetidas salvo básicas y las que su propio texto permite (los
+siete Nazgûl de Sauron), dentro de la identidad de color, legales en Commander,
+y un Bracket 3 con 3 Game Changers como máximo (Scryfall marca cada carta con
+`game_changer`). Las cartas de dos caras se piden por su primera mitad: con
+el nombre completo "A // B" la búsqueda por lote no las encuentra.
 
 Salen con la misma forma de un precon (`public/mazos/<slug>.json`), y por eso
 reusan la lista, el panel de compra (`PedirPrecon` recibe `clave="mazo"`) y la
@@ -408,8 +436,8 @@ que respetar.
 
 ### Lo que la competencia tiene y acá falta
 
-- **Más mazos listos.** Allá son veinte; acá seis, propuestos y sin revisar
-  por un jugador del formato.
+- **Más mazos listos.** Allá son veinte; acá dieciséis. Sumar otro es una
+  línea en `data/mazos/fuentes.json` y sus textos.
 - **Subir el XML de MPCFill.**
 - **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
   de atender por ahí.

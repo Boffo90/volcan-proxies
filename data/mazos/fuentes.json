@@ -1,0 +1,19 @@
+[
+  { "slug": "blue-farm", "fuente": "edhtop16", "comandante": "Kraum, Ludevic's Opus / Tymna the Weaver" },
+  { "slug": "kinnan", "fuente": "edhtop16", "comandante": "Kinnan, Bonder Prodigy" },
+  { "slug": "rograkh-thrasios", "fuente": "edhtop16", "comandante": "Rograkh, Son of Rohgahh / Thrasios, Triton Hero" },
+  { "slug": "rograkh-silas", "fuente": "edhtop16", "comandante": "Rograkh, Son of Rohgahh / Silas Renn, Seeker Adept" },
+  { "slug": "sisay", "fuente": "edhtop16", "comandante": "Sisay, Weatherlight Captain" },
+  { "slug": "thrasios-tymna", "fuente": "edhtop16", "comandante": "Thrasios, Triton Hero / Tymna the Weaver" },
+  { "slug": "vivi", "fuente": "edhtop16", "comandante": "Vivi Ornitier" },
+  { "slug": "magda", "fuente": "edhtop16", "comandante": "Magda, Brazen Outlaw" },
+
+  { "slug": "yshtola", "fuente": "edhrec", "edhrec": "yshtola-nights-blessed" },
+  { "slug": "edgar-markov", "fuente": "edhrec", "edhrec": "edgar-markov" },
+  { "slug": "ur-dragon", "fuente": "edhrec", "edhrec": "the-ur-dragon" },
+  { "slug": "atraxa", "fuente": "edhrec", "edhrec": "atraxa-praetors-voice" },
+  { "slug": "krenko", "fuente": "edhrec", "edhrec": "krenko-mob-boss" },
+  { "slug": "sauron", "fuente": "edhrec", "edhrec": "sauron-the-dark-lord" },
+  { "slug": "pantlaza", "fuente": "edhrec", "edhrec": "pantlaza-sun-favored" },
+  { "slug": "lathril", "fuente": "edhrec", "edhrec": "lathril-blade-of-the-elves" }
+]

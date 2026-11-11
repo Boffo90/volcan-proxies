@@ -93,7 +93,11 @@ async function resolver(nombres) {
     const res = await pedir(`${SCRYFALL}/cards/collection`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ identifiers: lote.map((name) => ({ name })) }),
+      // Una carta de dos caras o partida ("Dead // Gone") se pide por la
+      // primera mitad: con el nombre completo Scryfall no la encuentra acá.
+      body: JSON.stringify({
+        identifiers: lote.map((name) => ({ name: name.split(" // ")[0] })),
+      }),
     });
     await espera(150);
     for (const c of res?.data ?? []) {
@@ -105,7 +109,20 @@ async function resolver(nombres) {
     }
     for (const nf of res?.not_found ?? []) faltan.push(nf.name);
   }
-  return { porNombre, faltan };
+  // Las que no aparecieron por nombre exacto, una por una y por aproximación:
+  // las fuentes no siempre escriben igual los apóstrofos y las tildes.
+  const sinResolver = [];
+  for (const nombre of faltan) {
+    const c = await pedir(
+      `${SCRYFALL}/cards/named?fuzzy=${encodeURIComponent(nombre)}`
+    );
+    await espera(150);
+    if (c?.name) {
+      porNombre.set(plano(nombre), c);
+      porNombre.set(plano(c.name), c);
+    } else sinResolver.push(nombre);
+  }
+  return { porNombre, faltan: sinResolver };
 }
 
 function grupo(typeLine) {
@@ -122,6 +139,8 @@ function grupo(typeLine) {
 }
 
 const esBasica = (c) => (c.type_line ?? "").includes("Basic");
+// Nazgûl, Relentless Rats y compañía: su propio texto permite repetirlas.
+const admiteCopias = (c) => /A deck can have (any number of|up to \w+) cards named/.test(c.oracle_text ?? "");
 const imprimible = (c) => c.image_status !== "placeholder" && c.image_status !== "missing";
 
 /** oracle_id -> id de una impresión en español. */
@@ -202,7 +221,7 @@ for (const m of fuentes) {
     const clave = plano(sc.name);
     if (vistas.has(clave)) problemas.push(`repetida: ${sc.name}`);
     vistas.add(clave);
-    if (c.q > 1 && !esBasica(sc)) problemas.push(`${c.q} copias de ${sc.name}`);
+    if (c.q > 1 && !esBasica(sc) && !admiteCopias(sc)) problemas.push(`${c.q} copias de ${sc.name}`);
     const fuera = (sc.color_identity ?? []).filter((x) => !identidad.has(x));
     if (fuera.length) problemas.push(`fuera de color: ${sc.name} (${fuera.join("")})`);
     if (sc.legalities?.commander !== "legal") {
@@ -212,6 +231,22 @@ for (const m of fuentes) {
   for (const c of comandantes) {
     if (c && c.legalities?.commander !== "legal") {
       problemas.push(`comandante no legal: ${c.name}`);
+    }
+  }
+
+  // Un "cómo gana" que nombra una carta que el mazo no trae es una promesa
+  // falsa. Las listas se refrescan desde su fuente y pueden perderla.
+  const enLista = new Set(
+    [...m.comandantes, ...m.cartas.map((c) => c.n)].flatMap((n) => {
+      const sc = de(n);
+      return sc ? [sc.name, ...(sc.card_faces ?? []).map((f) => f.name)] : [];
+    })
+  );
+  for (const g of m.gana) {
+    for (const [nombre] of g.matchAll(/[A-Z][\w'’-]+(?:,? (?:of|the|to|and|de|[A-Z][\w'’-]+))*/g)) {
+      const limpio = nombre.replace(/[,.]$/, "");
+      const sc = porNombre.get(plano(limpio));
+      if (sc && !enLista.has(sc.name)) problemas.push(`"gana" nombra ${sc.name}, que no está en la lista`);
     }
   }
 
@@ -332,7 +367,17 @@ for (const { m, comandantes, gameChangers, tierras, total } of armados) {
   indice.push(resumen);
   await writeFile(
     path.join(dirSalida, m.slug + ".json"),
-    JSON.stringify({ ...resumen, juega: m.juega, gana: m.gana, gameChangers, tokens, cartas })
+    JSON.stringify({
+      ...resumen,
+      juega: m.juega,
+      gana: m.gana,
+      // De dónde salió la lista, para decirlo en la página.
+      fuente: m.fuente ?? "",
+      fuenteUrl: m.fuenteUrl ?? "",
+      gameChangers,
+      tokens,
+      cartas,
+    })
   );
 }
 

@@ -32,8 +32,8 @@ export default function MazosPage() {
             Mazos <span className="text-lava">listos</span>
           </h1>
           <p className="text-lg text-ink-muted">
-            Mazos completos de Commander, con su plan de juego y cómo ganan
-            explicado sin jerga. Elige uno y te lo imprimimos entero: antes de
+            Los mazos que más se juegan y más ganan, con su plan de juego y
+            cómo cierran la partida explicado sin jerga. Elige uno y te lo imprimimos entero: antes de
             pagar puedes quitar las cartas que ya tienes y cambiar el arte de
             las que quieras.
           </p>
@@ -104,9 +104,10 @@ export default function MazosPage() {
         })}
 
         <p className="text-xs text-ink-faint max-w-3xl">
-          Listas armadas por Volcán Proxies a partir de lo que se juega en cada
-          formato; no son productos oficiales. Lo que imprimimos son proxies
-          para jugar, no cartas oficiales.
+          Las listas cEDH salen de resultados de torneo publicados en
+          edhtop16.com y las de Bracket 3 del mazo promedio de EDHREC; cada
+          mazo enlaza a su lista original. No son productos oficiales, y lo que
+          imprimimos son proxies para jugar, no cartas oficiales.
         </p>
       </section>
 

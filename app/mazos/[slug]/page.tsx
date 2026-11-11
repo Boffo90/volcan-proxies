@@ -199,6 +199,22 @@ export default async function MazoPage({
           </div>
         </section>
 
+        {mazo.fuente ? (
+          <p className="mt-6 text-sm text-ink-muted">
+            <b className="text-ink">De dónde sale esta lista:</b> {mazo.fuente}.{" "}
+            {mazo.fuenteUrl ? (
+              <a
+                href={mazo.fuenteUrl}
+                target="_blank"
+                rel="noopener nofollow"
+                className="font-bold text-flame-ink underline underline-offset-2"
+              >
+                Ver la lista original
+              </a>
+            ) : null}
+          </p>
+        ) : null}
+
         {mazo.gameChangers.length > 0 ? (
           <section className="mt-8">
             <h2 className="font-display font-extrabold text-xl text-ink mb-1">
@@ -261,8 +277,8 @@ export default async function MazoPage({
           <Link href="/mazos" className="font-bold text-flame-ink hover:underline">
             ← Todos los mazos
           </Link>{" "}
-          · Lista armada por Volcán Proxies, no es un producto oficial. Lo que
-          imprimimos son proxies para jugar, no cartas oficiales.
+          · No es un producto oficial. Lo que imprimimos son proxies para
+          jugar, no cartas oficiales.
         </p>
       </article>
 

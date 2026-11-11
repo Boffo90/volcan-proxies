@@ -1,7 +1,10 @@
 /**
- * Los "mazos listos": listas armadas por nosotros, no productos oficiales.
+ * Los "mazos listos": listas que se juegan de verdad, no productos oficiales.
  *
- * Las fuentes son los .txt de `data/mazos/`, que se editan a mano, y
+ * Las cEDH son la lista mejor ubicada de cada comandante en torneos grandes
+ * del último año (edhtop16); las de Bracket 3, el mazo promedio de EDHREC.
+ * `scripts/fetch-mazos.mjs` las trae a los .txt de `data/mazos/`, donde el
+ * nombre y los textos de "juega" y "gana" sí son nuestros, y
  * `scripts/build-mazos.mjs` las valida y las convierte en:
  *
  *   data/mazos-index.json        el listado (este módulo lo importa)
@@ -38,6 +41,13 @@ export type Mazo = Omit<MazoResumen, "tokens" | "gameChangers"> & {
   juega: string;
   /** Cómo gana, una línea por vía. */
   gana: string[];
+  /**
+   * De dónde salió la lista: el resultado de torneo (edhtop16) o el mazo
+   * promedio (EDHREC). Se muestra en la página; no es decoración, es lo que
+   * respalda que la lista sea la que se juega y no una inventada.
+   */
+  fuente: string;
+  fuenteUrl: string;
   gameChangers: string[];
   tokens: PreconToken[];
   cartas: PreconCarta[];
@@ -54,13 +64,13 @@ export const FORMATOS: {
     id: "cedh",
     label: "cEDH",
     descripcion:
-      "Commander competitivo: listas rápidas, con mucha interacción gratis y combos que cierran la partida. Para mesas donde todos juegan a ganar.",
+      "Commander competitivo. Cada lista es la que mejor quedó con ese comandante en torneos de 50 jugadores o más durante el último año: rápidas, con mucha interacción gratis y combos que cierran la partida.",
   },
   {
     id: "b3",
     label: "Bracket 3",
     descripcion:
-      "Más fuertes que un precon y pensados para mesas casuales con ganas de competir. Sin destrucción masiva de tierras ni combos tempranos de dos cartas, y con 3 Game Changers como máximo.",
+      "Más fuertes que un precon y pensados para mesas casuales con ganas de competir, con 3 Game Changers como máximo. Cada lista es el mazo promedio de ese comandante entre miles de mazos de Bracket 3.",
   },
 ];
 
