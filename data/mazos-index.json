@@ -1,0 +1,386 @@
+[
+ {
+  "slug": "kinnan",
+  "nombre": "Kinnan — Maná infinito",
+  "formato": "cedh",
+  "arquetipo": "Combo / Midrange",
+  "comandantes": [
+   {
+    "n": "Kinnan, Bonder Prodigy",
+    "id": "63cda4a0-0dff-4edb-ae67-a2b7e2971350"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 87,
+  "tokens": 4,
+  "tierras": 24,
+  "curva": 2.45,
+  "gameChangers": 10
+ },
+ {
+  "slug": "magda",
+  "nombre": "Magda — Enanos y tesoros",
+  "formato": "cedh",
+  "arquetipo": "Combo de artefactos",
+  "comandantes": [
+   {
+    "n": "Magda, Brazen Outlaw",
+    "id": "079e6263-e54c-4899-a336-5315909b9322"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 86,
+  "tokens": 7,
+  "tierras": 30,
+  "curva": 2.61,
+  "gameChangers": 6
+ },
+ {
+  "slug": "rograkh-silas",
+  "nombre": "Rograkh + Silas Renn — Turbo Grixis",
+  "formato": "cedh",
+  "arquetipo": "Turbo",
+  "comandantes": [
+   {
+    "n": "Rograkh, Son of Rohgahh",
+    "id": "a4fab67f-00c2-4125-9262-d21a29411797"
+   },
+   {
+    "n": "Silas Renn, Seeker Adept",
+    "id": "4e3fe912-1374-47c7-b73f-89ef55c479c1"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 77,
+  "tokens": 2,
+  "tierras": 23,
+  "curva": 1.83,
+  "gameChangers": 19
+ },
+ {
+  "slug": "rograkh-thrasios",
+  "nombre": "Rograkh + Thrasios — Turbo Temur",
+  "formato": "cedh",
+  "arquetipo": "Turbo / Combo",
+  "comandantes": [
+   {
+    "n": "Rograkh, Son of Rohgahh",
+    "id": "a4fab67f-00c2-4125-9262-d21a29411797"
+   },
+   {
+    "n": "Thrasios, Triton Hero",
+    "id": "21e27b91-c7f1-4709-aa0d-8b5d81b22a0a"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 87,
+  "tokens": 5,
+  "tierras": 28,
+  "curva": 2.06,
+  "gameChangers": 13
+ },
+ {
+  "slug": "sisay",
+  "nombre": "Sisay — Leyendas",
+  "formato": "cedh",
+  "arquetipo": "Combo / Toolbox",
+  "comandantes": [
+   {
+    "n": "Sisay, Weatherlight Captain",
+    "id": "5a293c45-1e73-4527-be2f-2dcd5c47b610"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 82,
+  "tokens": 3,
+  "tierras": 28,
+  "curva": 2.03,
+  "gameChangers": 14
+ },
+ {
+  "slug": "thrasios-tymna",
+  "nombre": "Thrasios + Tymna — Midrange de cuatro colores",
+  "formato": "cedh",
+  "arquetipo": "Midrange / Combo",
+  "comandantes": [
+   {
+    "n": "Thrasios, Triton Hero",
+    "id": "21e27b91-c7f1-4709-aa0d-8b5d81b22a0a"
+   },
+   {
+    "n": "Tymna the Weaver",
+    "id": "bc7cbe9b-324e-42b8-94e2-36e91cb32163"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 81,
+  "tokens": 5,
+  "tierras": 27,
+  "curva": 2.15,
+  "gameChangers": 16
+ },
+ {
+  "slug": "blue-farm",
+  "nombre": "Tymna + Kraum — Blue Farm",
+  "formato": "cedh",
+  "arquetipo": "Midrange",
+  "comandantes": [
+   {
+    "n": "Kraum, Ludevic's Opus",
+    "id": "557fcd17-6cb3-414a-b2b1-ea9ae32e5aec"
+   },
+   {
+    "n": "Tymna the Weaver",
+    "id": "bc7cbe9b-324e-42b8-94e2-36e91cb32163"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 77,
+  "tokens": 4,
+  "tierras": 24,
+  "curva": 2.01,
+  "gameChangers": 19
+ },
+ {
+  "slug": "vivi",
+  "nombre": "Vivi Ornitier — Hechizos",
+  "formato": "cedh",
+  "arquetipo": "Spellslinger / Combo",
+  "comandantes": [
+   {
+    "n": "Vivi Ornitier",
+    "id": "ecc1027a-8c07-44a0-bdde-fa2844cff694"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 75,
+  "tokens": 2,
+  "tierras": 21,
+  "curva": 2.29,
+  "gameChangers": 12
+ },
+ {
+  "slug": "atraxa",
+  "nombre": "Atraxa — Veneno",
+  "formato": "b3",
+  "arquetipo": "Infect / Proliferar",
+  "comandantes": [
+   {
+    "n": "Atraxa, Praetors' Voice",
+    "id": "d0d33d52-3d28-4635-b985-51e126289259"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 2,
+  "tierras": 35,
+  "curva": 2.83,
+  "gameChangers": 2
+ },
+ {
+  "slug": "edgar-markov",
+  "nombre": "Edgar Markov — Vampiros",
+  "formato": "b3",
+  "arquetipo": "Aggro / Tribal",
+  "comandantes": [
+   {
+    "n": "Edgar Markov",
+    "id": "a577ba08-0aa8-45be-aa83-d5078770127c"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 8,
+  "tierras": 35,
+  "curva": 2.86,
+  "gameChangers": 3
+ },
+ {
+  "slug": "krenko",
+  "nombre": "Krenko — Goblins",
+  "formato": "b3",
+  "arquetipo": "Tokens / Tribal",
+  "comandantes": [
+   {
+    "n": "Krenko, Mob Boss",
+    "id": "824b2d73-2151-4e5e-9f05-8f63e2bdcaa9"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 95,
+  "tokens": 2,
+  "tierras": 35,
+  "curva": 2.6,
+  "gameChangers": 1
+ },
+ {
+  "slug": "lathril",
+  "nombre": "Lathril — Elfos",
+  "formato": "b3",
+  "arquetipo": "Tribal / Tokens",
+  "comandantes": [
+   {
+    "n": "Lathril, Blade of the Elves",
+    "id": "8d4e5480-a287-4a25-b855-a26dae555b1c"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 2,
+  "tierras": 33,
+  "curva": 3.19,
+  "gameChangers": 1
+ },
+ {
+  "slug": "pantlaza",
+  "nombre": "Pantlaza — Dinosaurios",
+  "formato": "b3",
+  "arquetipo": "Ramp / Tribal",
+  "comandantes": [
+   {
+    "n": "Pantlaza, Sun-Favored",
+    "id": "2524645e-b066-4351-885b-10faa8d819d7"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 12,
+  "tierras": 36,
+  "curva": 4.5,
+  "gameChangers": 0
+ },
+ {
+  "slug": "sauron",
+  "nombre": "Sauron — El Señor Oscuro",
+  "formato": "b3",
+  "arquetipo": "Control / Tokens",
+  "comandantes": [
+   {
+    "n": "Sauron, the Dark Lord",
+    "id": "034e0929-b2c7-4b5f-94f2-8eaf4fb1a2a1"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 5,
+  "tierras": 36,
+  "curva": 3.02,
+  "gameChangers": 2
+ },
+ {
+  "slug": "ur-dragon",
+  "nombre": "The Ur-Dragon — Dragones",
+  "formato": "b3",
+  "arquetipo": "Ramp / Tribal",
+  "comandantes": [
+   {
+    "n": "The Ur-Dragon",
+    "id": "10d42b35-844f-4a64-9981-c6118d45e826"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 6,
+  "tierras": 36,
+  "curva": 4.5,
+  "gameChangers": 3
+ },
+ {
+  "slug": "yshtola",
+  "nombre": "Y'shtola — Control Esper",
+  "formato": "b3",
+  "arquetipo": "Control / Drenaje",
+  "comandantes": [
+   {
+    "n": "Y'shtola, Night's Blessed",
+    "id": "c7f2c2d5-e052-49e8-b5de-712858c2ea78"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 96,
+  "tokens": 6,
+  "tierras": 34,
+  "curva": 3.08,
+  "gameChangers": 2
+ }
+]

@@ -117,6 +117,8 @@ export default function NavBar() {
 
   const navLinks = [
 	{ slug: "catalogo", label: "Catálogo" },
+	{ slug: "precons", label: "Precons" },
+	{ slug: "mazos", label: "Mazos" },
 	{ slug: "importar", label: "Importar lista" },
 	{ slug: "acabados", label: "Acabados" },
 	{ slug: "promos", label: "Promos" },
@@ -205,7 +207,8 @@ export default function NavBar() {
         	)}
       	</div>
 
-      	<div className="hidden lg:flex gap-6 text-sm flex-shrink-0">
+      	{/* Nueve enlaces no caben bajo 1280: ahi manda el menu. A 1280 justo entran apretados, por eso el espacio y la letra crecen recien en 2xl. */}
+      	<div className="hidden xl:flex gap-3 2xl:gap-6 text-[13px] 2xl:text-sm flex-shrink-0">
         	{navLinks.map((n) => (
           	<button
             	key={n.slug}
@@ -247,7 +250,7 @@ export default function NavBar() {
 
       	<button
         	onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        	className="lg:hidden"
+        	className="xl:hidden"
       	>
         	{mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
       	</button>
@@ -270,7 +273,7 @@ export default function NavBar() {
     	</div>
 
     	{mobileMenuOpen && (
-      	<div className="lg:hidden border-t border-line bg-surface-2">
+      	<div className="xl:hidden border-t border-line bg-surface-2">
         	<div className="flex flex-col py-2">
           	{navLinks.map((n) => (
             	<button

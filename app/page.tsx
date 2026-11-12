@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Flame,
   Truck,
@@ -26,6 +27,10 @@ import { usePrecios } from "@/hooks/usePrecios";
 import { usePlazos } from "@/hooks/usePlazos";
 import { promesa, plazoCorto } from "@/lib/plazos";
 import { FINISHES, FINISH_INFO, formatCLP } from "@/lib/pricing";
+// Un resumen chico de los precons, no el índice entero: la portada solo
+// necesita cuántos son y tres carátulas.
+import destacados from "@/data/precons-destacados.json";
+import { MAZOS, etiquetaFormato } from "@/lib/mazos";
 
 export default function Home() {
   const router = useRouter();
@@ -199,27 +204,177 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BANNER IMPORTADOR — el primer bloque de color pleno */}
-      <section className="px-6 py-9 bg-flame border-y-2 border-ink">
-        <Reveal className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-          <div className="flex items-center gap-4">
-            <FileText size={34} className="text-white flex-shrink-0" />
-            <div>
-              <h3 className="font-display font-extrabold text-xl text-white">
-                ¿Ya tienes tu mazo en Moxfield o Archidekt?
-              </h3>
-              <p className="text-sm text-white/90">
-                Pega tu lista y arma tu pedido en 30 segundos.
-              </p>
-            </div>
+      {/* POR DÓNDE EMPEZAR — cuatro caminos según lo que el visitante ya tiene.
+          Antes acá había un solo banner hacia el importador, que le sirve al
+          que llega con su lista hecha y a nadie más. El que recién empieza no
+          tiene lista: necesita que le muestren mazos. */}
+      <section className="px-6 py-14 bg-surface-3 border-y-2 border-ink">
+        <div className="max-w-6xl mx-auto">
+          <Reveal className="text-center mb-10">
+            <h2 className="font-display font-extrabold text-3xl md:text-4xl text-ink mb-2">
+              Elige por dónde <span className="text-lava">empezar</span>
+            </h2>
+            <p className="text-ink-muted">
+              Cuatro caminos, el mismo final: tu mazo impreso en la puerta de tu
+              casa.
+            </p>
+          </Reveal>
+
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+            <Reveal>
+              <Link
+                href="/precons"
+                className="block-card glow-hover h-full flex flex-col overflow-hidden"
+              >
+                {/* Tres comandantes recientes, en abanico chico. */}
+                <div className="relative h-44 bg-surface-ink border-b-2 border-ink overflow-hidden">
+                  {destacados.destacados.slice(0, 3).map((d, i) => (
+                    <div
+                      key={d.id}
+                      className="absolute top-5 w-[118px] aspect-[5/7] rounded-lg bg-cover bg-center border-2 border-ink shadow-[3px_4px_0_rgba(0,0,0,0.5)]"
+                      style={{
+                        backgroundImage: `url(https://cards.scryfall.io/normal/front/${d.id[0]}/${d.id[1]}/${d.id}.jpg)`,
+                        left: `calc(50% - 59px + ${(i - 1) * 78}px)`,
+                        transform: `rotate(${(i - 1) * 9}deg) translateY(${
+                          i === 1 ? -4 : 8
+                        }px)`,
+                        zIndex: i === 1 ? 2 : 1,
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-flame-ink mb-1">
+                    ¿Recién empiezas?
+                  </p>
+                  <h3 className="font-display font-extrabold text-2xl text-ink mb-2">
+                    Precons de Commander
+                  </h3>
+                  <p className="text-sm text-ink-muted mb-4">
+                    Elige un mazo oficial y llega a jugar sin armar nada. Los{" "}
+                    {destacados.total}, de {destacados.desde} a hoy, con su
+                    lista completa y sus tokens.
+                  </p>
+                  <span className="mt-auto font-bold text-flame-ink inline-flex items-center gap-1.5">
+                    Ver los precons <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+
+            <Reveal delay={0.06}>
+              <Link
+                href="/mazos"
+                className="block-card glow-hover h-full flex flex-col overflow-hidden"
+              >
+                {/* Los comandantes de los mazos, con su formato encima. */}
+                <div className="relative h-44 bg-surface-ink border-b-2 border-ink overflow-hidden">
+                  {MAZOS.slice(0, 3).map((m, i) => (
+                    <div
+                      key={m.slug}
+                      className="absolute top-5 w-[118px] aspect-[5/7] rounded-lg bg-cover bg-center border-2 border-ink shadow-[3px_4px_0_rgba(0,0,0,0.5)]"
+                      style={{
+                        backgroundImage: `url(https://cards.scryfall.io/normal/front/${m.comandantes[0].id[0]}/${m.comandantes[0].id[1]}/${m.comandantes[0].id}.jpg)`,
+                        left: `calc(50% - 59px + ${(i - 1) * 78}px)`,
+                        transform: `rotate(${(i - 1) * 9}deg) translateY(${
+                          i === 1 ? -4 : 8
+                        }px)`,
+                        zIndex: i === 1 ? 2 : 1,
+                      }}
+                    />
+                  ))}
+                  <span className="badge absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-mana-w text-ink text-[11px] px-2.5 py-1 whitespace-nowrap">
+                    {[...new Set(MAZOS.map((m) => etiquetaFormato(m.formato)))].join(" · ")}
+                  </span>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-flame-ink mb-1">
+                    ¿Quieres competir?
+                  </p>
+                  <h3 className="font-display font-extrabold text-2xl text-ink mb-2">
+                    Mazos listos
+                  </h3>
+                  <p className="text-sm text-ink-muted mb-4">
+                    Listas armadas para cEDH y Bracket 3, con cómo juegan y
+                    cómo ganan explicado sin jerga.
+                  </p>
+                  <span className="mt-auto font-bold text-flame-ink inline-flex items-center gap-1.5">
+                    Ver los mazos <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+
+            <Reveal delay={0.12}>
+              <Link
+                href="/importar"
+                className="block-card glow-hover h-full flex flex-col overflow-hidden"
+              >
+                <div className="h-44 bg-flame border-b-2 border-ink px-6 py-5 font-mono text-sm text-white/95 leading-relaxed overflow-hidden">
+                  <p className="text-white/60 text-xs mb-1.5">Tu lista</p>
+                  <p>1 Sol Ring</p>
+                  <p>1 Arcane Signet</p>
+                  <p>1 Command Tower</p>
+                  <p>1 Cyclonic Rift</p>
+                  <p>1 Rhystic Study</p>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-flame-ink mb-1">
+                    ¿Ya tienes tu mazo?
+                  </p>
+                  <h3 className="font-display font-extrabold text-2xl text-ink mb-2">
+                    Importa tu lista
+                  </h3>
+                  <p className="text-sm text-ink-muted mb-4">
+                    Pega tu lista de Moxfield, MTGO o Arena, o el enlace de tu
+                    mazo en Archidekt. Tú eliges el arte de cada carta y te
+                    ofrecemos los tokens que crea.
+                  </p>
+                  <span className="mt-auto font-bold text-flame-ink inline-flex items-center gap-1.5">
+                    Importar mi mazo <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+
+            <Reveal delay={0.18}>
+              <Link
+                href="/catalogo"
+                className="block-card glow-hover h-full flex flex-col overflow-hidden"
+              >
+                <div className="h-44 bg-mana-u border-b-2 border-ink p-5 flex flex-wrap content-center justify-center gap-2">
+                  {["Magic", "Pokémon", "Yu-Gi-Oh!", "Riftbound", "Mitos y Leyendas"].map(
+                    (j, i) => (
+                      <span
+                        key={j}
+                        className="badge bg-surface-2 text-ink text-xs px-3 py-1.5"
+                        style={{ transform: `rotate(${[-3, 2, -1, 3, -2][i]}deg)` }}
+                      >
+                        {j}
+                      </span>
+                    )
+                  )}
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-flame-ink mb-1">
+                    ¿Buscas cartas sueltas?
+                  </p>
+                  <h3 className="font-display font-extrabold text-2xl text-ink mb-2">
+                    Catálogo de cinco juegos
+                  </h3>
+                  <p className="text-sm text-ink-muted mb-4">
+                    Busca cualquier carta, elige su versión y agrégala desde la
+                    misma grilla. No solo Magic: también Pokémon, Yu-Gi-Oh!,
+                    Riftbound y Mitos y Leyendas.
+                  </p>
+                  <span className="mt-auto font-bold text-flame-ink inline-flex items-center gap-1.5">
+                    Buscar cartas <ArrowUpRight size={17} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
           </div>
-          <button
-            onClick={() => router.push("/importar")}
-            className="btn-ghost px-6 py-3 whitespace-nowrap"
-          >
-            Importar ahora →
-          </button>
-        </Reveal>
+        </div>
       </section>
 
       {/* FEATURES — cada uno con su color, no cuatro naranjos iguales */}

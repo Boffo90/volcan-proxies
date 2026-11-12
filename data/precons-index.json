@@ -1,0 +1,4045 @@
+[
+ {
+  "set": "trc",
+  "slug": "federation-fleet",
+  "nombre": "Federation Fleet",
+  "setNombre": "Star Trek Commander",
+  "fecha": "2026-11-13",
+  "comandantes": [
+   {
+    "n": "Jean-Luc Picard, Luminary",
+    "id": "901eaed9-dbea-4a31-87b0-e17e9bcabfed"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "trc",
+  "slug": "klingon-fury",
+  "nombre": "Klingon Fury",
+  "setNombre": "Star Trek Commander",
+  "fecha": "2026-11-13",
+  "comandantes": [
+   {
+    "n": "Worf, Defiant Commander",
+    "id": "da030114-a4ee-46d7-a6fd-6c0d8e779bcf"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "trc",
+  "slug": "landing-party",
+  "nombre": "Landing Party",
+  "setNombre": "Star Trek Commander",
+  "fecha": "2026-11-13",
+  "comandantes": [
+   {
+    "n": "Commander Spock",
+    "id": "cf114392-a38d-4117-aa41-911d6dc1051b"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "trc",
+  "slug": "we-are-the-borg",
+  "nombre": "We Are the Borg",
+  "setNombre": "Star Trek Commander",
+  "fecha": "2026-11-13",
+  "comandantes": [
+   {
+    "n": "The Borg Queen",
+    "id": "8ed939ba-bf8d-4a68-ae9f-f8ca4eb301ab"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "fdc",
+  "slug": "calling-all-angels",
+  "nombre": "Calling All Angels",
+  "setNombre": "Foundations Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Giada, Font of Hope",
+    "id": "4ebc7622-08a1-4f43-92dd-8675d395e8f6"
+   }
+  ],
+  "colores": [
+   "W"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "fdc",
+  "slug": "keen-engineering",
+  "nombre": "Keen Engineering",
+  "setNombre": "Foundations Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Sai, Master Thopterist",
+    "id": "5650587a-27a5-4d68-97e2-5745627bd094"
+   }
+  ],
+  "colores": [
+   "U"
+  ],
+  "total": 100,
+  "enEs": 96,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "frc",
+  "slug": "multiverse-reforged",
+  "nombre": "Multiverse Reforged",
+  "setNombre": "Reality Fracture Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Jace, Multiverse Architect",
+    "id": "55cd03d9-2535-4cf3-a8b2-1418e1190f4a"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 9,
+  "ub": false
+ },
+ {
+  "set": "fdc",
+  "slug": "reign-of-dragons",
+  "nombre": "Reign of Dragons",
+  "setNombre": "Foundations Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Lathliss, Dragon Queen",
+    "id": "8a17ec4e-b508-41af-803b-32acd863e598"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "fdc",
+  "slug": "tramplesaurus-rex",
+  "nombre": "Tramplesaurus Rex",
+  "setNombre": "Foundations Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Ghalta, Primal Hunger",
+    "id": "5d9951d1-3228-4d69-8e63-6e6f0a893a86"
+   }
+  ],
+  "colores": [
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "fdc",
+  "slug": "wretched-ranks",
+  "nombre": "Wretched Ranks",
+  "setNombre": "Foundations Commander",
+  "fecha": "2026-10-02",
+  "comandantes": [
+   {
+    "n": "Ghoulcaller Gisa",
+    "id": "909e62fa-4585-495e-812b-5df56af24610"
+   }
+  ],
+  "colores": [
+   "B"
+  ],
+  "total": 100,
+  "enEs": 96,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "odds-and-ends",
+  "nombre": "Odds and Ends",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2026-09-28",
+  "comandantes": [
+   {
+    "n": "Yennett, Cryptic Sovereign",
+    "id": "0ba9362f-eb35-4e72-8c51-7047c0a3f648"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 88,
+  "tokens": 3,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "hatsune-miku",
+  "nombre": "Hatsune Miku",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2026-08-10",
+  "comandantes": [
+   {
+    "n": "Trostani, Selesnya's Voice",
+    "id": "6ab6e6c9-fe20-40d3-997e-fe3480081f03"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 97,
+  "tokens": 3,
+  "ub": true
+ },
+ {
+  "set": "msc",
+  "slug": "avengers-assemble",
+  "nombre": "Avengers Assemble",
+  "setNombre": "Marvel Super Heroes Commander",
+  "fecha": "2026-06-26",
+  "comandantes": [
+   {
+    "n": "Captain America, Team Leader",
+    "id": "61a51b67-d941-4e07-9c12-ffe583cb65d4"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 1,
+  "ub": true
+ },
+ {
+  "set": "msc",
+  "slug": "doom-prevails",
+  "nombre": "Doom Prevails",
+  "setNombre": "Marvel Super Heroes Commander",
+  "fecha": "2026-06-26",
+  "comandantes": [
+   {
+    "n": "Doctor Doom, King of Latveria",
+    "id": "099ed408-9178-4403-8b2d-479ca3cbda9b"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 3,
+  "ub": true
+ },
+ {
+  "set": "msc",
+  "slug": "the-fantastic-four",
+  "nombre": "The Fantastic Four",
+  "setNombre": "Marvel Super Heroes Commander",
+  "fecha": "2026-06-26",
+  "comandantes": [
+   {
+    "n": "Invisible Woman",
+    "id": "d8e13ecb-98be-4d9b-86a2-24eaa98f7f0d"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 96,
+  "tokens": 4,
+  "ub": true
+ },
+ {
+  "set": "msc",
+  "slug": "wakanda-forever",
+  "nombre": "Wakanda Forever",
+  "setNombre": "Marvel Super Heroes Commander",
+  "fecha": "2026-06-26",
+  "comandantes": [
+   {
+    "n": "T'Challa, the Black Panther",
+    "id": "c1c8ad61-b7e1-446c-8b74-6e29371ea1d5"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 5,
+  "ub": true
+ },
+ {
+  "set": "sld",
+  "slug": "goblin-storm",
+  "nombre": "Goblin Storm",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2026-05-18",
+  "comandantes": [
+   {
+    "n": "Zada, Hedron Grinder",
+    "id": "b17fb671-f7ff-4633-bdef-39375c6f857c"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 95,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "soc",
+  "slug": "lorehold-spirit",
+  "nombre": "Lorehold Spirit",
+  "setNombre": "Secrets of Strixhaven Commander",
+  "fecha": "2026-04-24",
+  "comandantes": [
+   {
+    "n": "Quintorius, History Chaser",
+    "id": "0742f19d-179c-43c4-ab95-4160c56b4384"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "soc",
+  "slug": "prismari-artistry",
+  "nombre": "Prismari Artistry",
+  "setNombre": "Secrets of Strixhaven Commander",
+  "fecha": "2026-04-24",
+  "comandantes": [
+   {
+    "n": "Rootha, Mastering the Moment",
+    "id": "a5b3dbb2-c090-4118-9e47-56c16202572c"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "soc",
+  "slug": "quandrix-unlimited",
+  "nombre": "Quandrix Unlimited",
+  "setNombre": "Secrets of Strixhaven Commander",
+  "fecha": "2026-04-24",
+  "comandantes": [
+   {
+    "n": "Zimone, Infinite Analyst",
+    "id": "605afac4-d2e5-4e68-97d2-3ac2ead5f3a9"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "soc",
+  "slug": "silverquill-influence",
+  "nombre": "Silverquill Influence",
+  "setNombre": "Secrets of Strixhaven Commander",
+  "fecha": "2026-04-24",
+  "comandantes": [
+   {
+    "n": "Killian, Decisive Mentor",
+    "id": "76b6c35a-bb92-4ad3-8f85-88b9bafc6266"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "soc",
+  "slug": "witherbloom-pestilence",
+  "nombre": "Witherbloom Pestilence",
+  "setNombre": "Secrets of Strixhaven Commander",
+  "fecha": "2026-04-24",
+  "comandantes": [
+   {
+    "n": "Dina, Essence Brewer",
+    "id": "9fe237b8-c02c-41ea-9fc4-b771b91d2157"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "tmc",
+  "slug": "turtle-power",
+  "nombre": "Turtle Power!",
+  "setNombre": "Teenage Mutant Ninja Turtles Eternal",
+  "fecha": "2026-03-06",
+  "comandantes": [
+   {
+    "n": "Heroes in a Half Shell",
+    "id": "ccc2a4e6-f505-4040-9d8a-c7b8e1a2b55e"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 56,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "ecc",
+  "slug": "blight-curse",
+  "nombre": "Blight Curse",
+  "setNombre": "Lorwyn Eclipsed Commander",
+  "fecha": "2026-01-23",
+  "comandantes": [
+   {
+    "n": "Auntie Ool, Cursewretch",
+    "id": "9a2e4252-9fbc-4d43-8935-db2cafaa7b5f"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ecc",
+  "slug": "dance-of-the-elements",
+  "nombre": "Dance of the Elements",
+  "setNombre": "Lorwyn Eclipsed Commander",
+  "fecha": "2026-01-23",
+  "comandantes": [
+   {
+    "n": "Ashling, the Limitless",
+    "id": "5924c01f-2815-4e37-b700-3ba6cc81e0e4"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "eoc",
+  "slug": "counter-intelligence",
+  "nombre": "Counter Intelligence",
+  "setNombre": "Edge of Eternities Commander",
+  "fecha": "2025-08-01",
+  "comandantes": [
+   {
+    "n": "Inspirit, Flagship Vessel",
+    "id": "46900ec7-eb18-45c4-8e90-a48b665cfdee"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 5,
+  "ub": false
+ },
+ {
+  "set": "eoc",
+  "slug": "world-shaper",
+  "nombre": "World Shaper",
+  "setNombre": "Edge of Eternities Commander",
+  "fecha": "2025-08-01",
+  "comandantes": [
+   {
+    "n": "Hearthhull, the Worldseed",
+    "id": "6b913e79-a9f6-44d4-bb37-c4f6f66b8151"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 3,
+  "ub": false
+ },
+ {
+  "set": "fic",
+  "slug": "counter-blitz-final-fantasy-x",
+  "nombre": "Counter Blitz (FINAL FANTASY X)",
+  "setNombre": "Final Fantasy Commander",
+  "fecha": "2025-06-13",
+  "comandantes": [
+   {
+    "n": "Tidus, Yuna's Guardian",
+    "id": "2cfd4494-346c-4cbc-8072-e267254cefcc"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "fic",
+  "slug": "limit-break-final-fantasy-vii",
+  "nombre": "Limit Break (FINAL FANTASY VII)",
+  "setNombre": "Final Fantasy Commander",
+  "fecha": "2025-06-13",
+  "comandantes": [
+   {
+    "n": "Cloud, Ex-SOLDIER",
+    "id": "07b4e4f8-6a31-4533-be51-668ce3ddc84f"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "fic",
+  "slug": "revival-trance-final-fantasy-vi",
+  "nombre": "Revival Trance (FINAL FANTASY VI)",
+  "setNombre": "Final Fantasy Commander",
+  "fecha": "2025-06-13",
+  "comandantes": [
+   {
+    "n": "Terra, Herald of Hope",
+    "id": "5aa1a2d7-6133-41a9-9662-9008d1309935"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "fic",
+  "slug": "scions-and-spellcraft-final-fantasy-xiv",
+  "nombre": "Scions & Spellcraft (FINAL FANTASY XIV)",
+  "setNombre": "Final Fantasy Commander",
+  "fecha": "2025-06-13",
+  "comandantes": [
+   {
+    "n": "Y'shtola, Night's Blessed",
+    "id": "c7f2c2d5-e052-49e8-b5de-712858c2ea78"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "sld",
+  "slug": "everyones-invited",
+  "nombre": "Everyone's Invited!",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2025-05-12",
+  "comandantes": [
+   {
+    "n": "Morophon, the Boundless",
+    "id": "58e4a55f-b35a-411a-9a05-0cbb0d767920"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 4,
+  "ub": false
+ },
+ {
+  "set": "tdc",
+  "slug": "abzan-armor",
+  "nombre": "Abzan Armor",
+  "setNombre": "Tarkir: Dragonstorm Commander",
+  "fecha": "2025-04-11",
+  "comandantes": [
+   {
+    "n": "Felothar the Steadfast",
+    "id": "2c3549f6-25df-4ea7-84ad-922ccd4af6b2"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "tdc",
+  "slug": "jeskai-striker",
+  "nombre": "Jeskai Striker",
+  "setNombre": "Tarkir: Dragonstorm Commander",
+  "fecha": "2025-04-11",
+  "comandantes": [
+   {
+    "n": "Shiko and Narset, Unified",
+    "id": "5a42fc7d-52ac-4e95-9e04-8f8fa7f687c8"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "tdc",
+  "slug": "mardu-surge",
+  "nombre": "Mardu Surge",
+  "setNombre": "Tarkir: Dragonstorm Commander",
+  "fecha": "2025-04-11",
+  "comandantes": [
+   {
+    "n": "Zurgo Stormrender",
+    "id": "dc8eb325-75c9-4331-830d-3f7d62d77290"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "tdc",
+  "slug": "sultai-arisen",
+  "nombre": "Sultai Arisen",
+  "setNombre": "Tarkir: Dragonstorm Commander",
+  "fecha": "2025-04-11",
+  "comandantes": [
+   {
+    "n": "Teval, the Balanced Scale",
+    "id": "b5d1955a-9ff0-4f8b-9af8-341371957299"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "tdc",
+  "slug": "temur-roar",
+  "nombre": "Temur Roar",
+  "setNombre": "Tarkir: Dragonstorm Commander",
+  "fecha": "2025-04-11",
+  "comandantes": [
+   {
+    "n": "Eshki, Temur's Roar",
+    "id": "ff9aa863-8773-452d-946c-ae334c632e11"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "drc",
+  "slug": "eternal-might",
+  "nombre": "Eternal Might",
+  "setNombre": "Aetherdrift Commander",
+  "fecha": "2025-02-14",
+  "comandantes": [
+   {
+    "n": "Temmet, Naktamun's Will",
+    "id": "c0629894-0b72-4abe-9771-03becfdb241c"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 3,
+  "ub": false
+ },
+ {
+  "set": "drc",
+  "slug": "living-energy",
+  "nombre": "Living Energy",
+  "setNombre": "Aetherdrift Commander",
+  "fecha": "2025-02-14",
+  "comandantes": [
+   {
+    "n": "Saheeli, Radiant Creator",
+    "id": "5fea0781-e933-47ef-9414-92c8652a7778"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 6,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "20-ways-to-win",
+  "nombre": "20 Ways to Win",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2024-12-04",
+  "comandantes": [
+   {
+    "n": "Go-Shintai of Life's Origin",
+    "id": "4e9a1f19-6ee3-49fb-a08d-4048ee7c1e34"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "dsc",
+  "slug": "death-toll",
+  "nombre": "Death Toll",
+  "setNombre": "Duskmourn: House of Horror Commander",
+  "fecha": "2024-09-27",
+  "comandantes": [
+   {
+    "n": "Winter, Cynical Opportunist",
+    "id": "94dc35e4-a492-4019-afcd-cbef6f59a512"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 7,
+  "ub": false
+ },
+ {
+  "set": "dsc",
+  "slug": "endless-punishment",
+  "nombre": "Endless Punishment",
+  "setNombre": "Duskmourn: House of Horror Commander",
+  "fecha": "2024-09-27",
+  "comandantes": [
+   {
+    "n": "Valgavoth, Harrower of Souls",
+    "id": "8d7c1f6c-af45-4449-8cf8-e13830b3df8a"
+   }
+  ],
+  "colores": [
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "dsc",
+  "slug": "jump-scare",
+  "nombre": "Jump Scare!",
+  "setNombre": "Duskmourn: House of Horror Commander",
+  "fecha": "2024-09-27",
+  "comandantes": [
+   {
+    "n": "Zimone, Mystery Unraveler",
+    "id": "30f23588-5064-48d9-a271-039df757f8d2"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 6,
+  "ub": false
+ },
+ {
+  "set": "dsc",
+  "slug": "miracle-worker",
+  "nombre": "Miracle Worker",
+  "setNombre": "Duskmourn: House of Horror Commander",
+  "fecha": "2024-09-27",
+  "comandantes": [
+   {
+    "n": "Aminatou, Veil Piercer",
+    "id": "9f868023-6035-403d-ba91-7a4840c6c392"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 5,
+  "ub": false
+ },
+ {
+  "set": "blc",
+  "slug": "animated-army",
+  "nombre": "Animated Army",
+  "setNombre": "Bloomburrow Commander",
+  "fecha": "2024-08-02",
+  "comandantes": [
+   {
+    "n": "Bello, Bard of the Brambles",
+    "id": "31e4b7a1-b377-49d2-a92e-4bcb0db35f16"
+   }
+  ],
+  "colores": [
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "blc",
+  "slug": "family-matters",
+  "nombre": "Family Matters",
+  "setNombre": "Bloomburrow Commander",
+  "fecha": "2024-08-02",
+  "comandantes": [
+   {
+    "n": "Zinnia, Valley's Voice",
+    "id": "dfe36901-5841-4942-8b61-c273111f715e"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "blc",
+  "slug": "peace-offering",
+  "nombre": "Peace Offering",
+  "setNombre": "Bloomburrow Commander",
+  "fecha": "2024-08-02",
+  "comandantes": [
+   {
+    "n": "Ms. Bumbleflower",
+    "id": "42bbedc1-6b83-46b4-8b3b-a4e05ce77d87"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "blc",
+  "slug": "squirreled-away",
+  "nombre": "Squirreled Away",
+  "setNombre": "Bloomburrow Commander",
+  "fecha": "2024-08-02",
+  "comandantes": [
+   {
+    "n": "Hazel of the Rootbloom",
+    "id": "1269ca79-907e-4932-9e77-a9a5d2929060"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "m3c",
+  "slug": "creative-energy",
+  "nombre": "Creative Energy",
+  "setNombre": "Modern Horizons 3 Commander",
+  "fecha": "2024-06-14",
+  "comandantes": [
+   {
+    "n": "Satya, Aetherflux Genius",
+    "id": "3b964bbe-54cc-425c-9cc6-c877f82af7ba"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 85,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "m3c",
+  "slug": "eldrazi-incursion",
+  "nombre": "Eldrazi Incursion",
+  "setNombre": "Modern Horizons 3 Commander",
+  "fecha": "2024-06-14",
+  "comandantes": [
+   {
+    "n": "Ulalek, Fused Atrocity",
+    "id": "fdad1b0e-d3cc-4d76-ae7e-fee12558cf2c"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 84,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "m3c",
+  "slug": "graveyard-overdrive",
+  "nombre": "Graveyard Overdrive",
+  "setNombre": "Modern Horizons 3 Commander",
+  "fecha": "2024-06-14",
+  "comandantes": [
+   {
+    "n": "Disa the Restless",
+    "id": "c976edeb-0fa1-4647-a16c-870d8a3c30c6"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 86,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "m3c",
+  "slug": "tricky-terrain",
+  "nombre": "Tricky Terrain",
+  "setNombre": "Modern Horizons 3 Commander",
+  "fecha": "2024-06-14",
+  "comandantes": [
+   {
+    "n": "Omo, Queen of Vesuva",
+    "id": "e5d1c814-4c22-4917-95ae-dffaf491db32"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 84,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "otc",
+  "slug": "desert-bloom",
+  "nombre": "Desert Bloom",
+  "setNombre": "Outlaws of Thunder Junction Commander",
+  "fecha": "2024-04-19",
+  "comandantes": [
+   {
+    "n": "Yuma, Proud Protector",
+    "id": "18df72be-07d2-4412-b36d-a45119763db3"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "otc",
+  "slug": "grand-larceny",
+  "nombre": "Grand Larceny",
+  "setNombre": "Outlaws of Thunder Junction Commander",
+  "fecha": "2024-04-19",
+  "comandantes": [
+   {
+    "n": "Gonti, Canny Acquisitor",
+    "id": "03a7e79f-625a-49ac-9cb1-e1fe5f51f5a0"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "otc",
+  "slug": "most-wanted",
+  "nombre": "Most Wanted",
+  "setNombre": "Outlaws of Thunder Junction Commander",
+  "fecha": "2024-04-19",
+  "comandantes": [
+   {
+    "n": "Olivia, Opulent Outlaw",
+    "id": "55e6c31b-f9e9-4e42-a875-985d99300d9d"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "otc",
+  "slug": "quick-draw",
+  "nombre": "Quick Draw",
+  "setNombre": "Outlaws of Thunder Junction Commander",
+  "fecha": "2024-04-19",
+  "comandantes": [
+   {
+    "n": "Stella Lee, Wild Card",
+    "id": "2a8a7696-b5d9-4378-9d5c-2c9007e4df63"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "pip",
+  "slug": "hail-caesar",
+  "nombre": "Hail, Caesar",
+  "setNombre": "Fallout",
+  "fecha": "2024-03-08",
+  "comandantes": [
+   {
+    "n": "Caesar, Legion's Emperor",
+    "id": "246a7176-98bc-4f54-aa61-38747420f178"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "pip",
+  "slug": "mutant-menace",
+  "nombre": "Mutant Menace",
+  "setNombre": "Fallout",
+  "fecha": "2024-03-08",
+  "comandantes": [
+   {
+    "n": "The Wise Mothman",
+    "id": "3d6d6944-a364-41c2-b824-7a1bf6ad0d1e"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "pip",
+  "slug": "science",
+  "nombre": "Science!",
+  "setNombre": "Fallout",
+  "fecha": "2024-03-08",
+  "comandantes": [
+   {
+    "n": "Dr. Madison Li",
+    "id": "95af426d-a8af-4314-9ad0-ac61935e8e8e"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "pip",
+  "slug": "scrappy-survivors",
+  "nombre": "Scrappy Survivors",
+  "setNombre": "Fallout",
+  "fecha": "2024-03-08",
+  "comandantes": [
+   {
+    "n": "Dogmeat, Ever Loyal",
+    "id": "86b45e3e-8460-4678-87d1-d74479936c83"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "mkc",
+  "slug": "blame-game",
+  "nombre": "Blame Game",
+  "setNombre": "Murders at Karlov Manor Commander",
+  "fecha": "2024-02-09",
+  "comandantes": [
+   {
+    "n": "Nelly Borca, Impulsive Accuser",
+    "id": "2ef59aa9-f5e1-413a-869b-d287db95efd0"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 89,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "mkc",
+  "slug": "deadly-disguise",
+  "nombre": "Deadly Disguise",
+  "setNombre": "Murders at Karlov Manor Commander",
+  "fecha": "2024-02-09",
+  "comandantes": [
+   {
+    "n": "Kaust, Eyes of the Glade",
+    "id": "648c15d1-a2a2-4f59-9b0a-5448be3e990f"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 82,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "mkc",
+  "slug": "deep-clue-sea",
+  "nombre": "Deep Clue Sea",
+  "setNombre": "Murders at Karlov Manor Commander",
+  "fecha": "2024-02-09",
+  "comandantes": [
+   {
+    "n": "Morska, Undersea Sleuth",
+    "id": "ae9ccfec-05c6-469e-b1dd-dfbafa1e927f"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 87,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "mkc",
+  "slug": "revenant-recon",
+  "nombre": "Revenant Recon",
+  "setNombre": "Murders at Karlov Manor Commander",
+  "fecha": "2024-02-09",
+  "comandantes": [
+   {
+    "n": "Mirko, Obsessive Theorist",
+    "id": "690acbbf-5e92-4323-b939-31bdb07f9905"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 87,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "raining-cats-and-dogs",
+  "nombre": "Raining Cats and Dogs",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2024-01-22",
+  "comandantes": [
+   {
+    "n": "Rin and Seri, Inseparable // Rin and Seri, Inseparable",
+    "id": "a129558c-45a1-441c-97f0-b70b4e9d8a56"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "lcc",
+  "slug": "ahoy-mateys",
+  "nombre": "Ahoy Mateys",
+  "setNombre": "The Lost Caverns of Ixalan Commander",
+  "fecha": "2023-11-17",
+  "comandantes": [
+   {
+    "n": "Admiral Brass, Unsinkable",
+    "id": "bdc2d492-9d1e-4543-8b9c-c66ee67992ce"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "lcc",
+  "slug": "blood-rites",
+  "nombre": "Blood Rites",
+  "setNombre": "The Lost Caverns of Ixalan Commander",
+  "fecha": "2023-11-17",
+  "comandantes": [
+   {
+    "n": "Clavileño, First of the Blessed",
+    "id": "9f55b648-b1ec-407a-a0c7-7647755793d1"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "lcc",
+  "slug": "explorers-of-the-deep",
+  "nombre": "Explorers of the Deep",
+  "setNombre": "The Lost Caverns of Ixalan Commander",
+  "fecha": "2023-11-17",
+  "comandantes": [
+   {
+    "n": "Hakbal of the Surging Soul",
+    "id": "e738e675-4fd1-4bc3-97f5-71d0e2fc3f2e"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "lcc",
+  "slug": "veloci-ramp-tor",
+  "nombre": "Veloci-Ramp-Tor",
+  "setNombre": "The Lost Caverns of Ixalan Commander",
+  "fecha": "2023-11-17",
+  "comandantes": [
+   {
+    "n": "Pantlaza, Sun-Favored",
+    "id": "2524645e-b066-4351-885b-10faa8d819d7"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "who",
+  "slug": "blast-from-the-past",
+  "nombre": "Blast from the Past",
+  "setNombre": "Doctor Who",
+  "fecha": "2023-10-13",
+  "comandantes": [
+   {
+    "n": "The Fourth Doctor",
+    "id": "c84ea0fd-efc7-4614-9f8f-41a3c71fceaa"
+   },
+   {
+    "n": "Sarah Jane Smith",
+    "id": "1ba76f68-e647-4786-903c-92dbd3cef05d"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 50,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "who",
+  "slug": "masters-of-evil",
+  "nombre": "Masters of Evil",
+  "setNombre": "Doctor Who",
+  "fecha": "2023-10-13",
+  "comandantes": [
+   {
+    "n": "Davros, Dalek Creator",
+    "id": "59c5bd2b-cf68-4e5e-819d-53917a6c5275"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 50,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "who",
+  "slug": "paradox-power",
+  "nombre": "Paradox Power",
+  "setNombre": "Doctor Who",
+  "fecha": "2023-10-13",
+  "comandantes": [
+   {
+    "n": "The Thirteenth Doctor",
+    "id": "0dc4ec90-1650-4b98-9350-66341394cf0b"
+   },
+   {
+    "n": "Yasmin Khan",
+    "id": "12b09a4f-bb62-4766-8115-cae4d5cc4c12"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 52,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "who",
+  "slug": "timey-wimey",
+  "nombre": "Timey-Wimey",
+  "setNombre": "Doctor Who",
+  "fecha": "2023-10-13",
+  "comandantes": [
+   {
+    "n": "The Tenth Doctor",
+    "id": "f1499f49-793b-4265-9ad0-883a431941ab"
+   },
+   {
+    "n": "Rose Tyler",
+    "id": "3aa8d034-f98c-4e27-b6af-850eadf59941"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 50,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "woc",
+  "slug": "fae-dominion",
+  "nombre": "Fae Dominion",
+  "setNombre": "Wilds of Eldraine Commander",
+  "fecha": "2023-09-08",
+  "comandantes": [
+   {
+    "n": "Tegwyll, Duke of Splendor",
+    "id": "03fab911-7bd4-45fa-ba07-cd0e51b0cd95"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "woc",
+  "slug": "virtue-and-valor",
+  "nombre": "Virtue and Valor",
+  "setNombre": "Wilds of Eldraine Commander",
+  "fecha": "2023-09-08",
+  "comandantes": [
+   {
+    "n": "Ellivere of the Wild Court",
+    "id": "45851394-b8f3-4713-8239-afcb387d47c5"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "angels-theyre-just-like-us-but-cooler-and-with-wings",
+  "nombre": "Angels: They're Just Like Us but Cooler and with Wings",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2023-08-14",
+  "comandantes": [
+   {
+    "n": "Gisela, the Broken Blade // Brisela, Voice of Nightmares",
+    "id": "d1cfc318-9c3e-471f-90eb-dc76454da957"
+   }
+  ],
+  "colores": [
+   "W"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "cmm",
+  "slug": "eldrazi-unbound",
+  "nombre": "Eldrazi Unbound",
+  "setNombre": "Commander Masters",
+  "fecha": "2023-08-04",
+  "comandantes": [
+   {
+    "n": "Zhulodok, Void Gorger",
+    "id": "a015461d-4214-4feb-8b04-519c537759eb"
+   }
+  ],
+  "colores": [],
+  "total": 100,
+  "enEs": 90,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmm",
+  "slug": "enduring-enchantments",
+  "nombre": "Enduring Enchantments",
+  "setNombre": "Commander Masters",
+  "fecha": "2023-08-04",
+  "comandantes": [
+   {
+    "n": "Anikthea, Hand of Erebos",
+    "id": "8b796a56-1611-4835-ac5b-48b4e9263685"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 92,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmm",
+  "slug": "planeswalker-party",
+  "nombre": "Planeswalker Party",
+  "setNombre": "Commander Masters",
+  "fecha": "2023-08-04",
+  "comandantes": [
+   {
+    "n": "Commodore Guff",
+    "id": "92870fc6-a6bc-4198-bb31-397e07e0e835"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 90,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmm",
+  "slug": "sliver-swarm",
+  "nombre": "Sliver Swarm",
+  "setNombre": "Commander Masters",
+  "fecha": "2023-08-04",
+  "comandantes": [
+   {
+    "n": "Sliver Gravemother",
+    "id": "9f5d253e-9eb2-423c-90ee-68f27ec6bf88"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 85,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ltc",
+  "slug": "elven-council",
+  "nombre": "Elven Council",
+  "setNombre": "Tales of Middle-earth Commander",
+  "fecha": "2023-06-23",
+  "comandantes": [
+   {
+    "n": "Galadriel, Elven-Queen",
+    "id": "8fa46d54-563d-4b5c-9c69-5ab37dd529b3"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "ltc",
+  "slug": "food-and-fellowship",
+  "nombre": "Food and Fellowship",
+  "setNombre": "Tales of Middle-earth Commander",
+  "fecha": "2023-06-23",
+  "comandantes": [
+   {
+    "n": "Frodo, Adventurous Hobbit",
+    "id": "328df403-7428-4b17-bdd1-9759fc0f32d8"
+   },
+   {
+    "n": "Sam, Loyal Attendant",
+    "id": "687a2b76-3f05-4732-bd9b-513d06d16300"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "ltc",
+  "slug": "riders-of-rohan",
+  "nombre": "Riders of Rohan",
+  "setNombre": "Tales of Middle-earth Commander",
+  "fecha": "2023-06-23",
+  "comandantes": [
+   {
+    "n": "Éowyn, Shieldmaiden",
+    "id": "dd4a00ff-2206-4e12-a0ab-61ed82c9e6c5"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "ltc",
+  "slug": "the-hosts-of-mordor",
+  "nombre": "The Hosts of Mordor",
+  "setNombre": "Tales of Middle-earth Commander",
+  "fecha": "2023-06-23",
+  "comandantes": [
+   {
+    "n": "Sauron, Lord of the Rings",
+    "id": "fc53dec0-79fe-4f6f-9d5b-cf298588e808"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "sld",
+  "slug": "from-cute-to-brute",
+  "nombre": "From Cute to Brute",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2023-05-08",
+  "comandantes": [
+   {
+    "n": "Esika, God of the Tree // The Prismatic Bridge",
+    "id": "46d43696-3c63-4c55-bc61-e1560c8b8201"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "moc",
+  "slug": "call-for-backup",
+  "nombre": "Call for Backup",
+  "setNombre": "March of the Machine Commander",
+  "fecha": "2023-04-21",
+  "comandantes": [
+   {
+    "n": "Bright-Palm, Soul Awakener",
+    "id": "a485c2c3-c90b-43b4-bb00-c1b811b4b392"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "moc",
+  "slug": "cavalry-charge",
+  "nombre": "Cavalry Charge",
+  "setNombre": "March of the Machine Commander",
+  "fecha": "2023-04-21",
+  "comandantes": [
+   {
+    "n": "Sidar Jabari of Zhalfir",
+    "id": "5fc707be-9286-4ba1-90f6-475265d19ed2"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "moc",
+  "slug": "divine-convocation",
+  "nombre": "Divine Convocation",
+  "setNombre": "March of the Machine Commander",
+  "fecha": "2023-04-21",
+  "comandantes": [
+   {
+    "n": "Kasla, the Broken Halo",
+    "id": "a209bda2-f0bf-4417-94f9-b73eff0b4217"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "moc",
+  "slug": "growing-threat",
+  "nombre": "Growing Threat",
+  "setNombre": "March of the Machine Commander",
+  "fecha": "2023-04-21",
+  "comandantes": [
+   {
+    "n": "Brimaz, Blight of Oreskos",
+    "id": "f0d31ae7-8580-402a-a917-3d626a9e1f49"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "moc",
+  "slug": "tinker-time",
+  "nombre": "Tinker Time",
+  "setNombre": "March of the Machine Commander",
+  "fecha": "2023-04-21",
+  "comandantes": [
+   {
+    "n": "Gimbal, Gremlin Prodigy",
+    "id": "4a9aa899-752b-4106-89ba-9475ee777d41"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "onc",
+  "slug": "corrupting-influence",
+  "nombre": "Corrupting Influence",
+  "setNombre": "Phyrexia: All Will Be One Commander",
+  "fecha": "2023-02-10",
+  "comandantes": [
+   {
+    "n": "Ixhel, Scion of Atraxa",
+    "id": "ab866ec4-dcb4-47ef-8de1-a369986609c0"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "onc",
+  "slug": "rebellion-rising",
+  "nombre": "Rebellion Rising",
+  "setNombre": "Phyrexia: All Will Be One Commander",
+  "fecha": "2023-02-10",
+  "comandantes": [
+   {
+    "n": "Neyali, Suns' Vanguard",
+    "id": "2b5df03d-2463-468b-b444-d946eeb1c96d"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "scd",
+  "slug": "chaos-incarnate",
+  "nombre": "Chaos Incarnate",
+  "setNombre": "Starter Commander Decks",
+  "fecha": "2022-12-02",
+  "comandantes": [
+   {
+    "n": "Kardur, Doomscourge",
+    "id": "19e4d494-e8b3-4ae2-93e3-70c65ab90f15"
+   }
+  ],
+  "colores": [
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "scd",
+  "slug": "draconic-destruction",
+  "nombre": "Draconic Destruction",
+  "setNombre": "Starter Commander Decks",
+  "fecha": "2022-12-02",
+  "comandantes": [
+   {
+    "n": "Atarka, World Render",
+    "id": "719f172b-f9ad-4960-af66-757eb54147f6"
+   }
+  ],
+  "colores": [
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "scd",
+  "slug": "first-flight",
+  "nombre": "First Flight",
+  "setNombre": "Starter Commander Decks",
+  "fecha": "2022-12-02",
+  "comandantes": [
+   {
+    "n": "Isperia, Supreme Judge",
+    "id": "de3278de-a045-4290-b05f-3b19e7055091"
+   }
+  ],
+  "colores": [
+   "W",
+   "U"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "scd",
+  "slug": "grave-danger",
+  "nombre": "Grave Danger",
+  "setNombre": "Starter Commander Decks",
+  "fecha": "2022-12-02",
+  "comandantes": [
+   {
+    "n": "Gisa and Geralf",
+    "id": "4d8fd87c-caf7-402e-b543-e35ba3007bcb"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "scd",
+  "slug": "token-triumph",
+  "nombre": "Token Triumph",
+  "setNombre": "Starter Commander Decks",
+  "fecha": "2022-12-02",
+  "comandantes": [
+   {
+    "n": "Emmara, Soul of the Accord",
+    "id": "e8510a1e-62ca-462c-b036-d1312729f27d"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "brc",
+  "slug": "mishras-burnished-banner",
+  "nombre": "Mishra's Burnished Banner",
+  "setNombre": "The Brothers' War Commander",
+  "fecha": "2022-11-18",
+  "comandantes": [
+   {
+    "n": "Mishra, Eminent One",
+    "id": "7f5b1daa-ec45-48de-9496-6ca5b491a0dc"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 5,
+  "ub": false
+ },
+ {
+  "set": "brc",
+  "slug": "urzas-iron-alliance",
+  "nombre": "Urza's Iron Alliance",
+  "setNombre": "The Brothers' War Commander",
+  "fecha": "2022-11-18",
+  "comandantes": [
+   {
+    "n": "Urza, Chief Artificer",
+    "id": "ea409050-4296-4b76-a6cd-2896ce1b88e4"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "40k",
+  "slug": "forces-of-the-imperium",
+  "nombre": "Forces of the Imperium",
+  "setNombre": "Warhammer 40,000 Commander",
+  "fecha": "2022-10-07",
+  "comandantes": [
+   {
+    "n": "Inquisitor Greyfax",
+    "id": "1956cebe-bb71-45cc-b4ff-72ee3bb95c81"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "40k",
+  "slug": "necron-dynasties",
+  "nombre": "Necron Dynasties",
+  "setNombre": "Warhammer 40,000 Commander",
+  "fecha": "2022-10-07",
+  "comandantes": [
+   {
+    "n": "Szarekh, the Silent King",
+    "id": "12a3400d-7a8b-4bae-9a4f-c9a1bc741e68"
+   }
+  ],
+  "colores": [
+   "B"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "40k",
+  "slug": "the-ruinous-powers",
+  "nombre": "The Ruinous Powers",
+  "setNombre": "Warhammer 40,000 Commander",
+  "fecha": "2022-10-07",
+  "comandantes": [
+   {
+    "n": "Abaddon the Despoiler",
+    "id": "a78ab8fe-4499-4860-87d3-f8707398c00c"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "40k",
+  "slug": "tyranid-swarm",
+  "nombre": "Tyranid Swarm",
+  "setNombre": "Warhammer 40,000 Commander",
+  "fecha": "2022-10-07",
+  "comandantes": [
+   {
+    "n": "The Swarmlord",
+    "id": "c9dbba5a-fb9a-422e-87a1-a29d2c17a04e"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 98,
+  "tokens": 0,
+  "ub": true
+ },
+ {
+  "set": "dmc",
+  "slug": "legends-legacy",
+  "nombre": "Legends' Legacy",
+  "setNombre": "Dominaria United Commander",
+  "fecha": "2022-09-09",
+  "comandantes": [
+   {
+    "n": "Dihada, Binder of Wills",
+    "id": "ddeb54d6-a600-42b9-98df-20f8d58caed8"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "dmc",
+  "slug": "painbow",
+  "nombre": "Painbow",
+  "setNombre": "Dominaria United Commander",
+  "fecha": "2022-09-09",
+  "comandantes": [
+   {
+    "n": "Jared Carthalion",
+    "id": "5acffa48-9e3f-4ba3-a55f-d459307f46df"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "clb",
+  "slug": "draconic-dissent",
+  "nombre": "Draconic Dissent",
+  "setNombre": "Commander Legends: Battle for Baldur's Gate",
+  "fecha": "2022-06-10",
+  "comandantes": [
+   {
+    "n": "Firkraag, Cunning Instigator",
+    "id": "b55e624b-6f6a-42ae-89aa-0cc62ee55a31"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "clb",
+  "slug": "exit-from-exile",
+  "nombre": "Exit from Exile",
+  "setNombre": "Commander Legends: Battle for Baldur's Gate",
+  "fecha": "2022-06-10",
+  "comandantes": [
+   {
+    "n": "Faldorn, Dread Wolf Herald",
+    "id": "213e530e-33a9-4358-b43b-4a276a7e7190"
+   }
+  ],
+  "colores": [
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "clb",
+  "slug": "mind-flayarrrs",
+  "nombre": "Mind Flayarrrs",
+  "setNombre": "Commander Legends: Battle for Baldur's Gate",
+  "fecha": "2022-06-10",
+  "comandantes": [
+   {
+    "n": "Captain N'ghathrod",
+    "id": "55c02dc8-0743-400c-b334-ca029caf0463"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "clb",
+  "slug": "party-time",
+  "nombre": "Party Time",
+  "setNombre": "Commander Legends: Battle for Baldur's Gate",
+  "fecha": "2022-06-10",
+  "comandantes": [
+   {
+    "n": "Nalia de'Arnise",
+    "id": "7a1294fd-9885-4dfd-8192-0ca074fc83f7"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ncc",
+  "slug": "bedecked-brokers",
+  "nombre": "Bedecked Brokers",
+  "setNombre": "New Capenna Commander",
+  "fecha": "2022-04-29",
+  "comandantes": [
+   {
+    "n": "Perrie, the Pulverizer",
+    "id": "d438237b-c6f7-44d0-a3e6-6ec7d7465d33"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ncc",
+  "slug": "cabaretti-cacophony",
+  "nombre": "Cabaretti Cacophony",
+  "setNombre": "New Capenna Commander",
+  "fecha": "2022-04-29",
+  "comandantes": [
+   {
+    "n": "Kitt Kanto, Mayhem Diva",
+    "id": "9b9850d6-49d3-45ec-9a45-75aa0fce9ee5"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ncc",
+  "slug": "maestros-massacre",
+  "nombre": "Maestros Massacre",
+  "setNombre": "New Capenna Commander",
+  "fecha": "2022-04-29",
+  "comandantes": [
+   {
+    "n": "Anhelo, the Painter",
+    "id": "462e887d-6b91-4b31-9487-2780ffe8943f"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ncc",
+  "slug": "obscura-operation",
+  "nombre": "Obscura Operation",
+  "setNombre": "New Capenna Commander",
+  "fecha": "2022-04-29",
+  "comandantes": [
+   {
+    "n": "Kamiz, Obscura Oculus",
+    "id": "74b8ae28-e169-46be-8180-ebdaf80efd81"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "ncc",
+  "slug": "riveteers-rampage",
+  "nombre": "Riveteers Rampage",
+  "setNombre": "New Capenna Commander",
+  "fecha": "2022-04-29",
+  "comandantes": [
+   {
+    "n": "Henzie \"Toolbox\" Torre",
+    "id": "ee228dcc-3170-4c24-80bc-28bcee07cb43"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "sld",
+  "slug": "heads-i-win-tails-you-lose",
+  "nombre": "Heads I Win, Tails You Lose",
+  "setNombre": "Secret Lair Drop",
+  "fecha": "2022-04-22",
+  "comandantes": [
+   {
+    "n": "Zndrsplt, Eye of Wisdom // Zndrsplt, Eye of Wisdom",
+    "id": "d5dfd236-b1da-4552-b94f-ebf6bb9dafdf"
+   },
+   {
+    "n": "Okaun, Eye of Chaos // Okaun, Eye of Chaos",
+    "id": "94eea6e3-20bc-4dab-90ba-3113c120fb90"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 85,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "nec",
+  "slug": "buckle-up",
+  "nombre": "Buckle Up",
+  "setNombre": "Neon Dynasty Commander",
+  "fecha": "2022-02-18",
+  "comandantes": [
+   {
+    "n": "Kotori, Pilot Prodigy",
+    "id": "fea6c1c8-eff9-4b66-b96d-e23016f0bb62"
+   }
+  ],
+  "colores": [
+   "W",
+   "U"
+  ],
+  "total": 100,
+  "enEs": 92,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "nec",
+  "slug": "upgrades-unleashed",
+  "nombre": "Upgrades Unleashed",
+  "setNombre": "Neon Dynasty Commander",
+  "fecha": "2022-02-18",
+  "comandantes": [
+   {
+    "n": "Chishiro, the Shattered Blade",
+    "id": "bffa36ac-137d-481c-b1b7-76a88ef15d54"
+   }
+  ],
+  "colores": [
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 88,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "voc",
+  "slug": "spirit-squadron",
+  "nombre": "Spirit Squadron",
+  "setNombre": "Crimson Vow Commander",
+  "fecha": "2021-11-19",
+  "comandantes": [
+   {
+    "n": "Millicent, Restless Revenant",
+    "id": "2b86b538-0766-440d-a2cd-f5d5bfcfb010"
+   }
+  ],
+  "colores": [
+   "W",
+   "U"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "voc",
+  "slug": "vampiric-bloodline",
+  "nombre": "Vampiric Bloodline",
+  "setNombre": "Crimson Vow Commander",
+  "fecha": "2021-11-19",
+  "comandantes": [
+   {
+    "n": "Strefan, Maurer Progenitor",
+    "id": "8f54c6ce-fde4-47ef-a106-5c68b4397f99"
+   }
+  ],
+  "colores": [
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "mic",
+  "slug": "coven-counters",
+  "nombre": "Coven Counters",
+  "setNombre": "Midnight Hunt Commander",
+  "fecha": "2021-09-24",
+  "comandantes": [
+   {
+    "n": "Leinore, Autumn Sovereign",
+    "id": "bd7e1645-ea8f-41c4-b3ee-58f44fc5c574"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "mic",
+  "slug": "undead-unleashed",
+  "nombre": "Undead Unleashed",
+  "setNombre": "Midnight Hunt Commander",
+  "fecha": "2021-09-24",
+  "comandantes": [
+   {
+    "n": "Wilhelt, the Rotcleaver",
+    "id": "2501a911-d072-436d-ae3b-a5164e3b30aa"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "afc",
+  "slug": "aura-of-courage",
+  "nombre": "Aura of Courage",
+  "setNombre": "Forgotten Realms Commander",
+  "fecha": "2021-07-23",
+  "comandantes": [
+   {
+    "n": "Galea, Kindler of Hope",
+    "id": "1efbea01-c6a1-4380-a14f-6206c7895e48"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "afc",
+  "slug": "draconic-rage",
+  "nombre": "Draconic Rage",
+  "setNombre": "Forgotten Realms Commander",
+  "fecha": "2021-07-23",
+  "comandantes": [
+   {
+    "n": "Vrondiss, Rage of Ancients",
+    "id": "683ca7f0-e9df-459b-a8e3-cf80b39c732d"
+   }
+  ],
+  "colores": [
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "afc",
+  "slug": "dungeons-of-death",
+  "nombre": "Dungeons of Death",
+  "setNombre": "Forgotten Realms Commander",
+  "fecha": "2021-07-23",
+  "comandantes": [
+   {
+    "n": "Sefris of the Hidden Ways",
+    "id": "d30255f6-e058-476a-b377-2ee4c9178ed1"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "afc",
+  "slug": "planar-portal",
+  "nombre": "Planar Portal",
+  "setNombre": "Forgotten Realms Commander",
+  "fecha": "2021-07-23",
+  "comandantes": [
+   {
+    "n": "Prosper, Tome-Bound",
+    "id": "d743336e-d5c7-4053-a23d-92ec7581f74e"
+   }
+  ],
+  "colores": [
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c21",
+  "slug": "lorehold-legacies",
+  "nombre": "Lorehold Legacies",
+  "setNombre": "Commander 2021",
+  "fecha": "2021-04-23",
+  "comandantes": [
+   {
+    "n": "Osgir, the Reconstructor",
+    "id": "5815fe6e-e26b-4918-a090-55d6442722c1"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c21",
+  "slug": "prismari-performance",
+  "nombre": "Prismari Performance",
+  "setNombre": "Commander 2021",
+  "fecha": "2021-04-23",
+  "comandantes": [
+   {
+    "n": "Zaffai, Thunder Conductor",
+    "id": "ea1ab937-8647-4c83-99d5-6a40dffa4c9b"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c21",
+  "slug": "quantum-quandrix",
+  "nombre": "Quantum Quandrix",
+  "setNombre": "Commander 2021",
+  "fecha": "2021-04-23",
+  "comandantes": [
+   {
+    "n": "Adrix and Nev, Twincasters",
+    "id": "d495e084-92ec-4675-b6aa-8ade2775b796"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c21",
+  "slug": "silverquill-statement",
+  "nombre": "Silverquill Statement",
+  "setNombre": "Commander 2021",
+  "fecha": "2021-04-23",
+  "comandantes": [
+   {
+    "n": "Breena, the Demagogue",
+    "id": "6cb82b10-d785-4e20-84ac-0660d49be8ad"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c21",
+  "slug": "witherbloom-witchcraft",
+  "nombre": "Witherbloom Witchcraft",
+  "setNombre": "Commander 2021",
+  "fecha": "2021-04-23",
+  "comandantes": [
+   {
+    "n": "Willowdusk, Essence Seer",
+    "id": "42a97ec1-f613-49a5-9236-7fded1a81f3b"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "khc",
+  "slug": "elven-empire",
+  "nombre": "Elven Empire",
+  "setNombre": "Kaldheim Commander",
+  "fecha": "2021-02-05",
+  "comandantes": [
+   {
+    "n": "Lathril, Blade of the Elves",
+    "id": "547888c3-a9a6-4413-b29a-6bcd8a9279bf"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "khc",
+  "slug": "phantom-premonition",
+  "nombre": "Phantom Premonition",
+  "setNombre": "Kaldheim Commander",
+  "fecha": "2021-02-05",
+  "comandantes": [
+   {
+    "n": "Ranar the Ever-Watchful",
+    "id": "1c8c41dd-8551-4ce8-a9be-9b9f65718852"
+   }
+  ],
+  "colores": [
+   "W",
+   "U"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmr",
+  "slug": "arm-for-battle",
+  "nombre": "Arm for Battle",
+  "setNombre": "Commander Legends",
+  "fecha": "2020-11-20",
+  "comandantes": [
+   {
+    "n": "Wyleth, Soul of Steel",
+    "id": "7c5ada8c-98f2-4f9c-bcb5-dfa4f804fbe6"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmr",
+  "slug": "reap-the-tides",
+  "nombre": "Reap the Tides",
+  "setNombre": "Commander Legends",
+  "fecha": "2020-11-20",
+  "comandantes": [
+   {
+    "n": "Aesi, Tyrant of Gyre Strait",
+    "id": "d607b003-6b48-429c-a7fd-45b8dd1bb4f9"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "znc",
+  "slug": "lands-wrath",
+  "nombre": "Land's Wrath",
+  "setNombre": "Zendikar Rising Commander",
+  "fecha": "2020-09-25",
+  "comandantes": [
+   {
+    "n": "Obuun, Mul Daya Ancestor",
+    "id": "8319b155-0fba-4d30-9481-bf01afbd3457"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "znc",
+  "slug": "sneak-attack",
+  "nombre": "Sneak Attack",
+  "setNombre": "Zendikar Rising Commander",
+  "fecha": "2020-09-25",
+  "comandantes": [
+   {
+    "n": "Anowon, the Ruin Thief",
+    "id": "bca84fc4-4710-44c8-b90a-73ef888714d8"
+   }
+  ],
+  "colores": [
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c20",
+  "slug": "arcane-maelstrom",
+  "nombre": "Arcane Maelstrom",
+  "setNombre": "Commander 2020",
+  "fecha": "2020-04-17",
+  "comandantes": [
+   {
+    "n": "Kalamax, the Stormsire",
+    "id": "f990cd78-2165-446f-a116-ae55d7a0f00d"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 4,
+  "ub": false
+ },
+ {
+  "set": "c20",
+  "slug": "enhanced-evolution",
+  "nombre": "Enhanced Evolution",
+  "setNombre": "Commander 2020",
+  "fecha": "2020-04-17",
+  "comandantes": [
+   {
+    "n": "Otrimi, the Ever-Playful",
+    "id": "639df7bc-b87d-4bf5-8005-8eabc54e955b"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "c20",
+  "slug": "ruthless-regiment",
+  "nombre": "Ruthless Regiment",
+  "setNombre": "Commander 2020",
+  "fecha": "2020-04-17",
+  "comandantes": [
+   {
+    "n": "Jirina Kudro",
+    "id": "6e660d42-f5d3-452a-9662-74e18a1ae9e4"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 4,
+  "ub": false
+ },
+ {
+  "set": "c20",
+  "slug": "symbiotic-swarm",
+  "nombre": "Symbiotic Swarm",
+  "setNombre": "Commander 2020",
+  "fecha": "2020-04-17",
+  "comandantes": [
+   {
+    "n": "Kathril, Aspect Warper",
+    "id": "ebc57f73-a517-463e-8d55-56aa996d091e"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "c20",
+  "slug": "timeless-wisdom",
+  "nombre": "Timeless Wisdom",
+  "setNombre": "Commander 2020",
+  "fecha": "2020-04-17",
+  "comandantes": [
+   {
+    "n": "Gavi, Nest Warden",
+    "id": "80bc07d5-bdbb-4a6d-8958-0c172ea80245"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 7,
+  "ub": false
+ },
+ {
+  "set": "c19",
+  "slug": "faceless-menace",
+  "nombre": "Faceless Menace",
+  "setNombre": "Commander 2019",
+  "fecha": "2019-08-23",
+  "comandantes": [
+   {
+    "n": "Kadena, Slinking Sorcerer",
+    "id": "68a144f1-df18-4dc5-81c3-dff2af27527f"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c19",
+  "slug": "merciless-rage",
+  "nombre": "Merciless Rage",
+  "setNombre": "Commander 2019",
+  "fecha": "2019-08-23",
+  "comandantes": [
+   {
+    "n": "Anje Falkenrath",
+    "id": "913dd06f-ed2f-4128-9c9d-9cd0d8a55425"
+   }
+  ],
+  "colores": [
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c19",
+  "slug": "mystic-intellect",
+  "nombre": "Mystic Intellect",
+  "setNombre": "Commander 2019",
+  "fecha": "2019-08-23",
+  "comandantes": [
+   {
+    "n": "Sevinne, the Chronoclasm",
+    "id": "2c209efe-b4dc-44a3-bd45-d647f5680cbe"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c19",
+  "slug": "primal-genesis",
+  "nombre": "Primal Genesis",
+  "setNombre": "Commander 2019",
+  "fecha": "2019-08-23",
+  "comandantes": [
+   {
+    "n": "Ghired, Conclave Exile",
+    "id": "d0825bcd-8cf8-498a-a61e-406f136e1f3f"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c18",
+  "slug": "adaptive-enchantment",
+  "nombre": "Adaptive Enchantment",
+  "setNombre": "Commander 2018",
+  "fecha": "2018-08-10",
+  "comandantes": [
+   {
+    "n": "Estrid, the Masked",
+    "id": "3340b83e-72dc-42e2-9f93-92f732c047df"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c18",
+  "slug": "exquisite-invention",
+  "nombre": "Exquisite Invention",
+  "setNombre": "Commander 2018",
+  "fecha": "2018-08-10",
+  "comandantes": [
+   {
+    "n": "Saheeli, the Gifted",
+    "id": "ca095559-ac77-4186-8d9b-b75ce0607582"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c18",
+  "slug": "natures-vengeance",
+  "nombre": "Nature's Vengeance",
+  "setNombre": "Commander 2018",
+  "fecha": "2018-08-10",
+  "comandantes": [
+   {
+    "n": "Lord Windgrace",
+    "id": "213d6fb8-5624-4804-b263-51f339482754"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 99,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c18",
+  "slug": "subjective-reality",
+  "nombre": "Subjective Reality",
+  "setNombre": "Commander 2018",
+  "fecha": "2018-08-10",
+  "comandantes": [
+   {
+    "n": "Aminatou, the Fateshifter",
+    "id": "16b9f43a-9c3f-4bfa-9eb1-734189a4bb1f"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cm2",
+  "slug": "breed-lethality",
+  "nombre": "Breed Lethality",
+  "setNombre": "Commander Anthology Volume II",
+  "fecha": "2018-06-08",
+  "comandantes": [
+   {
+    "n": "Atraxa, Praetors' Voice",
+    "id": "b2e330dd-7cd3-445d-9c05-56e4a57526e9"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cm2",
+  "slug": "built-from-scratch",
+  "nombre": "Built From Scratch",
+  "setNombre": "Commander Anthology Volume II",
+  "fecha": "2018-06-08",
+  "comandantes": [
+   {
+    "n": "Daretti, Scrap Savant",
+    "id": "3f4e6adf-d52f-4087-a919-789a543a9a3e"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cm2",
+  "slug": "devour-for-power",
+  "nombre": "Devour for Power",
+  "setNombre": "Commander Anthology Volume II",
+  "fecha": "2018-06-08",
+  "comandantes": [
+   {
+    "n": "The Mimeoplasm",
+    "id": "aedc7a6b-c481-4719-bc83-424eeb216aef"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cm2",
+  "slug": "wade-into-battle",
+  "nombre": "Wade into Battle",
+  "setNombre": "Commander Anthology Volume II",
+  "fecha": "2018-06-08",
+  "comandantes": [
+   {
+    "n": "Kalemne, Disciple of Iroas",
+    "id": "3c718940-dc07-4449-ba35-4029f366c3eb"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c17",
+  "slug": "arcane-wizardry",
+  "nombre": "Arcane Wizardry",
+  "setNombre": "Commander 2017",
+  "fecha": "2017-08-25",
+  "comandantes": [
+   {
+    "n": "Inalla, Archmage Ritualist",
+    "id": "7c6e803a-451c-4aa6-97a2-400077f32c47"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c17",
+  "slug": "draconic-domination",
+  "nombre": "Draconic Domination",
+  "setNombre": "Commander 2017",
+  "fecha": "2017-08-25",
+  "comandantes": [
+   {
+    "n": "The Ur-Dragon",
+    "id": "7e78b70b-0c67-4f14-8ad7-c9f8e3f59743"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c17",
+  "slug": "feline-ferocity",
+  "nombre": "Feline Ferocity",
+  "setNombre": "Commander 2017",
+  "fecha": "2017-08-25",
+  "comandantes": [
+   {
+    "n": "Arahbo, Roar of the World",
+    "id": "81dc3d00-97cd-4549-b5a4-15a1e08767f5"
+   }
+  ],
+  "colores": [
+   "W",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c17",
+  "slug": "vampiric-bloodlust",
+  "nombre": "Vampiric Bloodlust",
+  "setNombre": "Commander 2017",
+  "fecha": "2017-08-25",
+  "comandantes": [
+   {
+    "n": "Edgar Markov",
+    "id": "8d94b8ec-ecda-43c8-a60e-1ba33e6a54a4"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cma",
+  "slug": "evasive-maneuvers",
+  "nombre": "Evasive Maneuvers",
+  "setNombre": "Commander Anthology",
+  "fecha": "2017-06-09",
+  "comandantes": [
+   {
+    "n": "Derevi, Empyrial Tactician",
+    "id": "3a1d0dad-18a8-489e-ac11-08f64b72fda4"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cma",
+  "slug": "guided-by-nature",
+  "nombre": "Guided by Nature",
+  "setNombre": "Commander Anthology",
+  "fecha": "2017-06-09",
+  "comandantes": [
+   {
+    "n": "Freyalise, Llanowar's Fury",
+    "id": "cb67310a-da5d-4932-8694-2ad6afe5aeae"
+   }
+  ],
+  "colores": [
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cma",
+  "slug": "heavenly-inferno",
+  "nombre": "Heavenly Inferno",
+  "setNombre": "Commander Anthology",
+  "fecha": "2017-06-09",
+  "comandantes": [
+   {
+    "n": "Kaalia of the Vast",
+    "id": "5c509c36-43a8-454e-80fc-321f41981049"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cma",
+  "slug": "plunder-the-graves",
+  "nombre": "Plunder the Graves",
+  "setNombre": "Commander Anthology",
+  "fecha": "2017-06-09",
+  "comandantes": [
+   {
+    "n": "Meren of Clan Nel Toth",
+    "id": "17d6703c-ad79-457b-a1b5-c2284e363085"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c16",
+  "slug": "breed-lethality",
+  "nombre": "Breed Lethality",
+  "setNombre": "Commander 2016",
+  "fecha": "2016-11-11",
+  "comandantes": [
+   {
+    "n": "Atraxa, Praetors' Voice",
+    "id": "c34ae834-775e-447a-a330-0270c227c667"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 3,
+  "ub": false
+ },
+ {
+  "set": "c16",
+  "slug": "entropic-uprising",
+  "nombre": "Entropic Uprising",
+  "setNombre": "Commander 2016",
+  "fecha": "2016-11-11",
+  "comandantes": [
+   {
+    "n": "Yidris, Maelstrom Wielder",
+    "id": "c219dd22-433c-4f6a-a0c4-fae12239291c"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "c16",
+  "slug": "invent-superiority",
+  "nombre": "Invent Superiority",
+  "setNombre": "Commander 2016",
+  "fecha": "2016-11-11",
+  "comandantes": [
+   {
+    "n": "Breya, Etherium Shaper",
+    "id": "8b585ce8-77a3-4755-8aa6-aee83724bbab"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 2,
+  "ub": false
+ },
+ {
+  "set": "c16",
+  "slug": "open-hostility",
+  "nombre": "Open Hostility",
+  "setNombre": "Commander 2016",
+  "fecha": "2016-11-11",
+  "comandantes": [
+   {
+    "n": "Saskia the Unyielding",
+    "id": "5b483db6-b614-4af1-820a-42a4ee0c8707"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 1,
+  "ub": false
+ },
+ {
+  "set": "c16",
+  "slug": "stalwart-unity",
+  "nombre": "Stalwart Unity",
+  "setNombre": "Commander 2016",
+  "fecha": "2016-11-11",
+  "comandantes": [
+   {
+    "n": "Kynaios and Tiro of Meletis",
+    "id": "97fa8615-2b6c-445a-bcaf-44a7e847bf65"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 4,
+  "ub": false
+ },
+ {
+  "set": "c15",
+  "slug": "call-the-spirits",
+  "nombre": "Call the Spirits",
+  "setNombre": "Commander 2015",
+  "fecha": "2015-11-13",
+  "comandantes": [
+   {
+    "n": "Daxos the Returned",
+    "id": "4abe142e-7e87-464b-be2a-ad2fc7aebd51"
+   }
+  ],
+  "colores": [
+   "W",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c15",
+  "slug": "plunder-the-graves",
+  "nombre": "Plunder the Graves",
+  "setNombre": "Commander 2015",
+  "fecha": "2015-11-13",
+  "comandantes": [
+   {
+    "n": "Meren of Clan Nel Toth",
+    "id": "f43bf91d-bc08-417f-a549-64919c24052a"
+   }
+  ],
+  "colores": [
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c15",
+  "slug": "seize-control",
+  "nombre": "Seize Control",
+  "setNombre": "Commander 2015",
+  "fecha": "2015-11-13",
+  "comandantes": [
+   {
+    "n": "Mizzix of the Izmagnus",
+    "id": "d0ea2c3a-c36d-44e8-bc46-5361f5f9d0e7"
+   }
+  ],
+  "colores": [
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c15",
+  "slug": "swell-the-host",
+  "nombre": "Swell the Host",
+  "setNombre": "Commander 2015",
+  "fecha": "2015-11-13",
+  "comandantes": [
+   {
+    "n": "Ezuri, Claw of Progress",
+    "id": "ef1b62ff-dbb3-4500-9d64-a3047ce193ec"
+   }
+  ],
+  "colores": [
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c15",
+  "slug": "wade-into-battle",
+  "nombre": "Wade into Battle",
+  "setNombre": "Commander 2015",
+  "fecha": "2015-11-13",
+  "comandantes": [
+   {
+    "n": "Kalemne, Disciple of Iroas",
+    "id": "c049d734-cb1c-4c38-b276-7e5ac9c81254"
+   }
+  ],
+  "colores": [
+   "W",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c14",
+  "slug": "built-from-scratch",
+  "nombre": "Built From Scratch",
+  "setNombre": "Commander 2014",
+  "fecha": "2014-11-07",
+  "comandantes": [
+   {
+    "n": "Daretti, Scrap Savant",
+    "id": "cda40e31-ba99-4565-ad92-7c687ff44bd9"
+   }
+  ],
+  "colores": [
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c14",
+  "slug": "forged-in-stone",
+  "nombre": "Forged In Stone",
+  "setNombre": "Commander 2014",
+  "fecha": "2014-11-07",
+  "comandantes": [
+   {
+    "n": "Nahiri, the Lithomancer",
+    "id": "9a226eae-1c77-45a9-9115-f846b76681a3"
+   }
+  ],
+  "colores": [
+   "W"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c14",
+  "slug": "guided-by-nature",
+  "nombre": "Guided By Nature",
+  "setNombre": "Commander 2014",
+  "fecha": "2014-11-07",
+  "comandantes": [
+   {
+    "n": "Freyalise, Llanowar's Fury",
+    "id": "6c6ef042-1a69-4b16-abae-4f436dbadbbd"
+   }
+  ],
+  "colores": [
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c14",
+  "slug": "peer-through-time",
+  "nombre": "Peer Through Time",
+  "setNombre": "Commander 2014",
+  "fecha": "2014-11-07",
+  "comandantes": [
+   {
+    "n": "Teferi, Temporal Archmage",
+    "id": "80eec0bd-9eb4-4360-b97b-9c7985a63343"
+   }
+  ],
+  "colores": [
+   "U"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c14",
+  "slug": "sworn-to-darkness",
+  "nombre": "Sworn To Darkness",
+  "setNombre": "Commander 2014",
+  "fecha": "2014-11-07",
+  "comandantes": [
+   {
+    "n": "Ob Nixilis of the Black Oath",
+    "id": "bf472be9-f375-455e-a800-7af5258f4e59"
+   }
+  ],
+  "colores": [
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c13",
+  "slug": "eternal-bargain",
+  "nombre": "Eternal Bargain",
+  "setNombre": "Commander 2013",
+  "fecha": "2013-11-01",
+  "comandantes": [
+   {
+    "n": "Oloro, Ageless Ascetic",
+    "id": "abf8df47-405c-42d8-be9e-0f0d0a49589b"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "B"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c13",
+  "slug": "evasive-maneuvers",
+  "nombre": "Evasive Maneuvers",
+  "setNombre": "Commander 2013",
+  "fecha": "2013-11-01",
+  "comandantes": [
+   {
+    "n": "Derevi, Empyrial Tactician",
+    "id": "3d61a4d4-f0d5-4bc4-8977-57bbb3d97776"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c13",
+  "slug": "mind-seize",
+  "nombre": "Mind Seize",
+  "setNombre": "Commander 2013",
+  "fecha": "2013-11-01",
+  "comandantes": [
+   {
+    "n": "Jeleva, Nephalia's Scourge",
+    "id": "83f9aeb8-05ba-49d9-a834-62f42fcd295b"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c13",
+  "slug": "nature-of-the-beast",
+  "nombre": "Nature of the Beast",
+  "setNombre": "Commander 2013",
+  "fecha": "2013-11-01",
+  "comandantes": [
+   {
+    "n": "Marath, Will of the Wild",
+    "id": "57afa796-db46-45ff-91bd-f02922e5f33d"
+   }
+  ],
+  "colores": [
+   "W",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "c13",
+  "slug": "power-hungry",
+  "nombre": "Power Hungry",
+  "setNombre": "Commander 2013",
+  "fecha": "2013-11-01",
+  "comandantes": [
+   {
+    "n": "Prossh, Skyraider of Kher",
+    "id": "fc411c52-3ee2-4fe4-983d-3fa43b516237"
+   }
+  ],
+  "colores": [
+   "B",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmd",
+  "slug": "counterpunch",
+  "nombre": "Counterpunch",
+  "setNombre": "Commander 2011",
+  "fecha": "2011-06-17",
+  "comandantes": [
+   {
+    "n": "Ghave, Guru of Spores",
+    "id": "91194df8-4066-4235-a829-2b688ba4afcb"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmd",
+  "slug": "devour-for-power",
+  "nombre": "Devour for Power",
+  "setNombre": "Commander 2011",
+  "fecha": "2011-06-17",
+  "comandantes": [
+   {
+    "n": "The Mimeoplasm",
+    "id": "20ffedd2-0575-4050-b687-fa1212966c46"
+   }
+  ],
+  "colores": [
+   "U",
+   "B",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmd",
+  "slug": "heavenly-inferno",
+  "nombre": "Heavenly Inferno",
+  "setNombre": "Commander 2011",
+  "fecha": "2011-06-17",
+  "comandantes": [
+   {
+    "n": "Kaalia of the Vast",
+    "id": "4b71d89b-7ba4-406f-8736-ac62b9864f21"
+   }
+  ],
+  "colores": [
+   "W",
+   "B",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmd",
+  "slug": "mirror-mastery",
+  "nombre": "Mirror Mastery",
+  "setNombre": "Commander 2011",
+  "fecha": "2011-06-17",
+  "comandantes": [
+   {
+    "n": "Riku of Two Reflections",
+    "id": "716d0b3b-bac9-4fb8-882e-bd6171864043"
+   }
+  ],
+  "colores": [
+   "U",
+   "R",
+   "G"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ },
+ {
+  "set": "cmd",
+  "slug": "political-puppets",
+  "nombre": "Political Puppets",
+  "setNombre": "Commander 2011",
+  "fecha": "2011-06-17",
+  "comandantes": [
+   {
+    "n": "Zedruu the Greathearted",
+    "id": "f851b861-4e9c-4422-8156-37d7bf2928cd"
+   }
+  ],
+  "colores": [
+   "W",
+   "U",
+   "R"
+  ],
+  "total": 100,
+  "enEs": 100,
+  "tokens": 0,
+  "ub": false
+ }
+]

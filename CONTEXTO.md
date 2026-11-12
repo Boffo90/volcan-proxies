@@ -4,7 +4,7 @@ Documento de traspaso. Si estás retomando el proyecto en una sesión nueva,
 lee esto antes de tocar código: acá está lo que no se deduce leyendo los
 archivos.
 
-Última actualización: 31 de octubre de 2026.
+Última actualización: 11 de noviembre de 2026.
 
 ---
 
@@ -282,6 +282,206 @@ La salida fue copiar las cartas a la tabla `riftbound_cartas`:
 
 Si el catálogo de Riftbound aparece vacío, lo primero que hay que mirar es si
 la sincronización se corrió.
+
+---
+
+## 4b. Precons de Commander y el importador
+
+Nacen de mirar a la competencia en noviembre de 2026: `mtgproxis.cl` ofrece los
+186 precons de Commander como producto, y el que recién empieza no tiene una
+lista que pegar. Hoy `/precons` los lista (búsqueda, color, año, "español
+completo", "sin Universes Beyond") y `/precons/<set>/<slug>` es la página de
+cada uno, con la lista por tipo, los tokens y el precio real con promo.
+
+**Los mazos viven en el repo, no en una API ni en la base.** Los escribe
+`node scripts/sync-precons.mjs`:
+
+- `data/precons-index.json` — el listado, que importan `/precons` y el sitemap.
+- `data/precons-destacados.json` — cuántos son y tres carátulas, para la
+  portada. Va aparte para no meter el índice entero (70 KB) en la página más
+  visitada.
+- `public/precons/<set>/<slug>.json` — las cartas de cada mazo. En `public/`
+  porque el importador las pide desde el navegador.
+
+Hay que **volver a correrlo cuando salga un producto de Commander** y hacer
+commit de lo que cambie. Tarda unos diez minutos, casi todo esperando a
+Scryfall.
+
+Las listas salen de **MTGJSON**; las ediciones de coleccionista se descartan
+porque son el mismo mazo. Las páginas se generan todas en el build
+(`dynamicParams = false`): una dirección que no esté en el índice es un 404 sin
+tocar el disco.
+
+### Las imágenes no se le piden a nadie
+
+`imagenDeScryfall(id, talla)` arma la dirección desde el id: el CDN de Scryfall
+ordena los archivos por los dos primeros caracteres. Cien cartas de un mazo son
+cien direcciones que se escriben solas, sin una sola llamada a la API.
+
+### "Español completo" es lo que el importador va a encontrar
+
+Cada carta guarda en `es` el **id de la impresión en español**, no un sí/no. Se
+busca primero la misma impresión del producto y, si no salió traducida,
+cualquier otra edición de esa carta que sí (`esOtra: 1`): a quien pide el mazo
+en español le importa poder leerla más que de qué edición viene. Como el
+importador pide ese id tal cual, lo que promete la página es exactamente lo que
+después aparece en la revisión.
+
+### La búsqueda de Scryfall tiene su propio límite, y bloquea
+
+El resto de la API aguanta diez por segundo; **`/cards/search` aguanta dos**, y
+al pasarse responde 429 durante un minuto entero con una amenaza explícita de
+bloquear la red. La primera versión del script esperaba 110 ms y murió a la
+mitad. Hoy espera 600 ms por búsqueda y respeta el 429 esperando 70 segundos.
+Si algún día se escribe otro script contra Scryfall, ese es el número.
+
+### "Pedir este mazo" no agrega al carrito: manda al importador
+
+`/importar?precon=fdc/reign-of-dragons&acabado=…&idioma=…&tokens=1`. Un precon
+y una lista pegada pasan por **la misma revisión**, así no hay dos pantallas
+que mantener iguales. La diferencia es cómo se resuelven: una lista pegada son
+cien peticiones y casi medio minuto; el precon ya trae los ids y se pide entero
+en dos llamadas a `/cards/collection` (`lib/preconImport.ts`).
+
+Scryfall rechaza **el lote entero** si un identificador no es un id válido. Por
+eso `idDe` comprueba que `es` sea texto: un archivo viejo dejaba al cliente sin
+ninguna de las cien cartas por culpa de una.
+
+### Lo que ganó la revisión
+
+- **Quitar cartas y cambiar cantidades**, que antes no se podía: el caso de
+  quien ya tiene la mitad del mazo.
+- **Tokens.** En un precon vienen del producto. En una lista pegada se leen de
+  `all_parts` de cada carta y **se ofrecen, no se suman solos**: son cartas que
+  se cobran. Se deja uno por token (por `oracle_id`), no uno por impresión.
+- **El total es el del carrito**, con promos. Antes era precio suelto por
+  cantidad y un mazo de 100 mostraba más de lo que después cobraba.
+
+- **Arte HD de MPCFill**, que antes solo estaba en la ficha. Se busca por el
+  nombre en inglés de la línea (`c.name`), no por el de la carta mostrada: en
+  un mazo en español ese es el traducido y MPCFill no lo conoce. La línea va
+  al carrito con el mismo id `<uid>-mpc-<id>` que arma la ficha.
+- **La revisión se guarda sola** en `localStorage` (`importar-borrador`) y al
+  volver a `/importar` se ofrece retomarla. No se restaura sin preguntar, y
+  no se ofrece al llegar desde un precon. Se borra al agregar al carrito.
+
+### Por enlace: Archidekt sí, Moxfield no
+
+`/api/mazo-link` convierte un enlace en la misma lista de texto que se pegaría
+a mano. **Archidekt** tiene API abierta. **Moxfield responde 403 a los clientes
+automáticos y lo hace a propósito**; disfrazarse de navegador para pasar es
+saltarse esa protección y no se hace. La vía correcta es pedirles acceso (dan
+un identificador de cliente autorizado). Mientras tanto, a quien pega un enlace
+de Moxfield se le explica cómo exportar. La ruta solo va a buscar a los sitios
+de su lista y solo con el id que saca del enlace: no es un proxy abierto.
+
+### Mazos listos: listas que se juegan, no inventadas
+
+`/mazos` ofrece mazos de cEDH y Bracket 3, cada uno con "cómo juega" y "cómo
+gana". Son la respuesta a lo mismo en mtgproxis.cl.
+
+**Las listas no las escribe nadie de acá.** La primera versión la armó el
+asistente de memoria y Seba pidió sacarlas de donde se juegan:
+
+- **cEDH: edhtop16.com.** Para cada comandante, la lista mejor ubicada del
+  último año en torneos de 50 jugadores o más (el orden por defecto de su
+  página). Las ocho de hoy son primeros lugares.
+- **Bracket 3: EDHREC.** El mazo promedio de ese comandante en Bracket 3
+  ("upgraded"), calculado sobre miles de mazos.
+
+Qué comandantes hay lo dice `data/mazos/fuentes.json`; se eligieron los más
+jugados de cada fuente. Son dos pasos:
+
+1. `node scripts/fetch-mazos.mjs` trae las listas a `data/mazos/<slug>.txt`
+   y anota de dónde salió cada una (`fuente:` y `fuenteUrl:`). Con un slug
+   de argumento trae solo ese.
+2. `node scripts/build-mazos.mjs` las valida y arma lo que usa el sitio
+   (`--check` solo valida).
+
+**Refrescar es volver a correr los dos.** El metajuego cambia: una lista de
+torneo de hace un año deja de ser "la que gana".
+
+**Lo nuestro son el nombre, el arquetipo y los textos.** `fetch-mazos` solo
+reescribe la lista y las líneas de fuente; el resto de la cabecera se conserva.
+Un mazo nuevo nace con esos campos vacíos y `build-mazos` se niega a
+publicarlo hasta que alguien los escriba.
+
+**Ojo al refrescar: el "cómo gana" nombra cartas.** Si la lista nueva ya no
+trae una, el texto queda prometiendo algo que el mazo no tiene. El validador lo
+detecta solo cuando la carta sigue en algún otro mazo; hay que releer los
+textos del mazo que cambió. Pasó al cambiar de fuente: la lista de Blue Farm
+que ganó no lleva Thassa's Oracle y la de Kinnan no lleva Isochron Scepter,
+que eran justo lo que decían los textos escritos de memoria.
+
+**Cómo se leen esas fuentes, y el límite.** edhtop16 es una app que trae sus
+datos incrustados en la página; de ahí se lee el resultado y sus cartas. Su API
+GraphQL solo acepta consultas propias y no se intenta usar. EDHREC publica el
+mazo promedio como JSON. Los dos `robots.txt` lo permiten, el script se
+identifica y hace una petición por segundo. **Si alguno empieza a rechazar, no
+se disfraza el cliente**: es la misma regla que con Moxfield. cedhstats no
+respondió y no se usa. Cada página enlaza a la lista original.
+
+**Una lista que no cumple las reglas no se escribe.** Contra Scryfall: 100
+cartas, sin repetidas salvo básicas y las que su propio texto permite (los
+siete Nazgûl de Sauron), dentro de la identidad de color, legales en Commander,
+y un Bracket 3 con 3 Game Changers como máximo (Scryfall marca cada carta con
+`game_changer`). Las cartas de dos caras se piden por su primera mitad: con
+el nombre completo "A // B" la búsqueda por lote no las encuentra.
+
+Salen con la misma forma de un precon (`public/mazos/<slug>.json`), y por eso
+reusan la lista, el panel de compra (`PedirPrecon` recibe `clave="mazo"`) y la
+revisión del importador (`/importar?mazo=kinnan`). La versión en español de
+cada carta es siempre "otra edición": acá no hay una impresión del producto
+que respetar.
+
+### Combos: los pone Commander Spellbook, no nosotros
+
+Cada mazo listo muestra sus combos. `build-mazos.mjs` le manda la lista a
+`find-my-combos` de Commander Spellbook y guarda los que vienen completos
+(`included`), los ocho más populares, con enlace al paso a paso. Es lo que
+respalda el "cómo gana" que sí escribimos a mano.
+
+- **Se descartan los de una sola carta.** Spellbook los lista cuando la otra
+  mitad es "alguna pieza que cumpla tal cosa"; mostrarlos como combo del mazo
+  sería prometer algo que no está completo.
+- **Lo que produce se traduce con un diccionario** (`RESULTADOS`). Lo que no
+  esté ahí sale en inglés, a propósito: mejor eso que inventarle traducción.
+  Al agregar mazos hay que mirar si apareció alguno nuevo.
+- **Si Spellbook no responde, el mazo se publica igual**, sin la sección.
+- Sauron y Y'shtola no tienen ninguno, y está bien: no son mazos de combo.
+
+### Agregar cartas a la revisión y subir archivos
+
+**"Agregar cartas"** suma a la revisión abierta una lista pegada, un archivo o
+un enlace. Si la carta ya estaba —misma impresión, mismo arte— **se suma la
+cantidad** (`fusionar`). La misma carta con otro arte es otra línea, igual que
+en el carrito. La revisión no se esconde mientras llegan las nuevas.
+
+**Se puede subir el `cards.xml` de MPCFill** (o una lista `.txt`). Del XML se
+leen solo los frentes: cada `<card>` trae el id del diseño y en `<slots>`
+cuántas copias son. Los dorsos del archivo se ignoran; acá el dorso se elige en
+el carrito. Tres cosas que no se deducen:
+
+- El XML trae solo ids. El nombre y la miniatura se piden a MPCFill por
+  `POST /api/mpcfill` con la lista de ids (un mazo no cabe en una dirección).
+  La ruta solo manda ids con forma de id de Google Drive.
+- Cada diseño se cruza con Scryfall por nombre para que la línea sea una carta
+  de verdad. **Si Scryfall no la reconoce —tokens, customs— la línea se arma
+  igual** (`cartaSoloMpc`, uid `mtg:mpc-<id>`): lo que se imprime es el archivo
+  de MPCFill. Esas líneas no tienen "otras versiones".
+- Un diseño que ya no existe en MPCFill sale en "no encontradas" con ese
+  motivo, en vez de desaparecer en silencio.
+
+### Lo que la competencia tiene y acá falta
+
+- **Más mazos listos.** Allá son veinte; acá dieciséis. Sumar otro es una
+  línea en `data/mazos/fuentes.json` y sus textos.
+- **Botón de WhatsApp** y **feed de Instagram**: faltan el número y la decisión
+  de atender por ahí.
+
+Y lo que acá hay y allá no: cinco juegos, cartas custom subidas por el cliente
+(allá se piden por WhatsApp), dorso personalizado, tokens para cualquier lista
+y no solo para los mazos de la casa, y siete idiomas.
 
 ---
 
@@ -1013,6 +1213,8 @@ hechos a la medida de sus parsers reales.
 
 ## 11. Pendientes
 
+- **Resincronizar los precons cuando salga un producto de Commander**:
+  `node scripts/sync-precons.mjs` y commit de lo que cambie.
 - **Resincronizar Riftbound cuando salga un set**: `node scripts/sync-riftbound.mjs`
   desde la máquina de Seba. Es lo único del catálogo que no se actualiza solo.
 - **Los pedidos con varios juegos son varias tandas de impresión** si mezclan

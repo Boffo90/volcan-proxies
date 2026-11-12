@@ -36,6 +36,8 @@ export type ScryfallCard = {
   loyalty?: string;
   colors?: string[];
   color_identity?: string[];
+  /** Las piezas relacionadas: los tokens que crea, la otra mitad de un meld… */
+  all_parts?: Array<{ id: string; component: string; name: string }>;
   rarity: string;
   /**
   * Qué tan buena es la imagen: "highres_scan", "lowres", "placeholder" o
