@@ -315,3 +315,6 @@ if (raros.length) {
       raros.map((d) => `${d.nombre} (${d.total})`).join(", ")
   );
 }
+
+// El índice para buscar mazos por carta sale de lo recién escrito.
+await import("./build-indice-cartas.mjs");

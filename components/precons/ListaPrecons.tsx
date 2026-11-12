@@ -13,23 +13,21 @@ import {
   type ColorMana,
   type PreconResumen,
 } from "@/lib/precons";
+import { plano, useCartasDeMazos } from "@/hooks/useCartasDeMazos";
 import Pips from "./Pips";
 
 const COLORES: ColorMana[] = ["W", "U", "B", "R", "G"];
 
-/** Sin tildes ni mayúsculas, para que "dragon" encuentre "Dragón". */
-function plano(v: string): string {
-  return v
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase();
-}
 
 export default function ListaPrecons({ mazos }: { mazos: PreconResumen[] }) {
   const [q, setQ] = useState("");
   const [colores, setColores] = useState<ColorMana[]>([]);
   const [soloEs, setSoloEs] = useState(false);
   const [sinUb, setSinUb] = useState(false);
+
+  // Qué mazos traen una carta que calce con lo escrito, y cuál.
+  const { cargar, buscar } = useCartasDeMazos("/precons/_cartas.json");
+  const porCarta = useMemo(() => buscar(q), [buscar, q]);
 
   const filtrados = useMemo(() => {
     const texto = plano(q.trim());
@@ -40,11 +38,13 @@ export default function ListaPrecons({ mazos }: { mazos: PreconResumen[] }) {
       // quien marca azul y negro busca un mazo que juegue los dos.
       if (colores.some((c) => !m.colores.includes(c))) return false;
       if (!texto) return true;
-      return plano(
-        [m.nombre, m.setNombre, m.set, nombreComandantes(m), anioDe(m)].join(" ")
-      ).includes(texto);
+      return (
+        plano(
+          [m.nombre, m.setNombre, m.set, nombreComandantes(m), anioDe(m)].join(" ")
+        ).includes(texto) || porCarta.has(m.set + "/" + m.slug)
+      );
     });
-  }, [mazos, q, colores, soloEs, sinUb]);
+  }, [mazos, q, colores, soloEs, sinUb, porCarta]);
 
   // Año -> producto -> mazos, respetando el orden en que vienen (el más
   // nuevo primero).
@@ -99,8 +99,14 @@ export default function ListaPrecons({ mazos }: { mazos: PreconResumen[] }) {
             />
             <input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Busca por mazo, comandante o edición"
+              onChange={(e) => {
+                // Tambien al escribir, no solo al enfocar: un campo puede llenarse
+                // sin que nadie lo toque (dictado, autocompletar).
+                cargar();
+                setQ(e.target.value);
+              }}
+              onFocus={cargar}
+              placeholder="Busca por mazo, comandante, edición o carta"
               className="w-full bg-surface-2 border-2 border-line rounded-lg pl-9 pr-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-ink"
             />
           </label>
@@ -224,6 +230,14 @@ export default function ListaPrecons({ mazos }: { mazos: PreconResumen[] }) {
                       <p className="text-xs text-ink-muted leading-snug">
                         {nombreComandantes(m)}
                       </p>
+                      {porCarta.get(m.set + "/" + m.slug) ? (
+                        <p className="text-xs text-ink-soft leading-snug">
+                          Trae{" "}
+                          <b className="text-ink">
+                            {porCarta.get(m.set + "/" + m.slug)}
+                          </b>
+                        </p>
+                      ) : null}
                       <p className="mt-auto pt-1.5 flex flex-wrap gap-1.5">
                         <span
                           className={
