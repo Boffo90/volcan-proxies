@@ -1,13 +1,8 @@
 import Link from "next/link";
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import Pips from "@/components/precons/Pips";
-import { FORMATOS, MAZOS, rutaMazo } from "@/lib/mazos";
-import {
-  espanolCompleto,
-  imagenDeScryfall,
-  nombreComandantes,
-} from "@/lib/precons";
+import ListaMazos from "@/components/precons/ListaMazos";
+import { MAZOS } from "@/lib/mazos";
 
 export const metadata = {
   title: "Mazos listos de Commander: cEDH y Bracket 3, en proxies",
@@ -49,59 +44,7 @@ export default function MazosPage() {
           </p>
         </header>
 
-        {FORMATOS.map((f) => {
-          const mazos = MAZOS.filter((m) => m.formato === f.id);
-          if (!mazos.length) return null;
-          return (
-            <section key={f.id} id={"formato-" + f.id} className="mb-14 scroll-mt-24">
-              <h2 className="font-display font-extrabold text-3xl text-ink mb-2">
-                {f.label}
-              </h2>
-              <p className="text-ink-muted max-w-2xl mb-6">{f.descripcion}</p>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {mazos.map((m) => (
-                  <Link
-                    key={m.slug}
-                    href={rutaMazo(m)}
-                    className="block-card glow-hover overflow-hidden flex flex-col"
-                  >
-                    <div
-                      className="relative aspect-[16/10] bg-surface-3 bg-cover bg-center border-b-2 border-ink"
-                      style={{
-                        backgroundImage: `url(${imagenDeScryfall(
-                          m.comandantes[0].id,
-                          "art_crop"
-                        )})`,
-                      }}
-                    >
-                      <span className="badge absolute top-3 left-3 bg-surface-2 text-ink text-[11px] px-2 py-1">
-                        {f.label}
-                      </span>
-                    </div>
-                    <div className="p-4 flex flex-col gap-1.5 flex-1">
-                      <Pips colores={m.colores} size={17} />
-                      <p className="font-display font-extrabold text-xl text-ink leading-tight">
-                        {m.nombre}
-                      </p>
-                      <p className="text-sm text-ink-muted">
-                        {nombreComandantes(m)}
-                      </p>
-                      <p className="text-xs font-bold uppercase tracking-wide text-flame-ink">
-                        {m.arquetipo}
-                      </p>
-                      <p className="mt-auto pt-2 text-xs text-ink-muted">
-                        {m.tierras} tierras · curva {String(m.curva).replace(".", ",")} ·{" "}
-                        {espanolCompleto(m)
-                          ? "español completo"
-                          : `español ${m.enEs}/${m.total}`}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+        <ListaMazos mazos={MAZOS} />
 
         <p className="text-xs text-ink-faint max-w-3xl">
           Las listas cEDH salen de resultados de torneo publicados en

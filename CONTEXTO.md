@@ -472,6 +472,33 @@ el carrito. Tres cosas que no se deducen:
 - Un diseño que ya no existe en MPCFill sale en "no encontradas" con ese
   motivo, en vez de desaparecer en silencio.
 
+### Buscar un mazo por sus cartas
+
+Los buscadores de `/precons` y `/mazos` también encuentran por carta ("¿qué
+precon trae Cyclonic Rift?") y dicen cuál fue: "Trae Cyclonic Rift".
+
+**El índice va aparte del listado**: `public/precons/_cartas.json` y
+`public/mazos/_cartas.json`. Los nombres de las cartas de 186 mazos pesan 200
+KB, tres veces el listado, y la mayoría de las visitas no busca por carta. El
+navegador lo pide recién al tocar el buscador (`hooks/useCartasDeMazos.ts`);
+hasta que llega, se busca solo por nombre.
+
+- Lo escribe `scripts/build-indice-cartas.mjs`, que `sync-precons` y
+  `build-mazos` llaman solos al terminar. No hay que correrlo a mano.
+- Es compacto a propósito: cada nombre una vez y cada mazo guarda números.
+- **Se carga al enfocar el campo Y al escribir.** Solo con el foco no bastaba:
+  un campo se puede llenar sin que nadie lo toque (dictado, autocompletar), y
+  ahí el buscador quedaba sin índice sin avisar.
+- Pide tres letras como mínimo: con menos, casi cualquier mazo trae algo que
+  calza. Y busca en inglés, que es como están los nombres.
+
+### "Agregar y elegir otro mazo"
+
+El segundo botón de la revisión manda las cartas al carrito sin ir al
+carrito. Quien venía de un precon o un mazo listo vuelve a ese listado; quien
+pegó una lista se queda en el importador, limpio, con un aviso de cuántas
+cartas agregó — sin el aviso, la pantalla vacía parece un error.
+
 ### Lo que la competencia tiene y acá falta
 
 - **Más mazos listos.** Allá son veinte; acá dieciséis. Sumar otro es una

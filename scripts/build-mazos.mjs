@@ -513,3 +513,6 @@ indice.sort(
 );
 await writeFile(path.join(RAIZ, "data", "mazos-index.json"), JSON.stringify(indice, null, 1));
 console.log(`${indice.length} mazos escritos.`);
+
+// El índice para buscar mazos por carta sale de lo recién escrito.
+await import("./build-indice-cartas.mjs");

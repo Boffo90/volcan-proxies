@@ -143,6 +143,10 @@ export default function ImportarPage() {
   >({});
   const [mpcError, setMpcError] = useState("");
 
+  // Cuántas cartas se acaban de mandar al carrito con "elegir otro mazo",
+  // para confirmarlo: la pantalla queda vacía y sin esto parecería un error.
+  const [agregado, setAgregado] = useState(0);
+
   // Agregar cartas a una revisión ya abierta.
   const [panelAgregar, setPanelAgregar] = useState(false);
   const [textoExtra, setTextoExtra] = useState("");
@@ -452,7 +456,7 @@ export default function ImportarPage() {
 
   const getFinish = (c: CardWithFinish): Finish => c.finish || globalFinish;
 
-  const addAllToCart = () => {
+  const addAllToCart = (seguir = false) => {
     const eligible = cards.filter(
       (c) =>
         c.status === "ok" &&
@@ -483,7 +487,24 @@ export default function ImportarPage() {
     });
     // Ya está en el carrito: no hay nada que retomar.
     borrarBorrador();
-    router.push("/carrito");
+    if (!seguir) {
+      router.push("/carrito");
+      return;
+    }
+    // Quien arma un pedido de dos mazos vuelve a donde eligió el primero. El
+    // que venía con una lista propia se queda acá, con el importador limpio.
+    if (precon) {
+      router.push(precon.ruta.startsWith("/mazos") ? "/mazos" : "/precons");
+      return;
+    }
+    setCards([]);
+    setText("");
+    setLinkUrl("");
+    setLinkMsg(null);
+    setPanelAgregar(false);
+    setTokensListos(false);
+    setAgregado(eligible.reduce((s, c) => s + c.quantity, 0));
+    window.scrollTo({ top: 0 });
   };
 
   const okCards = cards.filter((c) => c.status === "ok");
@@ -561,6 +582,24 @@ export default function ImportarPage() {
             </p>
           </Reveal>
         )}
+
+        {agregado > 0 && cards.length === 0 && !loading ? (
+          <p
+            role="status"
+            className="block-card p-4 mb-6 text-sm text-ink-soft flex flex-wrap items-center justify-between gap-3"
+          >
+            <span>
+              <b className="text-ink">
+                {agregado} {agregado === 1 ? "carta agregada" : "cartas agregadas"} al
+                carrito.
+              </b>{" "}
+              Pega la siguiente lista cuando quieras.
+            </span>
+            <Link href="/carrito" className="font-bold text-flame-ink underline underline-offset-2">
+              Ir al carrito
+            </Link>
+          </p>
+        ) : null}
 
         {pendiente && cards.length === 0 && !loading ? (
           <div className="block-card p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -1192,12 +1231,22 @@ export default function ImportarPage() {
                     : " · la promo aplica sola al llegar a 60 o 100"}
                 </p>
               </div>
-              <button
-                onClick={addAllToCart}
-                className="btn-flame px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all"
-              >
-                <ShoppingCart size={18} /> Agregar todo al carrito
-              </button>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => addAllToCart(true)}
+                  className="btn-ghost px-4 py-3 text-sm"
+                >
+                  Agregar y elegir otro mazo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => addAllToCart()}
+                  className="btn-flame px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all"
+                >
+                  <ShoppingCart size={18} /> Agregar todo al carrito
+                </button>
+              </div>
             </div>
           </>
         )}
