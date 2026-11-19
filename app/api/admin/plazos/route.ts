@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase";
 import { esColumnaFaltante } from "@/lib/db";
+import { SIN_DESPACHAR } from "@/lib/envio";
 import { ESTADOS_PENDIENTES } from "@/lib/stock";
 import { horasDeItems, normalizePlazos, type ItemCola } from "@/lib/plazos";
 
@@ -20,7 +21,12 @@ type PedidoCola = { items: ItemCola[] };
 async function leerCola(): Promise<PedidoCola[]> {
   const sb = supabaseAdmin();
   const consulta = () =>
-	sb.from("pedidos").select("items, estado").in("estado", ESTADOS_PENDIENTES);
+	sb
+      .from("pedidos")
+      .select("items, estado")
+      .in("estado", ESTADOS_PENDIENTES)
+      // Despachado = ya no ocupa la cola ni reserva material.
+      .or(SIN_DESPACHAR);
 
   // Un pedido archivado no se va a producir, así que no ocupa lugar en la cola.
   const conFiltro = await consulta().is("archivado_at", null);

@@ -854,6 +854,14 @@ Consultar el estado de un pago de producción desde local devuelve
 "Transaction not found" — no es un bug. Como efecto secundario útil, correr el
 servidor local no puede cobrarle a un cliente real.
 
+**Guardar el tracking no pasa el pedido a "enviado".** Avisa al cliente por
+correo, pero el estado se queda en "pagado" o "laminando". Todo lo que cuenta
+pedidos por estado tiene que excluir además los que tienen tracking
+(`SIN_DESPACHAR` en `lib/envio.ts`): el aviso del checkout, la cola de
+`/admin/plazos` y el material reservado en `/admin/stock`. Sin eso, el
+checkout llegó a decir "Hay 15 pedidos en producción antes del tuyo" contando
+paquetes que ya iban en camino.
+
 **El panel está tras contraseña de admin.** El asistente no debe escribirla.
 Todo lo del panel se verifica por API, por lógica o por consulta a la base;
 la pantalla la prueba Seba.

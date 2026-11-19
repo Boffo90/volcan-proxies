@@ -52,6 +52,21 @@ export function normalizarDireccion(
 */
 export const ESTADOS_PAGADOS = ["pagado", "imprimiendo", "laminando"];
 
+/**
+ * Filtro de Supabase para "todavía no salió de Pucón": sin número de
+ * seguimiento. Va con `.or(SIN_DESPACHAR)`.
+ *
+ * El estado solo no alcanza. Guardar el tracking en el panel avisa al cliente
+ * pero NO pasa el pedido a "enviado": se queda en "laminando" o "pagado". Así,
+ * todo lo que contaba pedidos por estado contaba también los que ya iban en el
+ * camión — el checkout le decía a un cliente que había 15 pedidos antes del
+ * suyo cuando varios ya estaban despachados.
+ *
+ * Un tracking vacío ("") cuenta como sin despachar: es lo que queda si se
+ * borra el número en el panel.
+ */
+export const SIN_DESPACHAR = "tracking_numero.is.null,tracking_numero.eq.";
+
 export type PedidoAgrupable = {
   id: string;
   numero: number;
