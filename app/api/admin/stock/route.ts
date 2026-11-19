@@ -8,6 +8,7 @@ import {
   type ItemConsumo,
 } from "@/lib/stock";
 import { esColumnaFaltante } from "@/lib/db";
+import { SIN_DESPACHAR } from "@/lib/envio";
 
 /**
 * Devuelve el stock guardado y, además, lo que van a consumir los pedidos que
@@ -28,7 +29,12 @@ export async function GET() {
 	.single();
 
   const consulta = () =>
-	sb.from("pedidos").select("items, estado").in("estado", ESTADOS_PENDIENTES);
+	sb
+      .from("pedidos")
+      .select("items, estado")
+      .in("estado", ESTADOS_PENDIENTES)
+      // Despachado = ya no reserva material.
+      .or(SIN_DESPACHAR);
 
   // Un pedido archivado no se va a producir, así que no reserva material.
   const conFiltro = await consulta().is("archivado_at", null);
